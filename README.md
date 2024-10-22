@@ -3,4 +3,3 @@
 ### Links
 
 [Jira](https://team-4s.atlassian.net/)
-[]
