@@ -1,5 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import CustomerHome from "./pages/CustomerHome";
+import ManagerHome from "./pages/ManagerHome";
+import CashierHome from "./pages/CashierHome";
 
 const App = () => {
   const [data, setData] = useState(null);
@@ -24,6 +28,12 @@ const App = () => {
   return (
     <>
       <h1>{data}</h1>
+
+      <Routes>
+        <Route path="/" element={<CustomerHome />} />
+        <Route path="/manager" element={<ManagerHome />} />
+        <Route path="/cashier" element={<CashierHome />} />
+      </Routes>
     </>
   );
 };
