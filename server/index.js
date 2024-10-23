@@ -13,5 +13,6 @@ app.listen(port, () => {
 
 // Test route
 app.get("/test", (request, response) => {
+  response.set("Cache-Control", "no-store");
   response.send("I love Panda Express");
 });
