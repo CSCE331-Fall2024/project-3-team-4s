@@ -1,34 +1,29 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
 
 const App = () => {
-  const [data, setData] = useState(null);
-
   useEffect(() => {
-    // Async function to fetch test data from the server
-    const fetchData = async () => {
+    // Async function to fetch menu data from the server
+    const fetchMenu = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/test");
+        const res = await axios.get("http://localhost:3000/menu");
 
-        setData(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
       }
     };
 
     // Call the async function
-    fetchData();
+    fetchMenu();
   }, []);
 
   return (
     <>
-      <h1>{data}</h1>
-
       <Routes>
         <Route path="/" element={<CustomerHome />} />
         <Route path="/manager" element={<ManagerHome />} />
