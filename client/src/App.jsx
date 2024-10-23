@@ -1,0 +1,36 @@
+import axios from "axios";
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import CustomerHome from "./pages/CustomerHome";
+import ManagerHome from "./pages/ManagerHome";
+import CashierHome from "./pages/CashierHome";
+
+const App = () => {
+  useEffect(() => {
+    // Async function to fetch menu data from the server
+    const fetchMenu = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/menu");
+
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    // Call the async function
+    fetchMenu();
+  }, []);
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<CustomerHome />} />
+        <Route path="/manager" element={<ManagerHome />} />
+        <Route path="/cashier" element={<CashierHome />} />
+      </Routes>
+    </>
+  );
+};
+
+export default App;
