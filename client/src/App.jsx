@@ -8,9 +8,9 @@ import CashierHome from "./pages/CashierHome";
 const App = () => {
   useEffect(() => {
     // Async function to fetch menu data from the server
-    const fetchMenu = async () => {
+    const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/menu");
+        const res = await axios.get("http://localhost:3000/kiosk/meal-types");
 
         console.log(res.data);
       } catch (err) {
@@ -19,7 +19,7 @@ const App = () => {
     };
 
     // Call the async function
-    fetchMenu();
+    fetchItems();
   }, []);
 
   return (
