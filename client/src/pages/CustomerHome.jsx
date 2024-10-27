@@ -93,16 +93,38 @@ const CustomerHome = () => {
         // Consolidate drinks items into a single "Drinks" item
         const drinksNames = ["Refresher", "Small Drink", "Medium Drink", "Bottle"];
         const drinksItem = {
-          menu_item_id: 'drinks', 
+          menu_item_id: 'drinks',
           item_name: "Drinks",
-          item_price: 2.10, 
+          item_price: 2.10,
         };
   
-        // Filter out individual drinks and add "Drinks"
-        data = data.filter(item => !drinksNames.includes(item.item_name));
-        data.push(drinksItem);
+        // Consolidate entrees into a single "A La Carte Entree" item
+        const entreeNames = ["Small Entree", "Medium Entree", "Large Entree"];
+        const entreeItem = {
+          menu_item_id: 'a_la_carte_entree',
+          item_name: "A La Carte Entree",
+          item_price: 5.50,
+        };
   
-        // Sort data according to displayOrder, pushing any unmatched items to the end
+        // Consolidate sides into a single "A La Carte Side" item
+        const sideNames = ["Medium Side", "Large Side"];
+        const sideItem = {
+          menu_item_id: 'a_la_carte_side',
+          item_name: "A La Carte Side",
+          item_price: 3.00, // Set an appropriate price if needed
+        };
+  
+        // Filter out individual drinks, entrees, and sides, and add consolidated items
+        data = data.filter(item => 
+          !drinksNames.includes(item.item_name) && 
+          !entreeNames.includes(item.item_name) &&
+          !sideNames.includes(item.item_name)
+        );
+        data.push(drinksItem);
+        data.push(entreeItem);
+        data.push(sideItem);
+  
+        // Sort data according to displayOrder, pushing unmatched items to the end
         data.sort((a, b) => {
           const indexA = displayOrder.indexOf(a.item_name);
           const indexB = displayOrder.indexOf(b.item_name);
@@ -168,14 +190,22 @@ const CustomerHome = () => {
 
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
-
+  
     if (item.item_name === "Appetizer") {
       fetchAppetizers();
+    } else if (item.item_name === "A La Carte Side") {
+      fetchSides(); // Load only sides
+      setEntrees([]); // Clear entrees to avoid displaying them
+    } else if (item.item_name === "A La Carte Entree") {
+      fetchEntrees(); // Load only entrees
+      setSides([]); // Clear sides to avoid displaying them
     } else {
+      // For any other selection, load both sides and entrees as default
       fetchSides();
       fetchEntrees();
     }
   };
+  
 
   const handleBackToMenu = () => {
     setSelectedItem(null);
@@ -206,11 +236,11 @@ const CustomerHome = () => {
           <span role="img" aria-label="user" className="navbar-icon">👤</span>
         </div>
       </div>
-
+  
       <h2 className="order-heading">
         {selectedItem ? `Customize your ${selectedItem.item_name}` : "Choose your meal type to start your order"}
       </h2>
-
+  
       <div className="menu-container">
         {!selectedItem ? (
           menuItems.map((item) => (
@@ -243,10 +273,46 @@ const CustomerHome = () => {
               ))}
             </div>
           </div>
+        ) : selectedItem.item_name === "A La Carte Side" ? (
+          <div className="steps-container">
+            <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
+            <h3>Choose Your Side</h3>
+            <div className="sides-container">
+              {sides.map((side) => (
+                <div key={side.menu_item_id} className="menu-item">
+                  <img 
+                    src={imageMap[side.item_name]?.image || logo} 
+                    alt={side.item_name} 
+                    className="menu-item-image" 
+                  />
+                  <h2>{side.item_name}</h2>
+                  <p className="image_description">{imageMap[side.item_name]?.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : selectedItem.item_name === "A La Carte Entree" ? (
+          <div className="steps-container">
+            <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
+            <h3>Choose Your Entree</h3>
+            <div className="entrees-container">
+              {entrees.map((entree) => (
+                <div key={entree.menu_item_id} className="menu-item">
+                  <img 
+                    src={imageMap[entree.item_name]?.image || logo} 
+                    alt={entree.item_name} 
+                    className="menu-item-image" 
+                  />
+                  <h2>{entree.item_name}</h2>
+                  <p className="image_description">{imageMap[entree.item_name]?.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="steps-container">
             <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
-            
+  
             <h3>Step 1: Choose Your Side</h3>
             <div className="sides-container">
               {sides.map((side) => (
@@ -261,7 +327,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-
+  
             <h3>Step 2: Choose Your Entree</h3>
             <div className="entrees-container">
               {entrees.map((entree) => (
