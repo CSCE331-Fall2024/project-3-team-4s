@@ -22,3 +22,44 @@ app.get("/menu", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+app.get("/menu/meals", async (req, res) => {
+  try {
+    const mealItems = await db.any("SELECT * FROM menu_item WHERE item_category = 'Meal'");
+    res.json(mealItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.get("/menu/sides", async (req, res) => {
+  try {
+    const mealItems = await db.any("SELECT * FROM menu_item WHERE item_category = 'Side'");
+    res.json(mealItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.get("/menu/entree", async (req, res) => {
+  try {
+    const mealItems = await db.any("SELECT * FROM menu_item WHERE item_category = 'Entree'");
+    res.json(mealItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+app.get("/menu/appetizer", async (req, res) => {
+  try {
+    const mealItems = await db.any("SELECT * FROM menu_item WHERE item_category = 'Appetizer'");
+    res.json(mealItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
