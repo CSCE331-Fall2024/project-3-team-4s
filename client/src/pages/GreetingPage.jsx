@@ -1,25 +1,38 @@
 import React from 'react';
-import '../components/GreetingPage.css'; // Import the CSS file for styling
+import { useNavigate } from 'react-router-dom';
+import './GreetingPage.css';    
 
 const GreetingPage = () => {
+  const navigate = useNavigate();  
+
+  // Function to navigate to CustomerHome
+  const handlePlaceOrderClick = () => {
+    navigate('/customer'); 
+  };
+
+  // Function to navigate to ManagerHome
+  const handleLoginClick = () => {
+    navigate('/manager');
+  };
+
   return (
     <div className="welcome-container">
-      <div className="left-section">
-        <button className="accessibility-button">Accessibility Options</button>
+      <div className="vbox left-box">
         <button className="translate-button">Translate</button>
+        <button className="accessibility-button">Accessibility Options</button>
       </div>
-      
-      <div className="center-section">
+      <div className="center-box">
         <h1>Panda Express</h1>
         <div className="panda-logo">
           <img src="/assets/panda.png" alt="Panda Logo" />
         </div>
-        <button className="order-button">Place Order</button>
+        <button className="order-button" onClick={handlePlaceOrderClick}>
+          Place Order
+        </button>
       </div>
-
-      <div className="right-section">
-        <button className="login-button">Login</button>
-      </div>
+      <button className="login-button" onClick={handleLoginClick}>
+        Login
+      </button>
     </div>
   );
 };
