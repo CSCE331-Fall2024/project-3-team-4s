@@ -1,5 +1,11 @@
 import express from "express";
-import { getMealTypes, postOrder } from "../controllers/kioskController.js";
+import {
+  getMealTypes,
+  getEntrees,
+  getSides,
+  getAppetizers,
+  postOrder,
+} from "../controllers/kioskController.js";
 
 const router = express.Router();
 
