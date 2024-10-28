@@ -52,6 +52,19 @@ const getAppetizers = async (req, res) => {
   }
 };
 
+const getDrinks = async (req, res) => {
+  try {
+    const drinks = await db.any(
+      "SELECT * FROM menu_item WHERE item_category = 'Drink' OR item_category = 'Bottle' OR item_category = 'Refresher'"
+    );
+
+    res.json(drinks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const postOrder = async (req, res) => {
   try {
   } catch (err) {
@@ -60,4 +73,4 @@ const postOrder = async (req, res) => {
   }
 };
 
-export { getMealTypes, getEntrees, getSides, getAppetizers, postOrder };
+export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks, postOrder };
