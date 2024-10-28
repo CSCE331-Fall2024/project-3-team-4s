@@ -143,7 +143,7 @@ body {
 
 .image_description {
     margin: 5px;
-    font-size: 14px;
+    font-size: 17px;
     color: black;
     font-style: normal;
 }
@@ -224,10 +224,10 @@ body {
     color: #333;
 }
 
-.steps-container p{
+/* .steps-container p{
     font-size: 18px;
     color: #333;
-}
+} */
 
 .appetizers-container {
     display: flex;
@@ -256,3 +256,26 @@ body {
     flex-shrink: 0;            /* Prevent items from shrinking */
     text-align: center;        /* Center-align text and image */
 }
+
+.menu-item.selected {
+    background-color: rgb(250, 228, 232); /* Light blue background */
+    border: 2px solid red; /* Teal border */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border 0.3s ease;
+}
+  
+.selection-count {
+    font-size: 25px;
+    font-style: bold;
+    color: black;
+    background-color: aliceblue;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid black;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}  
+
+.menu-item.unselected {
+    opacity: 0.5;
+    pointer-events: none; /* Prevent clicks on unselected items */
+  }

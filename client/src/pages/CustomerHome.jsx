@@ -120,8 +120,9 @@ const CustomerHome = () => {
   const [entrees, setEntrees] = useState([]);        // Store entrees here
   const [appetizers, setAppetizers] = useState([]); // State for appetizers
   const [drinks, setDrinks] = useState([]); // State for drinks
-  const [selectedItem, setSelectedItem] = useState(null); 
-
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedSides, setSelectedSides] = useState([]); // Track selected sides
+  const [selectedEntrees, setSelectedEntrees] = useState([]); // Track selected entrees and their counts
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -242,7 +243,7 @@ const CustomerHome = () => {
 
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
-
+  
     if (item.item_name === "Appetizer") {
       fetchAppetizers();
     } else if (item.item_name === "A La Carte Side") {
@@ -261,7 +262,61 @@ const CustomerHome = () => {
       fetchSides();
       fetchEntrees();
     }
+  
+    if (item.item_name === "Bowl") {
+      fetchSides();
+      fetchEntrees();
+      setSelectedSides([]); // Reset selected sides
+      setSelectedEntrees([]); // Reset selected entrees
+    }
   };
+
+  const handleSideSelect = (side) => {
+    if (selectedSides.includes(side)) {
+      // Deselect if the side is already selected
+      setSelectedSides(selectedSides.filter(s => s !== side));
+    } else if (selectedSides.length < 2) {
+      // Add the side if less than two sides are selected
+      setSelectedSides([...selectedSides, side]);
+    }
+  };
+
+  const maxEntrees = selectedItem?.item_name === "Plate" ? 2 : selectedItem?.item_name === "Bigger Plate" ? 3 : 1;
+
+
+  const handleEntreeSelect = (entree) => {
+    const entreeIndex = selectedEntrees.findIndex(e => e.item === entree);
+  
+    if (selectedItem.item_name === "Bowl") {
+      // For "Bowl," if the item is already selected, deselect it
+      if (entreeIndex !== -1) {
+        setSelectedEntrees([]);
+      } else {
+        // Add the selected entree since it's not yet selected
+        setSelectedEntrees([{ item: entree, count: 1 }]);
+      }
+    } else {
+      if (entreeIndex !== -1) {
+        // If the entree is already selected, increase its count up to the max per item limit
+        const newSelectedEntrees = [...selectedEntrees];
+        const maxPerItem = selectedItem.item_name === "Bigger Plate" ? 3 : 2;
+        
+        // Ensure not to exceed the max per item limit or max total count
+        if (newSelectedEntrees[entreeIndex].count < maxPerItem &&
+            selectedEntrees.reduce((acc, e) => acc + e.count, 0) < maxEntrees) {
+          newSelectedEntrees[entreeIndex].count += 1;
+          setSelectedEntrees(newSelectedEntrees);
+        }
+      } else if (selectedEntrees.reduce((acc, e) => acc + e.count, 0) < maxEntrees) {
+        // Add a new entree if there’s room for more selections
+        setSelectedEntrees([...selectedEntrees, { item: entree, count: 1 }]);
+      }
+    }
+  };
+                    
+                    
+                    
+                    
 
   const handleBackToMenu = () => {
     setSelectedItem(null);
@@ -269,6 +324,8 @@ const CustomerHome = () => {
     setEntrees([]);
     setAppetizers([]);
     setDrinks([]);
+    setSelectedSides([]); // Reset selected sides
+    setSelectedEntrees([]); // Reset selected entrees
   };
 
   const sortedItems = [...menuItems].sort(
@@ -280,13 +337,13 @@ const CustomerHome = () => {
       <div className="navbar">
         <img src={logo} alt="Logo" className="navbar-logo" />
         <div className="navbar-links">
-          <a href="#">Home</a>
+          <a href="/">Home</a>
           <span className="divider">|</span>
           <a href="#">About</a>
           <span className="divider">|</span>
           <a href="#">Services</a>
           <span className="divider">|</span>
-          <a href="#">Our Rewards</a>
+          <a href="/order">Our Rewards</a>
         </div>
         <div className="navbar-actions">
           <button className="navbar-button">ORDER</button>
@@ -391,7 +448,13 @@ const CustomerHome = () => {
             <h3>Step 1: Choose Your Side</h3>
             <div className="sides-container">
               {sides.map((side) => (
-                <div key={side.menu_item_id} className="menu-item">
+                <div
+                  key={side.menu_item_id}
+                  className={`menu-item ${
+                    selectedSides.length === 2 && !selectedSides.includes(side) ? 'unselected' : ''
+                  } ${selectedSides.includes(side) ? 'selected' : ''}`}
+                  onClick={() => handleSideSelect(side)}
+                >
                   <img 
                     src={imageMap[side.item_name]?.image || logo} 
                     alt={side.item_name} 
@@ -399,24 +462,42 @@ const CustomerHome = () => {
                   />
                   <h2>{side.item_name}</h2>
                   <p className="image_description">{imageMap[side.item_name]?.description}</p>
+                  {selectedSides.includes(side) && (
+                    <p className="selection-count">
+                      {selectedSides.length === 1 ? "1" : "1/2"}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
   
             <h3>Step 2: Choose Your Entree</h3>
             <div className="entrees-container">
-              {entrees.map((entree) => (
-                <div key={entree.menu_item_id} className="menu-item">
-                  <img 
-                    src={imageMap[entree.item_name]?.image || logo} 
-                    alt={entree.item_name} 
-                    className="menu-item-image" 
-                  />
-                  <h2>{entree.item_name}</h2>
-                  <p className="image_description">{imageMap[entree.item_name]?.description}</p>
-                </div>
-              ))}
+              {entrees.map((entree) => {
+                const entreeData = selectedEntrees.find(e => e.item === entree);
+                const itemsSelected = selectedEntrees.length; // Number of distinct entrees selected
+                
+                return (
+                  <div
+                    key={entree.menu_item_id}
+                    className={`menu-item ${
+                      itemsSelected === maxEntrees && !entreeData ? 'unselected' : ''
+                    } ${entreeData ? 'selected' : ''}`}
+                    onClick={() => handleEntreeSelect(entree)}
+                  >
+                    <img 
+                      src={imageMap[entree.item_name]?.image || logo} 
+                      alt={entree.item_name} 
+                      className="menu-item-image" 
+                    />
+                    <h2>{entree.item_name}</h2>
+                    <p className="image_description">{imageMap[entree.item_name]?.description}</p>
+                    {entreeData && <p className="selection-count">Selected: {entreeData.count}</p>}
+                  </div>
+                );
+              })}
             </div>
+
           </div>
         )}
       </div>

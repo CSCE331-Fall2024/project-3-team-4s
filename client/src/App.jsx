@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
+import OrderPage from "./pages/OrderPage";
 
 const App = () => {
   useEffect(() => {
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/" element={<CustomerHome />} />
         <Route path="/manager" element={<ManagerHome />} />
         <Route path="/cashier" element={<CashierHome />} />
+        <Route path="/order" element={<OrderPage />} />
       </Routes>
     </>
   );
