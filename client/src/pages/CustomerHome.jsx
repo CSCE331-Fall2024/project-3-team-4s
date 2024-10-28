@@ -29,6 +29,27 @@ import Chicken_Egg_Roll from '../customerImages/Chicken_Egg_Roll.avif';
 import Veggie_Spring_Roll from '../customerImages/Veggie_Spring_Roll.avif';
 import Cream_Cheese_Rangoon from '../customerImages/Cream_Cheese_Rangoon.avif';
 import Apple_Pie_Roll from '../customerImages/Apple_Pie_Roll.avif';
+import Dr_Pepper from '../customerImages/Dr_Pepper.avif';
+import Coca_Cola from '../customerImages/Coca_Cola.avif';
+import Diet_Coke from '../customerImages/Diet_Coke.avif';
+import Mango_Guava_Flavored_Tea from '../customerImages/Mango_Guava_Flavored_Tea.avif';
+import Peach_Lychee_Flavored_Refresher from '../customerImages/Peach_Lychee_Flavored_Refresher.avif';
+import Pomegranate_Pineapple_Flavored_Lemonade from '../customerImages/Pomegranate_Pineapple_Flavored_Lemonade.avif';
+import Watermelon_Mango_Flavored_Refresher from '../customerImages/Watermelon_Mango_Flavored_Refresher.avif';
+import Barqs_Root_Beer from '../customerImages/Barqs_Root_Beer.avif';
+import Fanta_Orange from '../customerImages/Fanta_Orange.avif';
+import Minute_Maid_Lemonade from '../customerImages/Minute_Maid_Lemonade.avif';
+import Powerade_Mountain_Berry_Blast from '../customerImages/Powerade_Mountain_Berry_Blast.avif';
+import Sprite from '../customerImages/Sprite.avif';
+import Coca_Cola_Cherry from '../customerImages/Coca_Cola_Cherry.avif';
+import Fuze_Raspberry_Iced_Tea from '../customerImages/Fuze_Raspberry_Iced_Tea.avif';
+import Powerade_Fruit_Punch from '../customerImages/Powerade_Fruit_Punch.avif';
+import Dasani from '../customerImages/Dasani.avif';
+import Minute_Maid_Apple_Juice from '../customerImages/Minute_Maid_Apple_Juice.avif';
+import Coke_Mexico from '../customerImages/Coke_Mexico.avif';
+import Coke_Zero from '../customerImages/Coke_Zero.avif';
+import Smartwater from '../customerImages/Smartwater.avif';
+
 
 
 
@@ -60,7 +81,27 @@ const imageMap = {
   "Chicken Egg Roll": { image: Chicken_Egg_Roll, description: "" },
   "Veggie Spring Roll": { image: Veggie_Spring_Roll, description: "" },
   "Cream Cheese Rangoon": { image: Cream_Cheese_Rangoon, description: "" },
-  "Apple Pie Roll": { image: Apple_Pie_Roll, description: "" }
+  "Apple Pie Roll": { image: Apple_Pie_Roll, description: "" },
+  "Dr Pepper": { image: Dr_Pepper, description: "" },
+  "Coca Cola": { image: Coca_Cola, description: "" },
+  "Diet Coke": { image: Diet_Coke, description: "" },
+  "Mango Guava Flavored Tea": { image: Mango_Guava_Flavored_Tea, description: "" },
+  "Peach Lychee Flavored Refresher": { image: Peach_Lychee_Flavored_Refresher, description: "" },
+  "Pomegranate Pineapple Flavored Lemonade": { image: Pomegranate_Pineapple_Flavored_Lemonade, description: "" },
+  "Watermelon Mango Flavored Refresher": { image: Watermelon_Mango_Flavored_Refresher, description: "" },
+  "Barqs Root Beer": { image: Barqs_Root_Beer, description: "" },
+  "Fanta Orange": { image: Fanta_Orange, description: "" },
+  "Minute Maid Lemonade": { image: Minute_Maid_Lemonade, description: "" },
+  "Powerade Mountain Berry Blast": { image: Powerade_Mountain_Berry_Blast, description: "" },
+  "Sprite": { image: Sprite, description: "" },
+  "Coca Cola Cherry": { image: Coca_Cola_Cherry, description: "" },
+  "Fuze Raspberry Iced Tea": { image: Fuze_Raspberry_Iced_Tea, description: "" },
+  "Powerade Fruit Punch": { image: Powerade_Fruit_Punch, description: "" },
+  "Dasani": { image: Dasani, description: "" },
+  "Minute Maid Apple Juice": { image: Minute_Maid_Apple_Juice, description: "" },
+  "Coke Mexico": { image: Coke_Mexico, description: "" },
+  "Coke Zero": { image: Coke_Zero, description: "" },
+  "Smartwater": { image: Smartwater, description: "" }
 };
 
 const displayOrder = [
@@ -78,13 +119,14 @@ const CustomerHome = () => {
   const [sides, setSides] = useState([]);           // Store sides here
   const [entrees, setEntrees] = useState([]);        // Store entrees here
   const [appetizers, setAppetizers] = useState([]); // State for appetizers
+  const [drinks, setDrinks] = useState([]); // State for drinks
   const [selectedItem, setSelectedItem] = useState(null); 
 
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch('http://localhost:3000/menu/meals');
+        const response = await fetch('http://localhost:3000/kiosk/meal-types');
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -142,12 +184,10 @@ const CustomerHome = () => {
   }, []);
   
   
-  
-
   // Fetch sides when an item is selected
   const fetchSides = async () => {
     try {
-      const response = await fetch('http://localhost:3000/menu/sides');
+      const response = await fetch('http://localhost:3000/kiosk/sides');
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -161,7 +201,7 @@ const CustomerHome = () => {
   // Fetch entrees when an item is selected
   const fetchEntrees = async () => {
     try {
-      const response = await fetch('http://localhost:3000/menu/entree');
+      const response = await fetch('http://localhost:3000/kiosk/entrees');
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -176,7 +216,7 @@ const CustomerHome = () => {
 
   const fetchAppetizers = async () => {
     try {
-      const response = await fetch('http://localhost:3000/menu/appetizer');
+      const response = await fetch('http://localhost:3000/kiosk/appetizers');
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -187,31 +227,48 @@ const CustomerHome = () => {
     }
   };
   
+  const fetchDrinks = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/kiosk/drinks');
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setDrinks(data);
+    } catch (error) {
+      console.error('Error fetching drinks:', error);
+    }
+  };
 
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
-  
+
     if (item.item_name === "Appetizer") {
       fetchAppetizers();
     } else if (item.item_name === "A La Carte Side") {
-      fetchSides(); // Load only sides
-      setEntrees([]); // Clear entrees to avoid displaying them
+      fetchSides();
+      setEntrees([]);
+      setDrinks([]);
     } else if (item.item_name === "A La Carte Entree") {
-      fetchEntrees(); // Load only entrees
-      setSides([]); // Clear sides to avoid displaying them
+      fetchEntrees();
+      setSides([]);
+      setDrinks([]);
+    } else if (item.item_name === "Drinks") {
+      fetchDrinks(); // Load only drinks
+      setSides([]);
+      setEntrees([]);
     } else {
-      // For any other selection, load both sides and entrees as default
       fetchSides();
       fetchEntrees();
     }
   };
-  
 
   const handleBackToMenu = () => {
     setSelectedItem(null);
     setSides([]);
     setEntrees([]);
     setAppetizers([]);
+    setDrinks([]);
   };
 
   const sortedItems = [...menuItems].sort(
@@ -243,7 +300,7 @@ const CustomerHome = () => {
   
       <div className="menu-container">
         {!selectedItem ? (
-          menuItems.map((item) => (
+          menuItems.map((item) => ( 
             <div key={item.menu_item_id} className="menu-item" onClick={() => handleMenuItemClick(item)}>
               <img 
                 src={imageMap[item.item_name]?.image || logo} 
@@ -309,7 +366,25 @@ const CustomerHome = () => {
               ))}
             </div>
           </div>
-        ) : (
+        ) : selectedItem.item_name === "Drinks" ? (
+          <div className="steps-container">
+            <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
+            <h3>Select Your Drink</h3>
+            <div className="drinks-container">
+              {drinks.map((drink) => (
+                <div key={drink.menu_item_id} className="menu-item">
+                  <img 
+                    src={imageMap[drink.item_name]?.image || logo} 
+                    alt={drink.item_name} 
+                    className="menu-item-image" 
+                  />
+                  <h2>{drink.item_name}</h2>
+                  <p className="image_description">{imageMap[drink.item_name]?.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          ) : (
           <div className="steps-container">
             <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
   
