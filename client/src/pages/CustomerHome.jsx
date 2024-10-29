@@ -367,7 +367,7 @@ const CustomerHome = () => {
   );
 
   return (
-    <div>
+    <div className='background'> 
       <div className="navbar">
         <img src={logo} alt="Logo" className="navbar-logo" />
         <div className="navbar-links">
