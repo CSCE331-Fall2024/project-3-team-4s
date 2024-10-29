@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import GreetingPage from "./pages/GreetingPage";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
@@ -26,7 +27,8 @@ const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<CustomerHome />} />
+        <Route path="/" element={<GreetingPage />} />
+        <Route path="/customer" element={<CustomerHome />} />
         <Route path="/manager" element={<ManagerHome />} />
         <Route path="/cashier" element={<CashierHome />} />
         <Route path="/order" element={<OrderPage />} />
