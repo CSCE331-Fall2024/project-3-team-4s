@@ -5,6 +5,9 @@ import GreetingPage from "./pages/GreetingPage";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
+import ReportsPage from "./pages/ReportsPage";
+import InventoryManage from "./pages/InventoryManage";
+import EditMenu from "./pages/EditMenu"; 
 
 const App = () => {
   const navigate = useNavigate();
@@ -33,17 +36,37 @@ const App = () => {
     navigate("/customer"); 
   };
 
+  const handleMenuClick = () => {
+    navigate("/menu"); 
+  };
+
+  const handleReportsClick = () => {
+    navigate("/reports"); 
+  };
+
+  const handleInventoryClick = () => {
+    navigate("/inventory"); 
+  };
+
   return (
     <>
       <Routes>
         <Route path="/"
-        element={<GreetingPage
-                      handleLoginClick={handleLoginClick}
-                      handlePlaceOrderClick={handlePlaceOrderClick} />} />
+               element={<GreetingPage
+                           handleLoginClick={handleLoginClick}
+                           handlePlaceOrderClick={handlePlaceOrderClick} />} />
 
         <Route path="/customer" element={<CustomerHome />} />
-        <Route path="/manager" element={<ManagerHome />} />
+        <Route path="/manager" 
+               element={<ManagerHome 
+                           handleMenuClick={handleMenuClick}
+                           handleReportsClick={handleReportsClick}
+                           handleInventoryClick={handleInventoryClick} />} />
         <Route path="/cashier" element={<CashierHome />} />
+        <Route path="/menu" element={<EditMenu />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/inventory" element={<InventoryManage />} />
+
       </Routes>
     </>
   );
