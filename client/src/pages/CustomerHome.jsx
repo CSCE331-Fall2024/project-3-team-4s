@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './styles/CustomerHome.css';
+import AppetizerModal from '../Modals/AppetizerModal';
+import SideModal from '../Modals/SideModal';
+
 import logo from '../customerImages/logo.png';
 import Bowl from '../customerImages/Bowl.avif';
 import Plate from '../customerImages/Plate.avif';
@@ -123,7 +126,9 @@ const CustomerHome = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSides, setSelectedSides] = useState([]); // Track selected sides
   const [selectedEntrees, setSelectedEntrees] = useState([]); // Track selected entrees and their counts
-
+  const [selectedAppetizer, setSelectedAppetizer] = useState(null);
+  const [selectedSide, setSelectedSide] = useState(null); // State to track the selected side for the modal
+  
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
@@ -313,6 +318,37 @@ const CustomerHome = () => {
       }
     }
   };
+
+  const handleAppetizerClick = (appetizer) => {
+    setSelectedAppetizer({
+      name: appetizer.item_name,
+      image: imageMap[appetizer.item_name]?.image,
+      smallPrice: appetizer.small_price, 
+      largePrice: appetizer.large_price, 
+      sauces: [
+        { name: "Soy Sauce" },
+        { name: "Sweet & Sour Sauce" },
+        { name: "Chili Sauce" },
+        { name: "Teriyaki Sauce" },
+        { name: "Hot Mustard" }
+      ]
+    });
+  };
+
+  const closeAppetizerModal = () => setSelectedAppetizer(null);
+
+  const handleSideClick = (side) => {
+    setSelectedSide({
+      name: side.item_name,
+      image: imageMap[side.item_name]?.image,
+      mediumPrice: 4.40, 
+      largePrice: 5.40  
+    });
+  };
+
+  const closeSideModal = () => {
+    setSelectedSide(null);
+  };
                     
                     
                     
@@ -375,17 +411,17 @@ const CustomerHome = () => {
             <h3>Select an Appetizer</h3>
             <div className="appetizers-container">
               {appetizers.map((appetizer) => (
-                <div key={appetizer.menu_item_id} className="menu-item">
-                  <img 
-                    src={imageMap[appetizer.item_name]?.image || logo} 
-                    alt={appetizer.item_name} 
-                    className="menu-item-image" 
-                  />
+                <div
+                  key={appetizer.menu_item_id}
+                  className="menu-item"
+                  onClick={() => handleAppetizerClick(appetizer)}
+                >
+                  <img src={imageMap[appetizer.item_name]?.image || logo} alt={appetizer.item_name} className="menu-item-image" />
                   <h2>{appetizer.item_name}</h2>
-                  <p className="image_description">{imageMap[appetizer.item_name]?.description}</p>
                 </div>
               ))}
             </div>
+            <AppetizerModal appetizer={selectedAppetizer} onClose={closeAppetizerModal} />
           </div>
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
@@ -393,7 +429,11 @@ const CustomerHome = () => {
             <h3>Choose Your Side</h3>
             <div className="sides-container">
               {sides.map((side) => (
-                <div key={side.menu_item_id} className="menu-item">
+                <div 
+                  key={side.menu_item_id} 
+                  className="menu-item" 
+                  onClick={() => handleSideClick(side)} // Call handleSideClick here
+                >
                   <img 
                     src={imageMap[side.item_name]?.image || logo} 
                     alt={side.item_name} 
@@ -404,7 +444,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
+            {selectedSide && <SideModal side={selectedSide} onClose={closeSideModal} />}
           </div>
+          
         ) : selectedItem.item_name === "A La Carte Entree" ? (
           <div className="steps-container">
             <button onClick={handleBackToMenu} className="back-button">Back to Menu</button>
