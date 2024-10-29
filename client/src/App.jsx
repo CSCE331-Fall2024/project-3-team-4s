@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import GreetingPage from "./pages/GreetingPage";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
 
 const App = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     // Async function to fetch menu data from the server
     const fetchItems = async () => {
@@ -23,10 +25,22 @@ const App = () => {
     fetchItems();
   }, []);
 
+  const handleLoginClick = () => {
+    navigate("/manager"); 
+  };
+
+  const handlePlaceOrderClick = () => {
+    navigate("/customer"); 
+  };
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<GreetingPage />} />
+        <Route path="/"
+        element={<GreetingPage
+                      handleLoginClick={handleLoginClick}
+                      handlePlaceOrderClick={handlePlaceOrderClick} />} />
+
         <Route path="/customer" element={<CustomerHome />} />
         <Route path="/manager" element={<ManagerHome />} />
         <Route path="/cashier" element={<CashierHome />} />
