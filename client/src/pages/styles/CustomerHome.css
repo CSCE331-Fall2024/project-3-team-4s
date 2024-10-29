@@ -9,7 +9,7 @@ body, html {
     font-family: 'Rubik', sans-serif;
 }
 
-body {
+.background {
     padding-top: 70px;  /* Adjust according to the height of your navbar */
     background-image: url('../../customerImages/background.webp');
     background-size: cover;
