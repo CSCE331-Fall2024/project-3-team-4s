@@ -352,8 +352,6 @@ const CustomerHome = () => {
                     
                     
                     
-                    
-
   const handleBackToMenu = () => {
     setSelectedItem(null);
     setSides([]);
