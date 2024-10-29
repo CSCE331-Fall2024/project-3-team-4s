@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import "./Employees.css";
 import PageHeader from "../components/PageHeader";
+import Button from "../components/Button";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -50,6 +51,12 @@ const Employees = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div class="button-container">
+        <Button text="Add Employee" />
+        <Button text="Edit Employee" />
+        <Button text="Delete Employee" />
       </div>
     </div>
   );
