@@ -7,7 +7,9 @@ import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
 import ReportsPage from "./pages/ReportsPage";
 import InventoryManage from "./pages/InventoryManage";
-import EditMenu from "./pages/EditMenu"; 
+import EditMenu from "./pages/EditMenu";
+import Employees from "./pages/Employees";
+import OrderPage from "./pages/OrderPage";
 
 const App = () => {
   const navigate = useNavigate();
@@ -29,46 +31,58 @@ const App = () => {
   }, []);
 
   const handleLoginClick = () => {
-    navigate("/manager"); 
+    navigate("/manager");
   };
 
   const handlePlaceOrderClick = () => {
-    navigate("/customer"); 
+    navigate("/customer");
   };
 
   const handleMenuClick = () => {
-    navigate("/menu"); 
+    navigate("/menu");
   };
 
   const handleReportsClick = () => {
-    navigate("/reports"); 
+    navigate("/reports");
   };
 
   const handleInventoryClick = () => {
-    navigate("/inventory"); 
+    navigate("/inventory");
   };
 
   return (
-    <>
+    <div className="global">
       <Routes>
-        <Route path="/"
-               element={<GreetingPage
-                           handleLoginClick={handleLoginClick}
-                           handlePlaceOrderClick={handlePlaceOrderClick} />} />
+        <Route
+          path="/"
+          element={
+            <GreetingPage
+              handleLoginClick={handleLoginClick}
+              handlePlaceOrderClick={handlePlaceOrderClick}
+            />
+          }
+        />
 
         <Route path="/customer" element={<CustomerHome />} />
-        <Route path="/manager" 
-               element={<ManagerHome 
-                           handleMenuClick={handleMenuClick}
-                           handleReportsClick={handleReportsClick}
-                           handleInventoryClick={handleInventoryClick} />} />
+        <Route
+          path="/manager"
+          element={
+            <ManagerHome
+              handleMenuClick={handleMenuClick}
+              handleReportsClick={handleReportsClick}
+              handleInventoryClick={handleInventoryClick}
+            />
+          }
+        />
         <Route path="/cashier" element={<CashierHome />} />
         <Route path="/menu" element={<EditMenu />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/inventory" element={<InventoryManage />} />
 
+        <Route path="/employees" element={<Employees />} />
+        <Route path="/order" element={<OrderPage />} />
       </Routes>
-    </>
+    </div>
   );
 };
 
