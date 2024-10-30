@@ -9,3 +9,20 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.custom-button:hover {
+  background-color: darkred;
+}
+
+.small-button {
+  width: 150px;
+  height: 50px;
+  font-size: 1rem;
+}
+
+.big-button {
+  width: 600px;
+  height: 300px;
+  font-size: 2rem;
+  border: 30px solid black;
+}
