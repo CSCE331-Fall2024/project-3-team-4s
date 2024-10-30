@@ -30,8 +30,11 @@ const App = () => {
     fetchItems();
   }, []);
 
-  const handleLoginClick = () => {
+  const handleManagerClick = () => {
     navigate("/manager");
+  };
+  const handleCashierClick = () => {
+    navigate("/cashier");
   };
 
   const handlePlaceOrderClick = () => {
@@ -46,9 +49,14 @@ const App = () => {
     navigate("/reports");
   };
 
+  const handleEmployeesClick = () => {
+    navigate("/employees");
+  }
+
   const handleInventoryClick = () => {
     navigate("/inventory");
   };
+
 
   return (
     <div className="global">
@@ -57,7 +65,8 @@ const App = () => {
           path="/"
           element={
             <GreetingPage
-              handleLoginClick={handleLoginClick}
+              handleManagerClick={handleManagerClick}
+              handleCashierClick={handleCashierClick}
               handlePlaceOrderClick={handlePlaceOrderClick}
             />
           }
@@ -71,6 +80,7 @@ const App = () => {
               handleMenuClick={handleMenuClick}
               handleReportsClick={handleReportsClick}
               handleInventoryClick={handleInventoryClick}
+              handleEmployeesClick={handleEmployeesClick}
             />
           }
         />
