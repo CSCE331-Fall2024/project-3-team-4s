@@ -7,6 +7,7 @@ const app = express(); // Create an Express app
 const port = 3000; // Set the port
 
 app.use(cors()); // Enable CORS
+app.use(express.json()); // Enable JSON parsing
 app.use("/kiosk", kioskRoutes); // Use the kiosk routes
 app.use("/employee", employeeRoutes); // Use the employee routes
 
