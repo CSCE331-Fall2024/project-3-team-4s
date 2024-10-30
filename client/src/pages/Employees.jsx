@@ -18,7 +18,7 @@ const Employees = () => {
         const res = await axios.get(
           "http://localhost:3000/employee/get-employees"
         );
-
+        console.log(res.data);
         setEmployees(res.data);
       } catch (err) {
         console.error(err);
