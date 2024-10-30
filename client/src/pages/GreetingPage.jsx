@@ -1,7 +1,7 @@
 import "./GreetingPage.css";
 import Button from "../components/Button"; 
 
-const GreetingPage = ({ handlePlaceOrderClick, handleLoginClick }) => {
+const GreetingPage = ({ handlePlaceOrderClick, handleManagerClick, handleCashierClick }) => {
   return (
     <div className="GreetingPage-container">
       <div className="vbox left-box">
@@ -16,7 +16,8 @@ const GreetingPage = ({ handlePlaceOrderClick, handleLoginClick }) => {
         <Button text="Place Order" onClick={handlePlaceOrderClick} className="big-button" />
       </div>
       <div className="right-box">
-        <Button text="Login" onClick={handleLoginClick} className="small-button" />
+        <Button text="Manager" onClick={handleManagerClick} className="small-button" />
+        <Button text="Cashier" onClick={handleCashierClick} className="small-button" />
       </div>
     </div>
   );
