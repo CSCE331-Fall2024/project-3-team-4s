@@ -109,7 +109,6 @@ const CashierHome = () => {
     <div className="cashierbackground">
       <div className="menu">
         <div className="tabs">
-          <h1>Cashier    Home</h1>
           <div className="tab">
             {tabs.map((tab, index) => (
               <button
