@@ -1,18 +1,21 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import "./InventoryManage.css";
+import "./Inventory.css";
 import PageHeader from "../components/PageHeader";
 import Icon from "../components/Icon";
 
-const InventoryManage = () => {
-  const [inventory, setInventory] = useState([]); // Inventory state
+const Inventory = () => {
+  const [inventory, setInventory] = useState([]);
 
   // Fetch all inventory items
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/inventory/get-inventory");
-        console.log(res.data); // Check if data is being fetched
+        const res = await axios.get(
+          "http://localhost:3000/inventory/get-inventory"
+        );
+
+        console.log(res.data);
         setInventory(res.data);
       } catch (err) {
         console.error(err);
@@ -74,4 +77,4 @@ const InventoryManage = () => {
   );
 };
 
-export default InventoryManage;
+export default Inventory;
