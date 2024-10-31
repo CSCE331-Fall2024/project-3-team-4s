@@ -6,47 +6,33 @@ import Button from "../components/Button";
 const ManagerHome = () => {
   const navigate = useNavigate();
 
-  const handleMenuClick = () => {
-    navigate("/menu");
-  };
-
-  const handleReportsClick = () => {
-    navigate("/reports");
-  };
-
-  const handleEmployeesClick = () => {
-    navigate("/employees");
-  };
-
-  const handleInventoryClick = () => {
-    navigate("/inventory");
-  };
-
   return (
     <div className="manager-home-container">
       <PageHeader pageTitle="Admin" />
+
       <div className="manager-button-container">
         <div className="manager-button-col">
           <Button
             text="Edit Menu"
-            onClick={handleMenuClick}
+            onClick={() => navigate("/menu")}
             className="big-custom-button"
           />
           <Button
             text="Manage Employees"
-            onClick={handleEmployeesClick}
+            onClick={() => navigate("/employees")}
             className="big-custom-button"
           />
         </div>
+
         <div className="manager-button-col">
           <Button
             text="Reports"
-            onClick={handleReportsClick}
+            onClick={() => navigate("/reports")}
             className="big-custom-button"
           />
           <Button
             text="Manage Inventory"
-            onClick={handleInventoryClick}
+            onClick={() => navigate("/inventory")}
             className="big-custom-button"
           />
         </div>

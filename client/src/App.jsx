@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import GreetingPage from "./pages/GreetingPage";
+import Home from "./pages/Home";
 import CustomerHome from "./pages/CustomerHome";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
@@ -13,7 +13,7 @@ const App = () => {
   return (
     <div className="global">
       <Routes>
-        <Route path="/" element={<GreetingPage />} />
+        <Route path="/" element={<Home />} />
         <Route path="/customer" element={<CustomerHome />} />
         <Route path="/manager" element={<ManagerHome />} />
         <Route path="/cashier" element={<CashierHome />} />

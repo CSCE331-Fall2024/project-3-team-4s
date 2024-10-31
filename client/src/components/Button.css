@@ -14,9 +14,9 @@
   background-color: darkred;
 }
 
-.small-button {
-  width: 150px;
-  height: 50px;
+.med-custom-button {
+  width: 8rem;
+  padding: 1rem 0;
   font-size: 1rem;
 }
 
