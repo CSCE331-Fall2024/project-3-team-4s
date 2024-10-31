@@ -31,7 +31,7 @@ const GreetingPage = () => {
         <Button
           text="Place Order"
           onClick={handlePlaceOrderClick}
-          className="big-button"
+          className="big-custom-button"
         />
       </div>
       <div className="right-box">
