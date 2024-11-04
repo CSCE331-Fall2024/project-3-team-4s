@@ -54,3 +54,11 @@
   display: flex;
   justify-content: space-evenly;
 }
+
+.inventory-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  width: 45%;
+  margin-top: 2rem;
+}

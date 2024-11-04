@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "./Inventory.css";
 import PageHeader from "../components/PageHeader";
 import Icon from "../components/Icon";
+import Button from "../components/Button";
 
 const Inventory = () => {
   const [inventory, setInventory] = useState([]);
@@ -25,9 +26,18 @@ const Inventory = () => {
     fetchInventory();
   }, []);
 
+  // Add inventory item
+  const addInventoryItem = async () => {};
+
+  // Edit inventory item
+  const editInventoryItem = async () => {};
+
+  // Delete inventory item
+  const deleteInventoryItem = async () => {};
+
   return (
     <div className="inventory-container">
-      <PageHeader pageTitle="Inventory Management" />
+      <PageHeader pageTitle="Inventory" />
 
       <div className="table-outer-container">
         <div className="table-inner-container">
@@ -45,33 +55,28 @@ const Inventory = () => {
             </thead>
 
             <tbody>
-              {inventory.length > 0 ? (
-                inventory.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.ingredient_id}</td>
-                    <td>{item.ingredient_name}</td>
-                    <td>{item.current_stock}</td>
-                    <td>{item.price}</td>
-                    <td>{item.unit}</td>
-                    <td>{item.min_stock}</td>
-                    <td className="icons-container">
-                      <Icon src="src/assets/edit-icon.svg" alt="edit icon" />
-                      <Icon
-                        src="src/assets/delete-icon.svg"
-                        alt="delete icon"
-                        onClick={() => openDeleteModal(item)}
-                      />
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7">No inventory items found</td>
+              {inventory.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.ingredient_id}</td>
+                  <td>{item.ingredient_name}</td>
+                  <td>{item.current_stock}</td>
+                  <td>{item.price}</td>
+                  <td>{item.unit}</td>
+                  <td>{item.min_stock}</td>
+                  <td className="icons-container">
+                    <Icon src="src/assets/edit-icon.svg" alt="edit icon" />
+                    <Icon src="src/assets/delete-icon.svg" alt="delete icon" />
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="inventory-buttons-container">
+        <Button text={"+"} />
+        <Button text={"Restock"} />
       </div>
     </div>
   );

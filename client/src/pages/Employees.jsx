@@ -186,7 +186,7 @@ const Employees = () => {
           </table>
         </div>
       </div>
-      <div className="button-container">
+      <div className="employee-buttons-container">
         <Button text="+" onClick={openAddModal} />
       </div>
 
