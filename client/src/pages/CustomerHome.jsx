@@ -146,31 +146,11 @@ const CustomerHome = () => {
           item_price: 2.10,
         };
   
-        // Consolidate entrees into a single "A La Carte Entree" item
-        const entreeNames = ["Small Entree", "Medium Entree", "Large Entree"];
-        const entreeItem = {
-          menu_item_id: 'a_la_carte_entree',
-          item_name: "A La Carte Entree",
-          item_price: 5.50,
-        };
-  
-        // Consolidate sides into a single "A La Carte Side" item
-        const sideNames = ["Medium Side", "Large Side"];
-        const sideItem = {
-          menu_item_id: 'a_la_carte_side',
-          item_name: "A La Carte Side",
-          item_price: 3.00, // Set an appropriate price if needed
-        };
-  
         // Filter out individual drinks, entrees, and sides, and add consolidated items
         data = data.filter(item => 
-          !drinksNames.includes(item.item_name) && 
-          !entreeNames.includes(item.item_name) &&
-          !sideNames.includes(item.item_name)
+          !drinksNames.includes(item.item_name) 
         );
         data.push(drinksItem);
-        data.push(entreeItem);
-        data.push(sideItem);
   
         // Sort data according to displayOrder, pushing unmatched items to the end
         data.sort((a, b) => {
