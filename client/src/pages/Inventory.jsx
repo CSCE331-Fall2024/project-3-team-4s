@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./Inventory.css";
 import PageHeader from "../components/PageHeader";
@@ -6,15 +7,17 @@ import Icon from "../components/Icon";
 import Button from "../components/Button";
 
 const Inventory = () => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+  const navigate = useNavigate();
+
   const [inventory, setInventory] = useState([]);
 
   // Fetch all inventory items
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/inventory/get-inventory"
-        );
+        const res = await axios.get(`${backendURL}/inventory/get-inventory`);
 
         console.log(res.data);
         setInventory(res.data);
@@ -26,13 +29,11 @@ const Inventory = () => {
     fetchInventory();
   }, []);
 
-  // Add inventory item
+  // Button handlers
   const addInventoryItem = async () => {};
 
-  // Edit inventory item
   const editInventoryItem = async () => {};
 
-  // Delete inventory item
   const deleteInventoryItem = async () => {};
 
   return (
@@ -45,7 +46,7 @@ const Inventory = () => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Ingredient Name</th>
+                <th>Inventory Item</th>
                 <th>Current Stock</th>
                 <th>Price</th>
                 <th>Unit</th>
@@ -76,7 +77,7 @@ const Inventory = () => {
 
       <div className="inventory-buttons-container">
         <Button text={"+"} />
-        <Button text={"Restock"} />
+        <Button text={"Restock"} onClick={() => navigate("/restock")} />
       </div>
     </div>
   );
