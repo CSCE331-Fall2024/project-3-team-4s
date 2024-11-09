@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import Icon from "../components/Icon";
 import AddEmployeeModal from "../components/AddEmployeeModal";
 import EditEmployeeModal from "../components/EditEmployeeModal";
-import DeleteEmployeeModal from "../components/DeleteEmployeeModal";
+import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -197,10 +197,11 @@ const Employees = () => {
       )}
 
       {showDeleteModal && (
-        <DeleteEmployeeModal
+        <DeleteModal
           onCancel={closeDeleteModal}
           onDelete={deleteEmployee}
-          employee={selectedEmployee}
+          heading={"Delete Employee"}
+          text={`Are you sure you want to delete ${selectedEmployee.first_name} ${selectedEmployee.last_name}?`}
         />
       )}
     </div>

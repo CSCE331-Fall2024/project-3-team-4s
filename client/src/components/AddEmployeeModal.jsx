@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./AddEmployeeModal.css";
+import "./AddModal.css";
 import Button from "./Button";
 
 const AddEmployeeModal = ({ onCancel, onAdd }) => {
@@ -8,25 +8,25 @@ const AddEmployeeModal = ({ onCancel, onAdd }) => {
   const [role, setRole] = useState("");
 
   return (
-    <div className="modal-ae">
-      <div className="modal-content-ae">
+    <div className="modal-add">
+      <div className="modal-content-add">
         <h2>Add Employee</h2>
-        <form className="modal-form-ae">
+        <form className="modal-form-add">
           <input
-            className="input-ae"
+            className="input-add"
             type="text"
             placeholder="First Name"
             onChange={(e) => setFirstName(e.target.value)}
           />
           <input
-            className="input-ae"
+            className="input-add"
             type="text"
             placeholder="Last Name"
             onChange={(e) => setLastName(e.target.value)}
           />
 
           <select
-            className="input-ae"
+            className="input-add"
             id="role"
             name="role"
             onChange={(e) => setRole(e.target.value)}
@@ -41,7 +41,7 @@ const AddEmployeeModal = ({ onCancel, onAdd }) => {
           </select>
         </form>
 
-        <div className="modal-actions-ae">
+        <div className="modal-actions-add">
           <Button text={"Cancel"} onClick={onCancel} />
           <Button
             text={"Add"}

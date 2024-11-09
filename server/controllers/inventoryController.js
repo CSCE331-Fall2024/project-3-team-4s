@@ -36,7 +36,19 @@ const updateInventoryItem = async (req, res) => {};
 
 const restockInventoryItem = async (req, res) => {};
 
-const deleteInventoryItem = async (req, res) => {};
+const deleteInventoryItem = async (req, res) => {
+  try {
+    // Extract the id from the request parameters
+    const { id } = req.params;
+
+    await db.none("DELETE FROM inventory WHERE ingredient_id = $1", [id]);
+
+    res.json({ message: `Inventory item ${id} deleted` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export {
   getInventoryItems,
