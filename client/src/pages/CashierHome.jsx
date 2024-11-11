@@ -28,8 +28,19 @@ const CashierHome = () => {
   const [mealTypes, setMealTypes] = useState([]); // Initialize mealTypes state
   const [currentOrderIDs, setCurrentOrderIDs] = useState([]); // Initialize currentOrderIDs state
   const [currentOrdersIDs, setCurrentOrdersIDs] = useState([]); // Initialize currentOrdersIDs state
+  const [weatherData, setWeatherData] = useState(null);
   
 // src/translateService.js
+const fetchWeather = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3000/weather/weather`, {
+      params: { city: 'College Station', units : 'imperial' }
+    });
+    setWeatherData(response.data);
+  } catch (error) {
+    console.error("Error fetching weather data:", error);
+  }
+};
 
 
 const translateText = async (text, targetLanguage) => {
@@ -274,6 +285,9 @@ const handleFoodClick = (id) => { //does the subtraction stuff
 };
 const debug = async () => {
   console.log("Translation:" + await translateText('Hello', 'es'));
+  console.log("Weather:" + weatherData.main.temp);
+  console.log("Weather:", JSON.stringify(weatherData, null, 2));
+  console.log("Weather: ", weatherData.weather[0].description)
 
   /*
   console.log("MealTypes: ");
