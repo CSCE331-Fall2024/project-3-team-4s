@@ -29,6 +29,21 @@ const CashierHome = () => {
   const [currentOrderIDs, setCurrentOrderIDs] = useState([]); // Initialize currentOrderIDs state
   const [currentOrdersIDs, setCurrentOrdersIDs] = useState([]); // Initialize currentOrdersIDs state
   
+// src/translateService.js
+
+
+const translateText = async (text, targetLanguage) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:3000/translate/translate`,
+      { text, targetLanguage }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error translating text:', error);
+    throw error;
+  }
+};
 
 
 
@@ -258,6 +273,8 @@ const handleFoodClick = (id) => { //does the subtraction stuff
   }
 };
 const debug = async () => {
+  console.log("Translation:" + await translateText('Hello', 'es'));
+
   /*
   console.log("MealTypes: ");
   try {
