@@ -15,9 +15,22 @@ const ReportsPage = () => {
     const [loading, setLoading] = useState(false); // Loading state for API request
 
     const fetchReportData = async () => {
+        // Check if graph type and dates are selected
         if (!graphType || !startDate || !endDate) {
             alert("Please select a report type and both dates.");
             return;
+        }
+
+        // Validate that endDate is not before startDate
+        if (new Date(endDate) < new Date(startDate)) {
+            alert("End date cannot be earlier than start date. Please select a valid date range.");
+            return; // Stop function if date range is invalid
+        }
+
+        // Validate that startHour is not after endHour for X Report
+        if (graphType === 'x-report' && startHour > endHour) {
+            alert("Start hour cannot be later than end hour. Please select a valid time range.");
+            return; // Stop function if time range is invalid
         }
 
         setLoading(true);
@@ -90,7 +103,6 @@ const ReportsPage = () => {
                     <option value="">--Select--</option>
                     <option value="x-report">X Report</option>
                     <option value="product-usage">Product Usage</option>
-                    {/* Removed Z Report */}
                 </select>
             </div>
 
