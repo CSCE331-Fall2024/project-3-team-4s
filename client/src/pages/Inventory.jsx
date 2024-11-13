@@ -124,7 +124,7 @@ const Inventory = () => {
 
   const deleteInventoryItem = async () => {
     try {
-      const res = await axios.delete(
+      const res = await axios.put(
         `${backendURL}/inventory/delete-inventory/${selectedInventoryItem.ingredient_id}`
       );
 

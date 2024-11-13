@@ -9,7 +9,8 @@ import EditEmployeeModal from "../components/EditEmployeeModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000";
 
   const [employees, setEmployees] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -119,7 +120,7 @@ const Employees = () => {
 
   const deleteEmployee = async () => {
     try {
-      const res = await axios.delete(
+      const res = await axios.put(
         `${backendURL}/employee/delete-employee/${selectedEmployee.employee_id}`
       );
 

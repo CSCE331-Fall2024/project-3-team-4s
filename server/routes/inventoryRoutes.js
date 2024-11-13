@@ -13,6 +13,6 @@ router.get("/get-inventory", getInventoryItems);
 router.post("/add-inventory", addInventoryItem);
 router.put("/update-inventory/:id", updateInventoryItem);
 router.put("/restock-inventory/:id", restockInventoryItem);
-router.delete("/delete-inventory/:id", deleteInventoryItem);
+router.put("/delete-inventory/:id", deleteInventoryItem);
 
 export default router;

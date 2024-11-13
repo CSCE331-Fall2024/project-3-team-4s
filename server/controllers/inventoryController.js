@@ -2,7 +2,9 @@ import db from "../db.js";
 
 const getInventoryItems = async (req, res) => {
   try {
-    const inventoryItem = await db.any("SELECT * FROM inventory");
+    const inventoryItem = await db.any(
+      "SELECT * FROM inventory where in_stock = true"
+    );
 
     res.json(inventoryItem);
   } catch (err) {
@@ -18,6 +20,22 @@ const addInventoryItem = async (req, res) => {
 
     if (!ingredient_name || !price || !unit || !min_stock) {
       return res.status(400).json({ message: "Please fill out all fields" });
+    }
+
+    // Check if the inventory item already exists
+    const existingInventoryItem = await db.oneOrNone(
+      "SELECT * FROM inventory WHERE ingredient_name = $1",
+      [ingredient_name]
+    );
+
+    if (existingInventoryItem) {
+      // If the inventory item exists, set in_stock to true and update the price, unit, and min_stock
+      const updatedInventoryItem = await db.one(
+        "UPDATE inventory SET in_stock = true, price = $1, unit = $2, min_stock = $3 WHERE ingredient_id = $4 RETURNING *",
+        [price, unit, min_stock, existingInventoryItem.ingredient_id]
+      );
+
+      return res.json({ inventoryItem: updatedInventoryItem });
     }
 
     const newInventoryItem = await db.one(
@@ -58,9 +76,12 @@ const deleteInventoryItem = async (req, res) => {
     // Extract the id from the request parameters
     const { id } = req.params;
 
-    await db.none("DELETE FROM inventory WHERE ingredient_id = $1", [id]);
+    await db.none(
+      "UPDATE inventory SET in_stock = false WHERE ingredient_id = $1",
+      [id]
+    );
 
-    res.json({ message: `Inventory item ${id} deleted` });
+    res.json({ message: `Inventory item ${id} set to out of stock` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
