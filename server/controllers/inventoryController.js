@@ -2,11 +2,24 @@ import db from "../db.js";
 
 const getInventoryItems = async (req, res) => {
   try {
-    const inventoryItem = await db.any(
+    const inventoryItems = await db.any(
       "SELECT * FROM inventory where in_stock = true"
     );
 
-    res.json(inventoryItem);
+    res.json(inventoryItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getMinStockInventoryItems = async (req, res) => {
+  try {
+    const inventoryItems = await db.any(
+      "SELECT * FROM inventory where in_stock = true and current_stock < min_stock"
+    );
+
+    res.json(inventoryItems);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -90,6 +103,7 @@ const deleteInventoryItem = async (req, res) => {
 
 export {
   getInventoryItems,
+  getMinStockInventoryItems,
   addInventoryItem,
   updateInventoryItem,
   restockInventoryItem,

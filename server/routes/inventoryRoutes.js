@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getInventoryItems,
+  getMinStockInventoryItems,
   addInventoryItem,
   updateInventoryItem,
   restockInventoryItem,
@@ -10,6 +11,7 @@ import {
 const router = express.Router();
 
 router.get("/get-inventory", getInventoryItems);
+router.get("/get-min-stock", getMinStockInventoryItems);
 router.post("/add-inventory", addInventoryItem);
 router.put("/update-inventory/:id", updateInventoryItem);
 router.put("/restock-inventory/:id", restockInventoryItem);
