@@ -6,9 +6,12 @@ import Button from "../components/Button";
 import Icon from "../components/Icon";
 import AddEmployeeModal from "../components/AddEmployeeModal";
 import EditEmployeeModal from "../components/EditEmployeeModal";
-import DeleteEmployeeModal from "../components/DeleteEmployeeModal";
+import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000";
+
   const [employees, setEmployees] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -19,9 +22,7 @@ const Employees = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/employee/get-employees"
-        );
+        const res = await axios.get(`${backendURL}/employee/get-employees`);
 
         console.log(res.data);
         setEmployees(res.data);
@@ -33,41 +34,36 @@ const Employees = () => {
     fetchEmployees();
   }, []);
 
-  // Open add modal
+  // Modal functions
   const openAddModal = () => {
     setShowAddModal(true);
   };
 
-  // Open edit modal
   const openEditModal = (employee) => {
     setShowEditModal(true);
     setSelectedEmployee(employee);
   };
 
-  // Open delete modal
   const openDeleteModal = (employee) => {
     setShowDeleteModal(true);
     setSelectedEmployee(employee);
   };
 
-  // Close add modal
   const closeAddModal = () => {
     setShowAddModal(false);
   };
 
-  // Close edit modal
   const closeEditModal = () => {
     setShowEditModal(false);
     setSelectedEmployee(null);
   };
 
-  // Close delete modal
   const closeDeleteModal = () => {
     setShowDeleteModal(false);
     setSelectedEmployee(null);
   };
 
-  // Add employee
+  // Button handlers
   const addEmployee = async (firstName, lastName, role) => {
     try {
       const employee = {
@@ -77,9 +73,10 @@ const Employees = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:3000/employee/add-employee",
+        `${backendURL}/employee/add-employee`,
         employee
       );
+
       // Re-render the employees list by adding the new employee
       setEmployees([...employees, res.data.employee]);
       closeAddModal();
@@ -90,7 +87,6 @@ const Employees = () => {
     }
   };
 
-  // Edit employee
   const editEmployee = async (firstName, lastName, role) => {
     try {
       const employee = {
@@ -100,7 +96,7 @@ const Employees = () => {
       };
 
       const res = await axios.put(
-        `http://localhost:3000/employee/update-employee/${selectedEmployee.employee_id}`,
+        `${backendURL}/employee/update-employee/${selectedEmployee.employee_id}`,
         employee
       );
 
@@ -122,11 +118,10 @@ const Employees = () => {
     }
   };
 
-  // Delete employee
   const deleteEmployee = async () => {
     try {
-      const res = await axios.delete(
-        `http://localhost:3000/employee/delete-employee/${selectedEmployee.employee_id}`
+      const res = await axios.put(
+        `${backendURL}/employee/delete-employee/${selectedEmployee.employee_id}`
       );
 
       // Re-render the employees list by removing the deleted employee
@@ -186,7 +181,7 @@ const Employees = () => {
           </table>
         </div>
       </div>
-      <div className="button-container">
+      <div className="employee-buttons-container">
         <Button text="+" onClick={openAddModal} />
       </div>
 
@@ -203,10 +198,11 @@ const Employees = () => {
       )}
 
       {showDeleteModal && (
-        <DeleteEmployeeModal
+        <DeleteModal
           onCancel={closeDeleteModal}
           onDelete={deleteEmployee}
-          employee={selectedEmployee}
+          heading={"Delete Employee"}
+          text={`Are you sure you want to delete ${selectedEmployee.first_name} ${selectedEmployee.last_name}?`}
         />
       )}
     </div>
