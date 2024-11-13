@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './styles/CustomerHome.css';
 import AppetizerModal from '../Modals/AppetizerModal';
 import SideModal from '../Modals/SideModal';
+import EntreeModal from '../Modals/EntreeModal';
+import DrinkModal from '../Modals/DrinkModal'; 
 
 import logo from '../customerImages/logo.png';
 import Bowl from '../customerImages/Bowl.avif';
@@ -52,9 +54,6 @@ import Minute_Maid_Apple_Juice from '../customerImages/Minute_Maid_Apple_Juice.a
 import Coke_Mexico from '../customerImages/Coke_Mexico.avif';
 import Coke_Zero from '../customerImages/Coke_Zero.avif';
 import Smartwater from '../customerImages/Smartwater.avif';
-
-
-
 
 const imageMap = {
   "Bowl": { image: Bowl, description: "1 Side & 1 Entree" },
@@ -127,7 +126,11 @@ const CustomerHome = () => {
   const [selectedSides, setSelectedSides] = useState([]); // Track selected sides
   const [selectedEntrees, setSelectedEntrees] = useState([]); // Track selected entrees and their counts
   const [selectedAppetizer, setSelectedAppetizer] = useState(null);
+  const [selectedEntree, setSelectedEntree] = useState(null); // State for selected entree
+  const [isEntreeModalOpen, setIsEntreeModalOpen] = useState(false); // State for modal visibility
   const [selectedSide, setSelectedSide] = useState(null); // State to track the selected side for the modal
+  const [selectedDrink, setSelectedDrink] = useState(null); // State for selected drink
+  const [isDrinkModalOpen, setIsDrinkModalOpen] = useState(false); // Drink modal visibility
   
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -139,7 +142,7 @@ const CustomerHome = () => {
         let data = await response.json();
   
         // Consolidate drinks items into a single "Drinks" item
-        const drinksNames = ["Refresher", "Small Drink", "Medium Drink", "Bottle"];
+        const drinksNames = ["Refresher", "Drink", "Bottle"];
         const drinksItem = {
           menu_item_id: 'drinks',
           item_name: "Drinks",
@@ -303,8 +306,7 @@ const CustomerHome = () => {
     setSelectedAppetizer({
       name: appetizer.item_name,
       image: imageMap[appetizer.item_name]?.image,
-      smallPrice: appetizer.small_price, 
-      largePrice: appetizer.large_price, 
+      price: 2.00,
       sauces: [
         { name: "Soy Sauce" },
         { name: "Sweet & Sour Sauce" },
@@ -321,15 +323,57 @@ const CustomerHome = () => {
     setSelectedSide({
       name: side.item_name,
       image: imageMap[side.item_name]?.image,
-      mediumPrice: 4.40, 
-      largePrice: 5.40  
+      price: 4.40,
     });
+  };
+
+  const handleEntreeClick = (entree) => {
+    setSelectedEntree({
+      name: entree.item_name,
+      image: imageMap[entree.item_name]?.image,
+      price: 5.20,
+    });
+    setIsEntreeModalOpen(true);
+  };
+
+  const closeEntreeModal = () => {
+    setSelectedEntree(null);
+    setIsEntreeModalOpen(false); // Close the modal
   };
 
   const closeSideModal = () => {
     setSelectedSide(null);
   };
                     
+  const handleDrinkClick = async (drink) => {
+    let price;
+  
+    if (drink.item_category === "Bottle") {
+      // Use the price of the selected drink
+      price = drink.item_price;
+    } else if (drink.item_category === "Drink") {
+      // Use a fixed price for drinks
+      price = 2.30;
+    } else if (drink.item_category === "Refresher") {
+      // Use a fixed price for refreshers
+      price = 3.20;
+    } else{
+      price = 0;
+    }
+  
+    setSelectedDrink({
+      name: drink.item_name,
+      image: imageMap[drink.item_name]?.image,
+      price: price, // Set the determined price
+    });
+    setIsDrinkModalOpen(true);
+  };
+  
+
+  const closeDrinkModal = () => {
+    setSelectedDrink(null);
+    setIsDrinkModalOpen(false);
+  };
                     
                     
   const handleBackToMenu = () => {
@@ -360,7 +404,7 @@ const CustomerHome = () => {
           <a href="/order">Our Rewards</a>
         </div>
         <div className="navbar-actions">
-          <button className="navbar-button">ORDER</button>
+          <button className="navbar-button"><a href="/order">ORDER</a></button>
           <span role="img" aria-label="user" className="navbar-icon">👤</span>
         </div>
       </div>
@@ -431,7 +475,7 @@ const CustomerHome = () => {
             <h3>Choose Your Entree</h3>
             <div className="entrees-container">
               {entrees.map((entree) => (
-                <div key={entree.menu_item_id} className="menu-item">
+                <div key={entree.menu_item_id} className="menu-item" onClick={() => handleEntreeClick(entree)}>
                   <img 
                     src={imageMap[entree.item_name]?.image || logo} 
                     alt={entree.item_name} 
@@ -442,6 +486,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
+            {isEntreeModalOpen && selectedEntree && (
+        <EntreeModal entree={selectedEntree} onClose={closeEntreeModal} />
+      )}
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
@@ -449,7 +496,7 @@ const CustomerHome = () => {
             <h3>Select Your Drink</h3>
             <div className="drinks-container">
               {drinks.map((drink) => (
-                <div key={drink.menu_item_id} className="menu-item">
+                <div key={drink.menu_item_id} className="menu-item" onClick={() => handleDrinkClick(drink)}>
                   <img 
                     src={imageMap[drink.item_name]?.image || logo} 
                     alt={drink.item_name} 
@@ -460,6 +507,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
+            {isDrinkModalOpen && selectedDrink && (
+        <DrinkModal drink={selectedDrink} onClose={closeDrinkModal} />
+      )}
           </div>
           ) : (
           <div className="steps-container">

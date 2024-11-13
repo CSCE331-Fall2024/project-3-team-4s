@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
 
-const SideModal = ({ side, onClose }) => {
+const EntreeModal = ({ entree, onClose }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('small'); // 'small' or 'large'
+  const [selectedSauces, setSelectedSauces] = useState([]);
 
-  if (!side) return null;
+  if (!entree) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  const handleSizeSelect = (size) => {
-    setSelectedSize(size);
+  const handleSauceSelect = (sauce) => {
+    if (selectedSauces.includes(sauce)) {
+      setSelectedSauces(selectedSauces.filter(s => s !== sauce)); // Deselect sauce if already selected
+    } else {
+      setSelectedSauces([...selectedSauces, sauce]); // Add sauce to selection
+    }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{side.name}</h2>
-        <img src={side.image} alt={side.name} className="modal-image" />
-        
+        <h2>{entree.name}</h2>
+        <img src={entree.image} alt={entree.name} className="modal-image" />
 
-        <h2 className='appetizer-price'>${side.price.toFixed(2)}</h2>
+        <h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2>
+        
         {/* Quantity Selector */}
         <div className="quantity-selector">
           <button onClick={decrementQuantity}>-</button>
@@ -29,11 +33,10 @@ const SideModal = ({ side, onClose }) => {
           <button onClick={incrementQuantity}>+</button>
         </div>
 
-        
         <button className="add-to-order-button">Add to Order</button>
       </div>
     </div>
   );
 };
 
-export default SideModal;
+export default EntreeModal;
