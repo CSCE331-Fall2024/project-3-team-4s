@@ -32,7 +32,24 @@ const addInventoryItem = async (req, res) => {
   }
 };
 
-const updateInventoryItem = async (req, res) => {};
+const updateInventoryItem = async (req, res) => {
+  try {
+    // Extract the id from the request parameters
+    const { id } = req.params;
+    // Extract the ingredient_name, price, unit, and min_stock from the request body
+    const { ingredient_name, price, unit, min_stock } = req.body;
+
+    const updatedInventoryItem = await db.one(
+      "UPDATE inventory SET ingredient_name = $1, price = $2, unit = $3, min_stock = $4 WHERE ingredient_id = $5 RETURNING *",
+      [ingredient_name, price, unit, min_stock, id]
+    );
+
+    res.json({ inventoryItem: updatedInventoryItem });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const restockInventoryItem = async (req, res) => {};
 

@@ -6,9 +6,11 @@ import PageHeader from "../components/PageHeader";
 import Icon from "../components/Icon";
 import Button from "../components/Button";
 import AddInventoryModal from "../components/AddInventoryModal";
+import EditInventoryModal from "../components/EditInventoryModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Inventory = () => {
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
   const backendURL = "http://localhost:3000";
   const navigate = useNavigate();
 
@@ -88,7 +90,37 @@ const Inventory = () => {
     }
   };
 
-  const editInventoryItem = async () => {};
+  const editInventoryItem = async (itemName, price, unit, minStock) => {
+    try {
+      const inventoryItem = {
+        ingredient_name: itemName,
+        price: price,
+        unit: unit,
+        min_stock: minStock,
+      };
+
+      const res = await axios.put(
+        `${backendURL}/inventory/update-inventory/${selectedInventoryItem.ingredient_id}`,
+        inventoryItem
+      );
+
+      // Re-render the inventory list by updating the edited inventory item
+      setInventory(
+        inventory.map((item) =>
+          item.ingredient_id === selectedInventoryItem.ingredient_id
+            ? { ...item, ...res.data.inventoryItem }
+            : item
+        )
+      );
+
+      setSelectedInventoryItem(null);
+      closeEditModal();
+
+      console.log(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const deleteInventoryItem = async () => {
     try {
@@ -166,6 +198,14 @@ const Inventory = () => {
 
       {showAddModal && (
         <AddInventoryModal onCancel={closeAddModal} onAdd={addInventoryItem} />
+      )}
+
+      {showEditModal && (
+        <EditInventoryModal
+          onCancel={closeEditModal}
+          onEdit={editInventoryItem}
+          inventoryItem={selectedInventoryItem}
+        />
       )}
 
       {showDeleteModal && (
