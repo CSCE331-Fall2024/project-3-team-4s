@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
+import { useOrder } from '../pages/OrderContext';
+import '../pages/CustomerHome.css';
 
-const SideModal = ({ side, onClose }) => {
+
+
+const SideModal = ({ side, onClose, }) =>{
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('small'); // 'small' or 'large'
+  const { addToOrder } = useOrder();
 
   if (!side) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  const handleSizeSelect = (size) => {
-    setSelectedSize(size);
+  const handleAddToOrder = () => {
+    addToOrder(side.name, quantity);
+    onClose(); // Close the modal after adding to the order
   };
 
   return (
@@ -21,6 +26,7 @@ const SideModal = ({ side, onClose }) => {
         <img src={side.image} alt={side.name} className="modal-image" />
         
 
+        <h2 className='appetizer-price'>${side.price.toFixed(2)}</h2>
         {/* Quantity Selector */}
         <div className="quantity-selector">
           <button onClick={decrementQuantity}>-</button>
@@ -28,24 +34,8 @@ const SideModal = ({ side, onClose }) => {
           <button onClick={incrementQuantity}>+</button>
         </div>
 
-        {/* Size Selector */}
-        <div className="size-selector">
-          <button 
-            onClick={() => handleSizeSelect('small')} 
-            className={selectedSize === 'small' ? 'size-button selected' : 'size-button'}
-          >
-            Small +${side.mediumPrice}
-          </button>
-          <button 
-            onClick={() => handleSizeSelect('large')} 
-            className={selectedSize === 'large' ? 'size-button selected' : 'size-button'}
-          >
-            Large +${side.largePrice}
-          </button>
-        </div>
-
         
-        <button className="add-to-order-button">Add to Order</button>
+        <button className="add-to-order-button" onClick={handleAddToOrder}>Add to Order</button>
       </div>
     </div>
   );

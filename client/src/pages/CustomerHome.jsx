@@ -1,60 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import './styles/CustomerHome.css';
-import AppetizerModal from '../Modals/AppetizerModal';
-import SideModal from '../Modals/SideModal';
+import './CustomerHome.css';
 
-import logo from '../customerImages/logo.png';
-import Bowl from '../customerImages/Bowl.avif';
-import Plate from '../customerImages/Plate.avif';
-import Bigger_Plate from '../customerImages/Bigger_Plate.avif';
-import Appetizer from '../customerImages/Appetizer.avif';
-import Drink from '../customerImages/Drink.avif';
-import A_La_Carte_Side from '../customerImages/A_La_Carte_Side.avif';
-import A_La_Carte_Entree from '../customerImages/A_La_Carte_Entree.avif';
-import Chow_Mein from '../customerImages/Chow_Mein.png';
-import Super_Greens from '../customerImages/Super_Greens.png';
-import White_Rice from '../customerImages/White_Rice.png';
-import Fried_Rice from '../customerImages/Fried_Rice.png';
-import Beijing_Beef from '../customerImages/Beijing_Beef.png';
-import The_Original_Orange_Chicken from '../customerImages/The_Original_Orange_Chicken.png';
-import Broccoli_Beef from '../customerImages/Broccoli_Beef.png';
-import Mushroom_Chicken from '../customerImages/Mushroom_Chicken.png';
-import Grilled_Teriyaki_Chicken from '../customerImages/Grilled_Teriyaki_Chicken.png';
-import Beyond_Original_Orange_Chicken from '../customerImages/Beyond_Original_Orange_Chicken.png';
-import Black_Pepper_Sirloin_Steak from '../customerImages/Black_Pepper_Sirloin_Steak.png';
-import Honey_Sesame_Chicken_Breast from '../customerImages/Honey_Sesame_Chicken_Breast.png';
-import Honey_Walnut_Shrimp from '../customerImages/Honey_Walnut_Shrimp.png';
-import Hot_Ones_Blazing_Bourbon_Chicken from '../customerImages/Hot_Ones_Blazing_Bourbon_Chicken.png';
-import Kung_Pao_Chicken from '../customerImages/Kung_Pao_Chicken.png';
-import String_Bean_Chicken_Breast from '../customerImages/String_Bean_Chicken_Breast.png';
-import Sweet_Fire_Chicken_Breast from '../customerImages/Sweet_Fire_Chicken_Breast.png';
-import Chicken_Egg_Roll from '../customerImages/Chicken_Egg_Roll.avif';
-import Veggie_Spring_Roll from '../customerImages/Veggie_Spring_Roll.avif';
-import Cream_Cheese_Rangoon from '../customerImages/Cream_Cheese_Rangoon.avif';
-import Apple_Pie_Roll from '../customerImages/Apple_Pie_Roll.avif';
-import Dr_Pepper from '../customerImages/Dr_Pepper.avif';
-import Coca_Cola from '../customerImages/Coca_Cola.avif';
-import Diet_Coke from '../customerImages/Diet_Coke.avif';
-import Mango_Guava_Flavored_Tea from '../customerImages/Mango_Guava_Flavored_Tea.avif';
-import Peach_Lychee_Flavored_Refresher from '../customerImages/Peach_Lychee_Flavored_Refresher.avif';
-import Pomegranate_Pineapple_Flavored_Lemonade from '../customerImages/Pomegranate_Pineapple_Flavored_Lemonade.avif';
-import Watermelon_Mango_Flavored_Refresher from '../customerImages/Watermelon_Mango_Flavored_Refresher.avif';
-import Barqs_Root_Beer from '../customerImages/Barqs_Root_Beer.avif';
-import Fanta_Orange from '../customerImages/Fanta_Orange.avif';
-import Minute_Maid_Lemonade from '../customerImages/Minute_Maid_Lemonade.avif';
-import Powerade_Mountain_Berry_Blast from '../customerImages/Powerade_Mountain_Berry_Blast.avif';
-import Sprite from '../customerImages/Sprite.avif';
-import Coca_Cola_Cherry from '../customerImages/Coca_Cola_Cherry.avif';
-import Fuze_Raspberry_Iced_Tea from '../customerImages/Fuze_Raspberry_Iced_Tea.avif';
-import Powerade_Fruit_Punch from '../customerImages/Powerade_Fruit_Punch.avif';
-import Dasani from '../customerImages/Dasani.avif';
-import Minute_Maid_Apple_Juice from '../customerImages/Minute_Maid_Apple_Juice.avif';
-import Coke_Mexico from '../customerImages/Coke_Mexico.avif';
-import Coke_Zero from '../customerImages/Coke_Zero.avif';
-import Smartwater from '../customerImages/Smartwater.avif';
+import AppetizerModal from '../components/AppetizerModal';
+import SideModal from '../components/SideModal';
+import EntreeModal from '../components/EntreeModal';
+import DrinkModal from '../components/DrinkModal'; 
+import BottomBar from '../components/BottomBar'; 
+import { useOrder } from './OrderContext';
 
-
-
+import Bowl from '../../public/Bowl.avif';
+import Plate from '../../public/Plate.avif';
+import Bigger_Plate from '../../public/Bigger_Plate.avif';
+import Appetizer from '../../public/Appetizer.avif';
+import A_La_Carte_Side from '../../public/A_La_Carte_Side.avif';
+import A_La_Carte_Entree from '../../public/A_La_Carte_Entree.avif';
+import Drink from '../../public/Drink.avif';
+import logo from '../../public/logo.png';
+import Chow_Mein from '../../public/Chow_Mein.png';
+import Super_Greens from '../../public/Super_Greens.png';
+import White_Rice from '../../public/White_Rice.png';
+import Fried_Rice from '../../public/Fried_Rice.png';
+import Beijing_Beef from '../../public/Beijing_Beef.png';
+import The_Original_Orange_Chicken from '../../public/The_Original_Orange_Chicken.png';
+import Broccoli_Beef from '../../public/Broccoli_Beef.png';
+import Mushroom_Chicken from '../../public/Mushroom_Chicken.png';
+import Grilled_Teriyaki_Chicken from '../../public/Grilled_Teriyaki_Chicken.png';
+import Beyond_Original_Orange_Chicken from '../../public/Beyond_Original_Orange_Chicken.png';
+import Black_Pepper_Sirloin_Steak from '../../public/Black_Pepper_Sirloin_Steak.png';
+import Honey_Sesame_Chicken_Breast from '../../public/Honey_Sesame_Chicken_Breast.png';
+import Honey_Walnut_Shrimp from '../../public/Honey_Walnut_Shrimp.png';
+import Hot_Ones_Blazing_Bourbon_Chicken from '../../public/Hot_Ones_Blazing_Bourbon_Chicken.png';
+import Kung_Pao_Chicken from '../../public/Kung_Pao_Chicken.png';
+import String_Bean_Chicken_Breast from '../../public/String_Bean_Chicken_Breast.png';
+import Sweet_Fire_Chicken_Breast from '../../public/Sweet_Fire_Chicken_Breast.png';
+import Chicken_Egg_Roll from '../../public/Chicken_Egg_Roll.avif';
+import Veggie_Spring_Roll from '../../public/Veggie_Spring_Roll.avif';
+import Cream_Cheese_Rangoon from '../../public/Cream_Cheese_Rangoon.avif';
+import Apple_Pie_Roll from '../../public/Apple_Pie_Roll.avif';
+import Dr_Pepper from '../../public/Dr_Pepper.avif';
+import Coca_Cola from '../../public/Coca_Cola.avif';
+import Diet_Coke from '../../public/Diet_Coke.avif';
+import Mango_Guava_Flavored_Tea from '../../public/Mango_Guava_Flavored_Tea.avif';
+import Peach_Lychee_Flavored_Refresher from '../../public/Peach_Lychee_Flavored_Refresher.avif';
+import Pomegranate_Pineapple_Flavored_Lemonade from '../../public/Pomegranate_Pineapple_Flavored_Lemonade.avif';
+import Watermelon_Mango_Flavored_Refresher from '../../public/Watermelon_Mango_Flavored_Refresher.avif';
+import Barqs_Root_Beer from '../../public/Barqs_Root_Beer.avif';
+import Fanta_Orange from '../../public/Fanta_Orange.avif';
+import Minute_Maid_Lemonade from '../../public/Minute_Maid_Lemonade.avif';
+import Powerade_Mountain_Berry_Blast from '../../public/Powerade_Mountain_Berry_Blast.avif';
+import Sprite from '../../public/Sprite.avif';
+import Coca_Cola_Cherry from '../../public/Coca_Cola_Cherry.avif';
+import Fuze_Raspberry_Iced_Tea from '../../public/Fuze_Raspberry_Iced_Tea.avif';
+import Powerade_Fruit_Punch from '../../public/Powerade_Fruit_Punch.avif';
+import Dasani from '../../public/Dasani.avif';
+import Minute_Maid_Apple_Juice from '../../public/Minute_Maid_Apple_Juice.avif';
+import Coke_Mexico from '../../public/Coke_Mexico.avif';
+import Coke_Zero from '../../public/Coke_Zero.avif';
+import Smartwater from '../../public/Smartwater.avif';
 
 const imageMap = {
   "Bowl": { image: Bowl, description: "1 Side & 1 Entree" },
@@ -118,6 +120,7 @@ const displayOrder = [
 ];
 
 const CustomerHome = () => {
+  const { addToOrder } = useOrder();
   const [menuItems, setMenuItems] = useState([]);
   const [sides, setSides] = useState([]);           // Store sides here
   const [entrees, setEntrees] = useState([]);        // Store entrees here
@@ -127,7 +130,11 @@ const CustomerHome = () => {
   const [selectedSides, setSelectedSides] = useState([]); // Track selected sides
   const [selectedEntrees, setSelectedEntrees] = useState([]); // Track selected entrees and their counts
   const [selectedAppetizer, setSelectedAppetizer] = useState(null);
+  const [selectedEntree, setSelectedEntree] = useState(null); // State for selected entree
+  const [isEntreeModalOpen, setIsEntreeModalOpen] = useState(false); // State for modal visibility
   const [selectedSide, setSelectedSide] = useState(null); // State to track the selected side for the modal
+  const [selectedDrink, setSelectedDrink] = useState(null); // State for selected drink
+  const [isDrinkModalOpen, setIsDrinkModalOpen] = useState(false); // Drink modal visibility
   
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -139,38 +146,18 @@ const CustomerHome = () => {
         let data = await response.json();
   
         // Consolidate drinks items into a single "Drinks" item
-        const drinksNames = ["Refresher", "Small Drink", "Medium Drink", "Bottle"];
+        const drinksNames = ["Refresher", "Drink", "Bottle"];
         const drinksItem = {
           menu_item_id: 'drinks',
           item_name: "Drinks",
           item_price: 2.10,
         };
   
-        // Consolidate entrees into a single "A La Carte Entree" item
-        const entreeNames = ["Small Entree", "Medium Entree", "Large Entree"];
-        const entreeItem = {
-          menu_item_id: 'a_la_carte_entree',
-          item_name: "A La Carte Entree",
-          item_price: 5.50,
-        };
-  
-        // Consolidate sides into a single "A La Carte Side" item
-        const sideNames = ["Medium Side", "Large Side"];
-        const sideItem = {
-          menu_item_id: 'a_la_carte_side',
-          item_name: "A La Carte Side",
-          item_price: 3.00, // Set an appropriate price if needed
-        };
-  
         // Filter out individual drinks, entrees, and sides, and add consolidated items
         data = data.filter(item => 
-          !drinksNames.includes(item.item_name) && 
-          !entreeNames.includes(item.item_name) &&
-          !sideNames.includes(item.item_name)
+          !drinksNames.includes(item.item_name) 
         );
         data.push(drinksItem);
-        data.push(entreeItem);
-        data.push(sideItem);
   
         // Sort data according to displayOrder, pushing unmatched items to the end
         data.sort((a, b) => {
@@ -275,6 +262,11 @@ const CustomerHome = () => {
       setSelectedEntrees([]); // Reset selected entrees
     }
   };
+  const resetSelections = () => {
+    setSelectedSides([]);
+    setSelectedEntrees([]);
+    setSelectedItem(null);
+  };
 
   const handleSideSelect = (side) => {
     if (selectedSides.includes(side)) {
@@ -323,8 +315,7 @@ const CustomerHome = () => {
     setSelectedAppetizer({
       name: appetizer.item_name,
       image: imageMap[appetizer.item_name]?.image,
-      smallPrice: appetizer.small_price, 
-      largePrice: appetizer.large_price, 
+      price: 2.00,
       sauces: [
         { name: "Soy Sauce" },
         { name: "Sweet & Sour Sauce" },
@@ -341,15 +332,57 @@ const CustomerHome = () => {
     setSelectedSide({
       name: side.item_name,
       image: imageMap[side.item_name]?.image,
-      mediumPrice: 4.40, 
-      largePrice: 5.40  
+      price: 4.40,
     });
+  };
+
+  const handleEntreeClick = (entree) => {
+    setSelectedEntree({
+      name: entree.item_name,
+      image: imageMap[entree.item_name]?.image,
+      price: 5.20,
+    });
+    setIsEntreeModalOpen(true);
+  };
+
+  const closeEntreeModal = () => {
+    setSelectedEntree(null);
+    setIsEntreeModalOpen(false); // Close the modal
   };
 
   const closeSideModal = () => {
     setSelectedSide(null);
   };
                     
+  const handleDrinkClick = async (drink) => {
+    let price;
+  
+    if (drink.item_category === "Bottle") {
+      // Use the price of the selected drink
+      price = drink.item_price;
+    } else if (drink.item_category === "Drink") {
+      // Use a fixed price for drinks
+      price = 2.30;
+    } else if (drink.item_category === "Refresher") {
+      // Use a fixed price for refreshers
+      price = 3.20;
+    } else{
+      price = 0;
+    }
+  
+    setSelectedDrink({
+      name: drink.item_name,
+      image: imageMap[drink.item_name]?.image,
+      price: price, // Set the determined price
+    });
+    setIsDrinkModalOpen(true);
+  };
+  
+
+  const closeDrinkModal = () => {
+    setSelectedDrink(null);
+    setIsDrinkModalOpen(false);
+  };
                     
                     
   const handleBackToMenu = () => {
@@ -360,6 +393,7 @@ const CustomerHome = () => {
     setDrinks([]);
     setSelectedSides([]); // Reset selected sides
     setSelectedEntrees([]); // Reset selected entrees
+    resetSelections();
   };
 
   const sortedItems = [...menuItems].sort(
@@ -380,7 +414,7 @@ const CustomerHome = () => {
           <a href="/order">Our Rewards</a>
         </div>
         <div className="navbar-actions">
-          <button className="navbar-button">ORDER</button>
+          <button className="navbar-button"><a href="/order">ORDER</a></button>
           <span role="img" aria-label="user" className="navbar-icon">👤</span>
         </div>
       </div>
@@ -419,7 +453,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            <AppetizerModal appetizer={selectedAppetizer} onClose={closeAppetizerModal} />
+            <AppetizerModal appetizer={selectedAppetizer} onClose={closeAppetizerModal} addToOrder={addToOrder}/>
           </div>
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
@@ -442,7 +476,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            {selectedSide && <SideModal side={selectedSide} onClose={closeSideModal} />}
+            {selectedSide && <SideModal side={selectedSide} onClose={closeSideModal} addToOrder={addToOrder}/>}
           </div>
           
         ) : selectedItem.item_name === "A La Carte Entree" ? (
@@ -451,7 +485,7 @@ const CustomerHome = () => {
             <h3>Choose Your Entree</h3>
             <div className="entrees-container">
               {entrees.map((entree) => (
-                <div key={entree.menu_item_id} className="menu-item">
+                <div key={entree.menu_item_id} className="menu-item" onClick={() => handleEntreeClick(entree)}>
                   <img 
                     src={imageMap[entree.item_name]?.image || logo} 
                     alt={entree.item_name} 
@@ -462,6 +496,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
+            {isEntreeModalOpen && selectedEntree && (
+        <EntreeModal entree={selectedEntree} onClose={closeEntreeModal} addToOrder={addToOrder}/>
+      )}
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
@@ -469,7 +506,7 @@ const CustomerHome = () => {
             <h3>Select Your Drink</h3>
             <div className="drinks-container">
               {drinks.map((drink) => (
-                <div key={drink.menu_item_id} className="menu-item">
+                <div key={drink.menu_item_id} className="menu-item" onClick={() => handleDrinkClick(drink)}>
                   <img 
                     src={imageMap[drink.item_name]?.image || logo} 
                     alt={drink.item_name} 
@@ -480,6 +517,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
+            {isDrinkModalOpen && selectedDrink && (
+        <DrinkModal drink={selectedDrink} onClose={closeDrinkModal} addToOrder={addToOrder}/>
+      )}
           </div>
           ) : (
           <div className="steps-container">
@@ -532,7 +572,7 @@ const CustomerHome = () => {
                     />
                     <h2>{entree.item_name}</h2>
                     <p className="image_description">{imageMap[entree.item_name]?.description}</p>
-                    {entreeData && <p className="selection-count">Selected: {entreeData.count}</p>}
+                    {entreeData && <p className="selection-count">{entreeData.count}</p>}
                   </div>
                 );
               })}
@@ -541,6 +581,16 @@ const CustomerHome = () => {
           </div>
         )}
       </div>
+      {selectedItem && ["Bowl", "Plate", "Bigger Plate"].includes(selectedItem.item_name) && (
+        <BottomBar
+          selectedItem={selectedItem}          
+          selectedSides={selectedSides}
+          selectedEntrees={selectedEntrees}
+          addToOrder={addToOrder}
+          resetSelections={resetSelections} 
+        />
+      )}
+      {/* <OrderPage orderList={orderList} /> */}
     </div>
   );
 };
