@@ -177,6 +177,8 @@ const displayOrder = [
 ];
 
 const CustomerHome = () => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const { addToOrder } = useOrder();
   const [menuItems, setMenuItems] = useState([]);
   const [sides, setSides] = useState([]); // Store sides here
@@ -194,8 +196,6 @@ const CustomerHome = () => {
   const [isDrinkModalOpen, setIsDrinkModalOpen] = useState(false); // Drink modal visibility
 
   useEffect(() => {
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
-
     const fetchMenuItems = async () => {
       try {
         const response = await fetch(`${backendURL}/kiosk/meal-types`);

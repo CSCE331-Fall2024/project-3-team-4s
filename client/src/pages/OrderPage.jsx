@@ -53,6 +53,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link
 const OrderPage = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
   const [categoryPrices, setCategoryPrices] = useState({}); // Cache for category prices
