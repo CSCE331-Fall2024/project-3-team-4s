@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
+import { useOrder } from '../pages/OrderContext';
 
 const DrinkModal = ({ drink, onClose }) => {
   const [quantity, setQuantity] = useState(1);
+  const { addToOrder } = useOrder();
 
   if (!drink) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+
+  const handleAddToOrder = () => {
+    addToOrder(drink.name, quantity);
+    onClose(); // Close the modal after adding to the order
+  };
 
   return (
     <div className="modal-overlay">
@@ -24,7 +31,7 @@ const DrinkModal = ({ drink, onClose }) => {
           <button onClick={incrementQuantity}>+</button>
         </div>
 
-        <button className="add-to-order-button">Add to Order</button>
+        <button className="add-to-order-button" onClick={handleAddToOrder}>Add to Order</button>
       </div>
     </div>
   );

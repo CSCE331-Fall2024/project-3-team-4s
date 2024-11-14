@@ -370,3 +370,43 @@ body, html {
   .appetizer-price {
     color: maroon;
   }
+
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f1f1f1;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  .selected-items {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-to-order-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .add-to-order-button:hover {
+    background-color: #0056b3;
+  }
+
+  .order-item-image{
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+    margin-right: 10px;
+    object-fit: cover;
+  }

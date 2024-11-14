@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
+import { useOrder } from '../pages/OrderContext';
+
 
 const EntreeModal = ({ entree, onClose }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSauces, setSelectedSauces] = useState([]);
-
+  const { addToOrder } = useOrder();
   if (!entree) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  const handleSauceSelect = (sauce) => {
-    if (selectedSauces.includes(sauce)) {
-      setSelectedSauces(selectedSauces.filter(s => s !== sauce)); // Deselect sauce if already selected
-    } else {
-      setSelectedSauces([...selectedSauces, sauce]); // Add sauce to selection
-    }
+  const handleAddToOrder = () => {
+    addToOrder(entree.name, quantity);
+    onClose(); // Close the modal after adding to the order
   };
-
+    
   return (
     <div className="modal-overlay">
       <div className="modal">
@@ -33,7 +31,7 @@ const EntreeModal = ({ entree, onClose }) => {
           <button onClick={incrementQuantity}>+</button>
         </div>
 
-        <button className="add-to-order-button">Add to Order</button>
+        <button className="add-to-order-button" onClick={handleAddToOrder}>Add to Order</button>
       </div>
     </div>
   );

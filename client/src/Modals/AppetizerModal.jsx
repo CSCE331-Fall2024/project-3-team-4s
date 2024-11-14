@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import { useOrder } from '../pages/OrderContext';
+
 
 const AppetizerModal = ({ appetizer, onClose }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('small'); // 'small' or 'large'
+  const { addToOrder } = useOrder();
 
   if (!appetizer) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  const handleSizeSelect = (size) => {
-    setSelectedSize(size);
+  const handleAddToOrder = () => {
+    addToOrder(appetizer.name, quantity);
+    onClose(); 
   };
 
   return (
@@ -28,7 +31,7 @@ const AppetizerModal = ({ appetizer, onClose }) => {
           <button onClick={incrementQuantity}>+</button>
         </div>
         
-        <button className="add-to-order-button">Add to Order</button>
+        <button className="add-to-order-button" onClick={handleAddToOrder}>Add to Order</button>
       </div>
     </div>
   );

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './styles/CustomerHome.css';
+
 import AppetizerModal from '../Modals/AppetizerModal';
 import SideModal from '../Modals/SideModal';
 import EntreeModal from '../Modals/EntreeModal';
 import DrinkModal from '../Modals/DrinkModal'; 
+import BottomBar from '../Modals/BottomBar'; 
+import { useOrder } from './OrderContext';
 
 import logo from '../customerImages/logo.png';
 import Bowl from '../customerImages/Bowl.avif';
@@ -117,6 +120,7 @@ const displayOrder = [
 ];
 
 const CustomerHome = () => {
+  const { addToOrder } = useOrder();
   const [menuItems, setMenuItems] = useState([]);
   const [sides, setSides] = useState([]);           // Store sides here
   const [entrees, setEntrees] = useState([]);        // Store entrees here
@@ -258,6 +262,11 @@ const CustomerHome = () => {
       setSelectedEntrees([]); // Reset selected entrees
     }
   };
+  const resetSelections = () => {
+    setSelectedSides([]);
+    setSelectedEntrees([]);
+    setSelectedItem(null);
+  };
 
   const handleSideSelect = (side) => {
     if (selectedSides.includes(side)) {
@@ -384,6 +393,7 @@ const CustomerHome = () => {
     setDrinks([]);
     setSelectedSides([]); // Reset selected sides
     setSelectedEntrees([]); // Reset selected entrees
+    resetSelections();
   };
 
   const sortedItems = [...menuItems].sort(
@@ -443,7 +453,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            <AppetizerModal appetizer={selectedAppetizer} onClose={closeAppetizerModal} />
+            <AppetizerModal appetizer={selectedAppetizer} onClose={closeAppetizerModal} addToOrder={addToOrder}/>
           </div>
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
@@ -466,7 +476,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            {selectedSide && <SideModal side={selectedSide} onClose={closeSideModal} />}
+            {selectedSide && <SideModal side={selectedSide} onClose={closeSideModal} addToOrder={addToOrder}/>}
           </div>
           
         ) : selectedItem.item_name === "A La Carte Entree" ? (
@@ -487,7 +497,7 @@ const CustomerHome = () => {
               ))}
             </div>
             {isEntreeModalOpen && selectedEntree && (
-        <EntreeModal entree={selectedEntree} onClose={closeEntreeModal} />
+        <EntreeModal entree={selectedEntree} onClose={closeEntreeModal} addToOrder={addToOrder}/>
       )}
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
@@ -508,7 +518,7 @@ const CustomerHome = () => {
               ))}
             </div>
             {isDrinkModalOpen && selectedDrink && (
-        <DrinkModal drink={selectedDrink} onClose={closeDrinkModal} />
+        <DrinkModal drink={selectedDrink} onClose={closeDrinkModal} addToOrder={addToOrder}/>
       )}
           </div>
           ) : (
@@ -562,7 +572,7 @@ const CustomerHome = () => {
                     />
                     <h2>{entree.item_name}</h2>
                     <p className="image_description">{imageMap[entree.item_name]?.description}</p>
-                    {entreeData && <p className="selection-count">Selected: {entreeData.count}</p>}
+                    {entreeData && <p className="selection-count">{entreeData.count}</p>}
                   </div>
                 );
               })}
@@ -571,6 +581,16 @@ const CustomerHome = () => {
           </div>
         )}
       </div>
+      {selectedItem && ["Bowl", "Plate", "Bigger Plate"].includes(selectedItem.item_name) && (
+        <BottomBar
+          selectedItem={selectedItem}          
+          selectedSides={selectedSides}
+          selectedEntrees={selectedEntrees}
+          addToOrder={addToOrder}
+          resetSelections={resetSelections} 
+        />
+      )}
+      {/* <OrderPage orderList={orderList} /> */}
     </div>
   );
 };
