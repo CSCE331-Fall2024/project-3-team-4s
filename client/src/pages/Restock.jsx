@@ -53,10 +53,7 @@ const Restock = () => {
                   <td>{item.current_stock}</td>
                   <td>{item.min_stock}</td>
                   <td className="icons-container">
-                    <Icon
-                      src="src/assets/add-cart-icon.svg"
-                      alt="add to cart icon"
-                    />
+                    <Icon src="/add-cart-icon.svg" alt="add to cart icon" />
                   </td>
                 </tr>
               ))}

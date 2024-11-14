@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-import "./styles/CashierHome.css";
+import "./CashierHome.css";
 import axios from "axios";
 import "./Employees.css";
 

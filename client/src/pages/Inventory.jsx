@@ -174,12 +174,12 @@ const Inventory = () => {
                   <td>{item.min_stock}</td>
                   <td className="icons-container">
                     <Icon
-                      src="src/assets/edit-icon.svg"
+                      src="/edit-icon.svg"
                       alt="edit icon"
                       onClick={() => openEditModal(item)}
                     />
                     <Icon
-                      src="src/assets/delete-icon.svg"
+                      src="/delete-icon.svg"
                       alt="delete icon"
                       onClick={() => openDeleteModal(item)}
                     />
