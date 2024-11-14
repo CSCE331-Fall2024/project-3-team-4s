@@ -1,4 +1,4 @@
-.modal-ae {
+.modal-edit {
   position: fixed;
   width: 100%;
   height: 100%;
@@ -9,14 +9,14 @@
   align-items: center;
 }
 
-.modal-content-ae {
+.modal-content-edit {
   padding: 2.5rem 5rem;
   background-color: white;
   border-radius: 10px;
   text-align: center;
 }
 
-.modal-form-ae {
+.modal-form-edit {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -25,14 +25,14 @@
   margin: 2rem 0;
 }
 
-.input-ae {
+.input-edit {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.modal-actions-ae {
+.modal-actions-edit {
   min-width: 15rem;
   display: flex;
   justify-content: space-between;
