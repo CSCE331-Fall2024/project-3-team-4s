@@ -9,8 +9,8 @@ import EditEmployeeModal from "../components/EditEmployeeModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
 
   const [employees, setEmployees] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -76,7 +76,7 @@ const Employees = () => {
         `${backendURL}/employee/add-employee`,
         employee
       );
-      
+
       // Re-render the employees list by adding the new employee
       setEmployees([...employees, res.data.employee]);
       closeAddModal();
