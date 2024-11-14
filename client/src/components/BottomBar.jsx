@@ -1,5 +1,7 @@
 // BottomBar.jsx
 import React from 'react';
+import '../pages/CustomerHome.css';
+
 
 const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, resetSelections }) => {
   const handleAddToOrder = () => {

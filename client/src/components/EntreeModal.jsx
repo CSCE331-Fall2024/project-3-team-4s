@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
 import { useOrder } from '../pages/OrderContext';
+import '../pages/CustomerHome.css';
 
-const DrinkModal = ({ drink, onClose }) => {
+
+
+const EntreeModal = ({ entree, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
-
-  if (!drink) return null;
+  if (!entree) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
-    addToOrder(drink.name, quantity);
+    addToOrder(entree.name, quantity);
     onClose(); // Close the modal after adding to the order
   };
-
+    
   return (
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{drink.name}</h2>
-        <img src={drink.image} alt={drink.name} className="modal-image" />
+        <h2>{entree.name}</h2>
+        <img src={entree.image} alt={entree.name} className="modal-image" />
 
-        <h2 className='appetizer-price'>${drink.price.toFixed(2)}</h2>
+        <h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2>
         
         {/* Quantity Selector */}
         <div className="quantity-selector">
@@ -37,4 +39,4 @@ const DrinkModal = ({ drink, onClose }) => {
   );
 };
 
-export default DrinkModal;
+export default EntreeModal;

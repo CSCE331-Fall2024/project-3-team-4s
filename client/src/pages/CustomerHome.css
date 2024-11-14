@@ -11,7 +11,7 @@ body, html {
 
 .background {
     padding-top: 70px;  /* Adjust according to the height of your navbar */
-    background-image: url('../../../assets/bambooBackground.jpg');
+    background-image: url('../../../../public/bamboo.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
