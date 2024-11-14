@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./OrderPage.css";
 import { useOrder } from "./OrderContext";
-import Bowl from "../../public/Bowl.avif";
-import Plate from "../../public/Plate.avif";
+import Bowl from "../../public/bowl.avif";
+import Plate from "../../public/plate.avif";
 import Bigger_Plate from "../../public/Bigger_Plate.avif";
 import logo from "../../public/logo.png";
 import Chow_Mein from "../../public/Chow_Mein.png";
