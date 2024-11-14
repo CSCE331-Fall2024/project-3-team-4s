@@ -76,7 +76,7 @@ const Employees = () => {
         `${backendURL}/employee/add-employee`,
         employee
       );
-
+      
       // Re-render the employees list by adding the new employee
       setEmployees([...employees, res.data.employee]);
       closeAddModal();
