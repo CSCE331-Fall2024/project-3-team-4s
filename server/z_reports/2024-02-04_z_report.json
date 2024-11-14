@@ -1,0 +1,264 @@
+{
+  "sales": [
+    {
+      "label": "Hour 10",
+      "value": 214.19999999999996
+    },
+    {
+      "label": "Hour 11",
+      "value": 150.5
+    },
+    {
+      "label": "Hour 12",
+      "value": 380.90000000000003
+    },
+    {
+      "label": "Hour 13",
+      "value": 214.90000000000003
+    },
+    {
+      "label": "Hour 14",
+      "value": 311.99999999999994
+    },
+    {
+      "label": "Hour 15",
+      "value": 237.8
+    },
+    {
+      "label": "Hour 16",
+      "value": 204.89999999999998
+    },
+    {
+      "label": "Hour 17",
+      "value": 263.29999999999995
+    },
+    {
+      "label": "Hour 18",
+      "value": 217.20000000000002
+    },
+    {
+      "label": "Hour 19",
+      "value": 161.6
+    },
+    {
+      "label": "Hour 20",
+      "value": 287.3
+    },
+    {
+      "label": "Hour 21",
+      "value": 220.4
+    }
+  ],
+  "itemsSold": [
+    {
+      "label": "Hour 10",
+      "value": "61"
+    },
+    {
+      "label": "Hour 11",
+      "value": "56"
+    },
+    {
+      "label": "Hour 12",
+      "value": "94"
+    },
+    {
+      "label": "Hour 13",
+      "value": "132"
+    },
+    {
+      "label": "Hour 14",
+      "value": "121"
+    },
+    {
+      "label": "Hour 15",
+      "value": "67"
+    },
+    {
+      "label": "Hour 16",
+      "value": "97"
+    },
+    {
+      "label": "Hour 17",
+      "value": "68"
+    },
+    {
+      "label": "Hour 18",
+      "value": "69"
+    },
+    {
+      "label": "Hour 19",
+      "value": "77"
+    },
+    {
+      "label": "Hour 20",
+      "value": "82"
+    },
+    {
+      "label": "Hour 21",
+      "value": "64"
+    }
+  ],
+  "transactionTypes": {
+    "Credit/Debit": [
+      {
+        "label": "Hour 10",
+        "value": "3"
+      },
+      {
+        "label": "Hour 11",
+        "value": "2"
+      },
+      {
+        "label": "Hour 12",
+        "value": "6"
+      },
+      {
+        "label": "Hour 13",
+        "value": "3"
+      },
+      {
+        "label": "Hour 14",
+        "value": "6"
+      },
+      {
+        "label": "Hour 15",
+        "value": "2"
+      },
+      {
+        "label": "Hour 16",
+        "value": "4"
+      },
+      {
+        "label": "Hour 17",
+        "value": "6"
+      },
+      {
+        "label": "Hour 18",
+        "value": "5"
+      },
+      {
+        "label": "Hour 19",
+        "value": "1"
+      },
+      {
+        "label": "Hour 20",
+        "value": "5"
+      },
+      {
+        "label": "Hour 21",
+        "value": "7"
+      }
+    ],
+    "Dining Dollars": [
+      {
+        "label": "Hour 10",
+        "value": "3"
+      },
+      {
+        "label": "Hour 11",
+        "value": "5"
+      },
+      {
+        "label": "Hour 12",
+        "value": "4"
+      },
+      {
+        "label": "Hour 13",
+        "value": "2"
+      },
+      {
+        "label": "Hour 14",
+        "value": "8"
+      },
+      {
+        "label": "Hour 15",
+        "value": "6"
+      },
+      {
+        "label": "Hour 16",
+        "value": "3"
+      },
+      {
+        "label": "Hour 17",
+        "value": "3"
+      },
+      {
+        "label": "Hour 18",
+        "value": "3"
+      },
+      {
+        "label": "Hour 19",
+        "value": "4"
+      },
+      {
+        "label": "Hour 20",
+        "value": "7"
+      },
+      {
+        "label": "Hour 21",
+        "value": "4"
+      }
+    ],
+    "Gift Card": [
+      {
+        "label": "Hour 10",
+        "value": "5"
+      },
+      {
+        "label": "Hour 11",
+        "value": "3"
+      },
+      {
+        "label": "Hour 12",
+        "value": "7"
+      },
+      {
+        "label": "Hour 13",
+        "value": "7"
+      },
+      {
+        "label": "Hour 14",
+        "value": "3"
+      },
+      {
+        "label": "Hour 15",
+        "value": "2"
+      },
+      {
+        "label": "Hour 16",
+        "value": "6"
+      },
+      {
+        "label": "Hour 17",
+        "value": "4"
+      },
+      {
+        "label": "Hour 18",
+        "value": "3"
+      },
+      {
+        "label": "Hour 19",
+        "value": "6"
+      },
+      {
+        "label": "Hour 20",
+        "value": "5"
+      },
+      {
+        "label": "Hour 21",
+        "value": "2"
+      }
+    ],
+    "Maroon Meal": [
+      {
+        "label": "Hour 12",
+        "value": "2"
+      },
+      {
+        "label": "Hour 13",
+        "value": "2"
+      }
+    ]
+  }
+}
