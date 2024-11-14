@@ -1,4 +1,4 @@
-.inventory-container {
+.restock-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,35 +30,22 @@
   width: 100%;
   max-height: 50vh;
   overflow-y: auto;
-
-  table {
-    width: 100%;
-    border-spacing: 0;
-    background-color: white;
-
-    th,
-    td {
-      border: 1px solid lightgray;
-      padding: 0.75rem;
-    }
-
-    th {
-      background-color: white;
-      position: sticky;
-      top: 0;
-    }
-  }
 }
 
-.icons-container {
-  display: flex;
-  justify-content: space-evenly;
+table {
+  width: 100%;
+  border-spacing: 0;
+  background-color: white;
 }
 
-.inventory-buttons-container {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  width: 45%;
-  margin-top: 2rem;
+th,
+td {
+  border: 1px solid lightgray;
+  padding: 0.75rem;
+}
+
+th {
+  background-color: white;
+  position: sticky;
+  top: 0;
 }
