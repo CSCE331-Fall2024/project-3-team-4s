@@ -388,7 +388,9 @@ body, html {
   .selected-items {
     display: flex;
     flex-direction: column;
+    font-size: large;
   }
+
   
   .add-to-order-button {
     padding: 10px 20px;
@@ -397,6 +399,9 @@ body, html {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 400px;
+    font-size: large;
+    font-weight: bold;
   }
   
   .add-to-order-button:hover {
@@ -409,4 +414,18 @@ body, html {
     border-radius: 8px;
     margin-right: 10px;
     object-fit: cover;
+  }
+
+  .add-more{
+    color: white;
+    text-decoration: none;
+    font-size: large;
+    font-weight: bold;
+  }
+
+  .checkout{
+    font-size: large;
+    font-weight: bold;
+    background-color: red;
+    color: white;
   }

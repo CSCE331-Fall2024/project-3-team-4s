@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './styles/OrderPage.css';
 import { useOrder } from './OrderContext';
 import Bowl from '../customerImages/Bowl.avif';
@@ -47,14 +47,78 @@ import Coke_Mexico from '../customerImages/Coke_Mexico.avif';
 import Coke_Zero from '../customerImages/Coke_Zero.avif';
 import Smartwater from '../customerImages/Smartwater.avif';
 
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
+
+import { Link } from 'react-router-dom'; // Import Link
 const OrderPage = () => {
     const { orderList, setOrderList } = useOrder();
+    const [prices, setPrices] = useState({}); // Cache for fetched prices
+    const [categoryPrices, setCategoryPrices] = useState({}); // Cache for category prices
+
+    // Fetch item or category price
+    const fetchPrice = async (name) => {
+        if (!prices[name]) { // Cache lookup for both item and category names
+            try {
+                const response = await axios.get(`http://localhost:3000/kiosk/prices`, { params: { itemName: name } });
+                console.log(`Fetched price for ${name}:`, response.data.price); // Log the fetched price
+                setPrices((prev) => ({ ...prev, [name]: response.data.price }));
+                return response.data.price;
+            } catch (error) {
+                console.error('Error fetching price:', error.response || error.message || error);
+                return 0;
+            }
+        }
+        return prices[name];
+    };
+
+
     console.log(orderList);
     const clearOrder = () => {
         setOrderList([]);
         localStorage.removeItem('orderList');
     };
+
+    // Fetch all prices initially for items in the order list
+    useEffect(() => {
+        const fetchAllPrices = async () => {
+            const newPrices = {};
+            for (const item of orderList) {
+                // Fetch individual item price
+                if (!prices[item.name]) {
+                    const price = await fetchPrice(item.name);
+                    newPrices[item.name] = price;
+                }
+                // Fetch category price (if category exists in the database as an item)
+                if (item.category && !prices[item.category]) {
+                    const categoryPrice = await fetchPrice(item.category);
+                    newPrices[item.category] = categoryPrice;
+                }
+            }
+            setPrices((prev) => ({ ...prev, ...newPrices }));
+        };
+        fetchAllPrices();
+    }, [orderList]);
+    
+
+    // Calculate total price for an item with category price if applicable
+    const getItemTotalPrice = (item) => {
+        const itemPrice = prices[item.name] || 0;
+        const categoryPrice = prices[item.category] || 0; // Use category name as key
+        return (itemPrice + categoryPrice) * item.quantity;
+    };
+
+    // Calculate total price for main items with sides and entrees
+    const getTotalPrice = (item, sidesAndEntrees) => {
+        const mainItemPrice = getItemTotalPrice(item);
+        const sidesAndEntreesPrice = sidesAndEntrees.reduce(
+            (sum, subItem) => sum + getItemTotalPrice(subItem),
+            0
+        );
+        return (mainItemPrice + sidesAndEntreesPrice).toFixed(2);
+    };
+
 
     const getItemImage = (itemName) => {
         switch (itemName) {
@@ -106,157 +170,146 @@ const OrderPage = () => {
         }
     };
 
-  return (
-    <div>
-      <div className="navbar">
-        <img src={logo} alt="Logo" className="navbar-logo" />
-        <div className="navbar-links">
-          <a href="/">Home</a>
-          <span className="divider">|</span>
-          <a href="#">About</a>
-          <span className="divider">|</span>
-          <a href="#">Services</a>
-          <span className="divider">|</span>
-          <a href="/order">Our Rewards</a>
-        </div>
-        <div className="navbar-actions">
-          <button className="navbar-button">ORDER</button>
-          <span role="img" aria-label="user" className="navbar-icon">👤</span>
-        </div>
-      </div>
-      
-      <h2 className="page-title">Order</h2>
-      
-      <div className="container">
-        {/* Left Section: Order Summary */}
-        <div className="order-summary">
-          <button className="add-more"><a href='/customer'>+ Add More Items</a></button>
-          <h2>Your Order</h2>
-          
-          {orderList.length > 0 ? (
-  (() => {
-    const items = []; // Array to store the JSX for each row
-    for (let index = 0; index < orderList.length; index++) {
-      const item = orderList[index];
-      
-      if (item.name === 'Bowl' || item.name === 'Plate' || item.name === 'Bigger Plate') {
-        // Determine the number of sides and entrees based on the item type
-        const sideCount = 1;
-        const entreeCount = item.name === 'Bowl' ? 1 : item.name === 'Plate' ? 2 : 3;
+    const removeItem = (indexToRemove) => {
+        const updatedOrderList = orderList.filter((_, index) => index !== indexToRemove);
+        setOrderList(updatedOrderList);
+    };
 
-        // Gather sides and entrees
-        const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
+    const handleCheckout = async () => {
+        const confirmed = window.confirm("Are you sure you want to proceed to checkout?");
+        if (confirmed) {
+            const totalCost = orderList.reduce((sum, item) => sum + (prices[item.name] * item.quantity), 0).toFixed(2);
+            const transactionType = "card"; // Or set dynamically based on user input
+    
+            try {
+                const response = await axios.post('http://localhost:3000/kiosk/order', {
+                    totalCost,
+                    transactionType,
+                    orderList // Pass orderList directly if each item has menu_item_id and quantity
+                });
+                
+                if (response.status === 200) {
+                    alert("Order has been successfully checked out!");
+                    clearOrder(); // Clears the local order list
+                }
+            } catch (error) {
+                console.error("Error during checkout:", error);
+                alert("There was an error processing your order. Please try again.");
+            }
+        }
+    };
 
-        // Push the main item with its sides and entrees into the items array
-        items.push(
-          <div className="order-item" key={index}>
-            <img src={getItemImage(item.name)} alt={item.name} className="order-item-image" />
-            <div className="item-details">
-              <h3>{item.name}</h3>
-              {sidesAndEntrees.map((subItem, subIndex) => (
-                <p key={subIndex}>{subItem.name}</p>
-              ))}
-              <p>Quantity: {item.quantity}</p>
-              <p className="item-price">${(item.price * item.quantity).toFixed(2)}</p>
-            </div>
-          </div>
-        );
+    const navigate = useNavigate(); // Initialize the navigate function
+    const goToCustomerPage = () => {
+        navigate('/customer'); // Navigate to the customer page
+    };
+    
 
-        // Skip over the sides and entrees in the main loop
-        index += sideCount + entreeCount;
-      } else {
-        // For items not part of Bowl, Plate, or Bigger Plate, add them individually
-        items.push(
-          <div className="order-item" key={index}>
-            <img src={getItemImage(item.name)} alt={item.name} className="order-item-image" />
-            <div className="item-details">
-              <h3>{item.name}</h3>
-              <p>Quantity: {item.quantity}</p>
-              <p className="item-price">${(item.price * item.quantity).toFixed(2)}</p>
+    return (
+        <div className='background'>
+            <div className="navbar">
+                <img src={logo} alt="Logo" className="navbar-logo" />
+                <div className="navbar-links">
+                    <a href="/">Home</a> | <a href="#">About</a> | <a href="#">Services</a> | <a href="/order">Our Rewards</a>
+                </div>
+                <div className="navbar-actions">
+                    <button className="navbar-button"><Link to='/customer'>Go Back To Menu</Link></button>
+                    <span role="img" aria-label="user" className="navbar-icon">👤</span>
+                </div>
             </div>
-          </div>
-        );
-      }
-    }
-    return items;
-  })()
-) : (
-  <p>No items in the order.</p>
-)}
 
-          
-          {/* Recommended Items Section */}
-          <h2>You May Also Like</h2>
-          <div className="recommended-items">
-            <div className="recommendation">
-              <img src={Watermelon_Mango_Flavored_Refresher} alt="Watermelon Mango Flavored Refresher" />
-              <p>Watermelon Mango Flavored Refresher</p>
+            <h2 className="page-title">Order</h2>
+
+            <div className="container">
+                <div className="order-summary">
+                    <button className="add-more" onClick={goToCustomerPage}>+ Add More Items</button>
+                    <h2>Your Order</h2>
+
+                    {orderList.length > 0 ? (
+                        (() => {
+                            const items = [];
+                            for (let index = 0; index < orderList.length; index++) {
+                                const item = orderList[index];
+
+                                if (item.name === 'Bowl' || item.name === 'Plate' || item.name === 'Bigger Plate') {
+                                    const sideCount = 1;
+                                    const entreeCount = item.name === 'Bowl' ? 1 : item.name === 'Plate' ? 2 : 3;
+                                    const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
+
+                                    items.push(
+                                        <div className="order-item" key={index}>
+                                            <img src={getItemImage(item.name)} alt={item.name} className="order-item-image" />
+                                            <div className="item-details">
+                                                <h3>{item.name}</h3>
+                                                {sidesAndEntrees.map((subItem, subIndex) => (
+                                                    <p key={subIndex}>{subItem.name}</p>
+                                                ))}
+                                                <p>Quantity: {item.quantity}</p>
+                                                <p className="item-price">Total: ${getTotalPrice(item, sidesAndEntrees)}</p>
+                                                <button className="remove-button" onClick={() => removeItem(index)}>Remove</button>
+                                            </div>
+                                        </div>
+                                    );
+                                    index += sideCount + entreeCount;
+                                } else {
+                                    items.push(
+                                        <div className="order-item" key={index}>
+                                            <img src={getItemImage(item.name)} alt={item.name} className="order-item-image" />
+                                            <div className="item-details">
+                                                <h3>{item.name}</h3>
+                                                <p>Quantity: {item.quantity}</p>
+                                                <p className="item-price">Total: ${getItemTotalPrice(item).toFixed(2)}</p>
+                                                <button className="remove-button" onClick={() => removeItem(index)}>Remove</button>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            }
+                            return items;
+                        })()
+                    ) : (
+                        <p>No items in the order.</p>
+                    )}
+                </div>
+
+                <div className="pickup-details">
+                    <h3>Additional Requests?</h3>
+                    <div className="additional-requests">
+                        <label><input type="checkbox" /> Utensils</label>
+                        <label><input type="checkbox" /> Napkins</label>
+                    </div>
+                    <br />
+                    <h3>Special Requests</h3>
+                    <input type="text" className="special-request-input" placeholder="Add Note" />
+                    <br /><br />
+                    <h3>Coupon Code</h3>
+                    <div className="coupon-code">
+                        <input type="text" placeholder="Enter Code" />
+                        <button>Add</button>
+                    </div>
+                    <br />
+                    <h3>Payment Method</h3>
+                    <div className="payment-method">
+                        <label><input type="radio" name="payment" /> Credit Card</label>
+                        <label><input type="radio" name="payment" /> Debit Card</label>
+                        <label><input type="radio" name="payment" /> Cash</label>
+                    </div>
+                    <br />
+
+                    <button className="checkout" onClick={handleCheckout}>Checkout</button>
+                    <br />
+                    <br />
+                    <label>Subtotal : ${orderList.reduce((sum, item) => sum + prices[item.name] * item.quantity, 0).toFixed(2)}</label>
+                    <br />
+                    <br />
+                    <label>Tax : ${(orderList.reduce((sum, item) => sum + prices[item.name] * item.quantity, 0) * 0.06).toFixed(2)}</label>
+                    <br />
+                    <br />
+                    <label>Total : ${(orderList.reduce((sum, item) => sum + prices[item.name] * item.quantity, 0) * 1.06).toFixed(2)}</label>
+                </div>
             </div>
-            <div className="recommendation">
-              <img src={Chicken_Egg_Roll} alt="Chicken Egg Roll" />
-              <p>Chicken Egg Roll</p>
-            </div>
-            <div className="recommendation">
-              <img src={Dr_Pepper} alt="Dr Pepper" />
-              <p>Dr Pepper</p>
-            </div>
-            <div className="recommendation">
-              <img src={Veggie_Spring_Roll} alt="Veggie Spring Roll" />
-              <p>Veggie Spring Roll</p>
-            </div>
-          </div>
         </div>
-        
-        {/* Right Section: Pickup Details */}
-        <div className="pickup-details">
-          <h3>Additional Requests?</h3>
-          <div className="additional-requests">
-            <label>
-              <input type="checkbox" />
-              Utensils
-            </label>
-            <label>
-              <input type="checkbox" />
-              Napkins
-            </label>
-          </div>
-          
-          <h3>Special Requests</h3>
-          <input type="text" className="special-request-input" placeholder="Add Note" />
-          
-          <h3>Coupon Code</h3>
-          <div className="coupon-code">
-            <input type="text" placeholder="Enter Code" />
-            <button>Add</button>
-          </div>
-          
-          <h3>Payment Method</h3>
-          <div className="payment-method">
-            <label>
-              <input type="radio" name="payment" />
-              Credit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" />
-              Debit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" />
-              Cash
-            </label>
-          </div>
-          
-          <button className="checkout" onClick={clearOrder}>Checkout</button>
-          <br />
-          <label>Subtotal : ${orderList.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</label>
-          <br />
-          <label>Tax : ${(orderList.reduce((sum, item) => sum + item.price * item.quantity, 0) * 0.06).toFixed(2)}</label>
-          <br />
-          <label>Total : ${(orderList.reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.06).toFixed(2)}</label>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default OrderPage;

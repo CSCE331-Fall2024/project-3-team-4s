@@ -1,4 +1,3 @@
-// OrderContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const OrderContext = createContext();
@@ -23,7 +22,7 @@ export const OrderProvider = ({ children }) => {
   }, [orderList]);
 
   return (
-    <OrderContext.Provider value={{ orderList, addToOrder }}>
+    <OrderContext.Provider value={{ orderList, setOrderList, addToOrder }}>
       {children}
     </OrderContext.Provider>
   );
