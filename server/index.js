@@ -9,7 +9,7 @@ import weatherRoutes from './routes/weatherRoutes.js';
 
 
 const app = express(); // Create an Express app
-const port = 3000; // Set the port
+const port = process.env.PORT || 3000; // Dynamically set the port or default to 3000
 
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Enable JSON parsing

@@ -1,4 +1,4 @@
-.employees-container {
+.inventory-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,7 +55,7 @@
   justify-content: space-evenly;
 }
 
-.employee-buttons-container {
+.inventory-buttons-container {
   display: flex;
   justify-content: center;
   gap: 2rem;
