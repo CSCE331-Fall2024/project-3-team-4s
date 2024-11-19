@@ -3,7 +3,7 @@ import db from "../db.js";
 const getInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await db.any(
-      "SELECT * FROM inventory where in_stock = true"
+      "SELECT * FROM inventory WHERE in_stock = true"
     );
 
     res.json(inventoryItems);
@@ -16,7 +16,7 @@ const getInventoryItems = async (req, res) => {
 const getMinStockInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await db.any(
-      "SELECT * FROM inventory where in_stock = true and current_stock < min_stock"
+      "SELECT * FROM inventory WHERE in_stock = true and current_stock < min_stock"
     );
 
     res.json(inventoryItems);
@@ -82,7 +82,27 @@ const updateInventoryItem = async (req, res) => {
   }
 };
 
-const restockInventoryItem = async (req, res) => {};
+const restockInventoryItem = async (req, res) => {
+  try {
+    // Extract order from the request body
+    const { order } = req.body;
+
+    // Iterate through the order and update inventory
+    for (const item of order) {
+      const { ingredient_id, ingredient_name, quantity, total_price } = item;
+
+      await db.none(
+        "UPDATE inventory SET current_stock = current_stock + $1 WHERE ingredient_id = $2",
+        [quantity, ingredient_id]
+      );
+    }
+
+    res.json({ message: "Inventory restocked" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const deleteInventoryItem = async (req, res) => {
   try {

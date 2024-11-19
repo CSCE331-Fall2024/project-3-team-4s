@@ -49,3 +49,11 @@ th {
   position: sticky;
   top: 0;
 }
+
+.order-details {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 1rem;
+  width: 100%;
+}
