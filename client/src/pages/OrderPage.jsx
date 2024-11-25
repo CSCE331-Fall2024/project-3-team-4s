@@ -236,12 +236,11 @@ const OrderPage = () => {
         .toFixed(2);
       const transactionType = "card"; // Or set dynamically based on user input
 
-
       try {
         const response = await axios.post(`${backendURL}/kiosk/order`, {
           totalCost,
           transactionType,
-          orderList, 
+          orderList, // Pass orderList directly if each item has menu_item_id and quantity
         });
 
         if (response.status === 200) {
