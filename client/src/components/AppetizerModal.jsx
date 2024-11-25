@@ -21,9 +21,9 @@ const AppetizerModal = ({ appetizer, onClose }) => {
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{appetizer.name} </h2>
+        <div className='modal-name'><h2>{appetizer.name} </h2></div>
         <img src={appetizer.image} alt={appetizer.name} className="modal-image" />  
-        <h2 className="appetizer-price">${appetizer.price.toFixed(2)}</h2>
+        <div className='modal-name'><h2 className="appetizer-price">${appetizer.price.toFixed(2)}</h2></div>
 
         {/* Quantity Selector */}
         <div className="quantity-selector">

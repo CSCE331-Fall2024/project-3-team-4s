@@ -21,10 +21,10 @@ const EntreeModal = ({ entree, onClose }) => {
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{entree.name}</h2>
+        <div className='modal-name'><h2>{entree.name}</h2></div>
         <img src={entree.image} alt={entree.name} className="modal-image" />
 
-        <h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2>
+        <div className='modal-name'><h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2></div>
         
         {/* Quantity Selector */}
         <div className="quantity-selector">

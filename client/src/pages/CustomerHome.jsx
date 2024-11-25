@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CustomerHome.css";
 
 import AppetizerModal from "../components/AppetizerModal";
@@ -8,163 +9,58 @@ import DrinkModal from "../components/DrinkModal";
 import BottomBar from "../components/BottomBar";
 import { useOrder } from "./OrderContext";
 
-import Bowl from "../../public/bowl.avif";
-import Plate from "../../public/plate.avif";
-import Bigger_Plate from "../../public/Bigger_Plate.avif";
-import Appetizer from "../../public/Appetizer.avif";
-import A_La_Carte_Side from "../../public/A_La_Carte_Side.avif";
-import A_La_Carte_Entree from "../../public/A_La_Carte_Entree.avif";
-import Drink from "../../public/Drink.avif";
-import logo from "../../public/logo.png";
-import Chow_Mein from "../../public/Chow_Mein.png";
-import Super_Greens from "../../public/Super_Greens.png";
-import White_Rice from "../../public/White_Rice.png";
-import Fried_Rice from "../../public/Fried_Rice.png";
-import Beijing_Beef from "../../public/Beijing_Beef.png";
-import The_Original_Orange_Chicken from "../../public/The_Original_Orange_Chicken.png";
-import Broccoli_Beef from "../../public/Broccoli_Beef.png";
-import Mushroom_Chicken from "../../public/Mushroom_Chicken.png";
-import Grilled_Teriyaki_Chicken from "../../public/Grilled_Teriyaki_Chicken.png";
-import Beyond_Original_Orange_Chicken from "../../public/Beyond_Original_Orange_Chicken.png";
-import Black_Pepper_Sirloin_Steak from "../../public/Black_Pepper_Sirloin_Steak.png";
-import Honey_Sesame_Chicken_Breast from "../../public/Honey_Sesame_Chicken_Breast.png";
-import Honey_Walnut_Shrimp from "../../public/Honey_Walnut_Shrimp.png";
-import Hot_Ones_Blazing_Bourbon_Chicken from "../../public/Hot_Ones_Blazing_Bourbon_Chicken.png";
-import Kung_Pao_Chicken from "../../public/Kung_Pao_Chicken.png";
-import String_Bean_Chicken_Breast from "../../public/String_Bean_Chicken_Breast.png";
-import Sweet_Fire_Chicken_Breast from "../../public/Sweet_Fire_Chicken_Breast.png";
-import Chicken_Egg_Roll from "../../public/Chicken_Egg_Roll.avif";
-import Veggie_Spring_Roll from "../../public/Veggie_Spring_Roll.avif";
-import Cream_Cheese_Rangoon from "../../public/Cream_Cheese_Rangoon.avif";
-import Apple_Pie_Roll from "../../public/Apple_Pie_Roll.avif";
-import Dr_Pepper from "../../public/Dr_Pepper.avif";
-import Coca_Cola from "../../public/Coca_Cola.avif";
-import Diet_Coke from "../../public/Diet_Coke.avif";
-import Mango_Guava_Flavored_Tea from "../../public/Mango_Guava_Flavored_Tea.avif";
-import Peach_Lychee_Flavored_Refresher from "../../public/Peach_Lychee_Flavored_Refresher.avif";
-import Pomegranate_Pineapple_Flavored_Lemonade from "../../public/Pomegranate_Pineapple_Flavored_Lemonade.avif";
-import Watermelon_Mango_Flavored_Refresher from "../../public/Watermelon_Mango_Flavored_Refresher.avif";
-import Barqs_Root_Beer from "../../public/Barqs_Root_Beer.avif";
-import Fanta_Orange from "../../public/Fanta_Orange.avif";
-import Minute_Maid_Lemonade from "../../public/Minute_Maid_Lemonade.avif";
-import Powerade_Mountain_Berry_Blast from "../../public/Powerade_Mountain_Berry_Blast.avif";
-import Sprite from "../../public/Sprite.avif";
-import Coca_Cola_Cherry from "../../public/Coca_Cola_Cherry.avif";
-import Fuze_Raspberry_Iced_Tea from "../../public/Fuze_Raspberry_Iced_Tea.avif";
-import Powerade_Fruit_Punch from "../../public/Powerade_Fruit_Punch.avif";
-import Dasani from "../../public/Dasani.avif";
-import Minute_Maid_Apple_Juice from "../../public/Minute_Maid_Apple_Juice.avif";
-import Coke_Mexico from "../../public/Coke_Mexico.avif";
-import Coke_Zero from "../../public/Coke_Zero.avif";
-import Smartwater from "../../public/Smartwater.avif";
 
 const imageMap = {
-  Bowl: { image: Bowl, description: "1 Side & 1 Entree" },
-  Plate: { image: Plate, description: "1 Side & 2 Entree" },
-  "Bigger Plate": { image: Bigger_Plate, description: "1 Side & 3 Entree" },
-  Appetizer: {
-    image: Appetizer,
-    description: "Choose from a variety of appetizers.",
-  },
-  "A La Carte Side": {
-    image: A_La_Carte_Side,
-    description: "Side options available à la carte.",
-  },
-  "A La Carte Entree": {
-    image: A_La_Carte_Entree,
-    description: "Individual entrees served à la carte.",
-  },
-  Drinks: { image: Drink, description: "A selection of refreshing beverages." },
-  "Chow Mein": { image: Chow_Mein, description: "600 cal" },
-  "Super Greens": { image: Super_Greens, description: "130 cal" },
-  "White Rice": { image: White_Rice, description: "520 cal" },
-  "Fried Rice": { image: Fried_Rice, description: "620 cal" },
-  "Beijing Beef": { image: Beijing_Beef, description: "480 cal" },
-  "The Original Orange Chicken": {
-    image: The_Original_Orange_Chicken,
-    description: "510 cal",
-  },
-  "Broccoli Beef": { image: Broccoli_Beef, description: "150 cal" },
-  "Mushroom Chicken": { image: Mushroom_Chicken, description: "220 cal" },
-  "Grilled Teriyaki Chicken": {
-    image: Grilled_Teriyaki_Chicken,
-    description: "275 cal",
-  },
-  "Beyond Original Orange Chicken": {
-    image: Beyond_Original_Orange_Chicken,
-    description: "+1.50 | 440 cal",
-  },
-  "Black Pepper Sirloin Steak": {
-    image: Black_Pepper_Sirloin_Steak,
-    description: "+1.50 | 180 cal",
-  },
-  "Honey Sesame Chicken Breast": {
-    image: Honey_Sesame_Chicken_Breast,
-    description: "340 cal",
-  },
-  "Honey Walnut Shrimp": {
-    image: Honey_Walnut_Shrimp,
-    description: "+1.50 | 430 cal",
-  },
-  "Hot Ones Blazing Bourbon Chicken": {
-    image: Hot_Ones_Blazing_Bourbon_Chicken,
-    description: "400 cal",
-  },
-  "Kung Pao Chicken": { image: Kung_Pao_Chicken, description: "320 cal" },
-  "String Bean Chicken Breast": {
-    image: String_Bean_Chicken_Breast,
-    description: "210 cal",
-  },
-  "Sweet Fire Chicken Breast": {
-    image: Sweet_Fire_Chicken_Breast,
-    description: "380 cal",
-  },
-  "Chicken Egg Roll": { image: Chicken_Egg_Roll, description: "" },
-  "Veggie Spring Roll": { image: Veggie_Spring_Roll, description: "" },
-  "Cream Cheese Rangoon": { image: Cream_Cheese_Rangoon, description: "" },
-  "Apple Pie Roll": { image: Apple_Pie_Roll, description: "" },
-  "Dr Pepper": { image: Dr_Pepper, description: "" },
-  "Coca Cola": { image: Coca_Cola, description: "" },
-  "Diet Coke": { image: Diet_Coke, description: "" },
-  "Mango Guava Flavored Tea": {
-    image: Mango_Guava_Flavored_Tea,
-    description: "",
-  },
-  "Peach Lychee Flavored Refresher": {
-    image: Peach_Lychee_Flavored_Refresher,
-    description: "",
-  },
-  "Pomegranate Pineapple Flavored Lemonade": {
-    image: Pomegranate_Pineapple_Flavored_Lemonade,
-    description: "",
-  },
-  "Watermelon Mango Flavored Refresher": {
-    image: Watermelon_Mango_Flavored_Refresher,
-    description: "",
-  },
-  "Barqs Root Beer": { image: Barqs_Root_Beer, description: "" },
-  "Fanta Orange": { image: Fanta_Orange, description: "" },
-  "Minute Maid Lemonade": { image: Minute_Maid_Lemonade, description: "" },
-  "Powerade Mountain Berry Blast": {
-    image: Powerade_Mountain_Berry_Blast,
-    description: "",
-  },
-  Sprite: { image: Sprite, description: "" },
-  "Coca Cola Cherry": { image: Coca_Cola_Cherry, description: "" },
-  "Fuze Raspberry Iced Tea": {
-    image: Fuze_Raspberry_Iced_Tea,
-    description: "",
-  },
-  "Powerade Fruit Punch": { image: Powerade_Fruit_Punch, description: "" },
-  Dasani: { image: Dasani, description: "" },
-  "Minute Maid Apple Juice": {
-    image: Minute_Maid_Apple_Juice,
-    description: "",
-  },
-  "Coke Mexico": { image: Coke_Mexico, description: "" },
-  "Coke Zero": { image: Coke_Zero, description: "" },
-  Smartwater: { image: Smartwater, description: "" },
+  Bowl: { image: "/bowl.avif", description: "1 Side & 1 Entree" },
+  Plate: { image: "/plate.avif", description: "1 Side & 2 Entree" },
+  "Bigger Plate": { image: "/Bigger_Plate.avif", description: "1 Side & 3 Entree" },
+  Appetizer: { image: "/Appetizer.avif", description: "Choose from a variety of appetizers." },
+  "A La Carte Side": { image: "/A_La_Carte_Side.avif", description: "Side options available à la carte." },
+  "A La Carte Entree": { image: "/A_La_Carte_Entree.avif", description: "Individual entrees served à la carte." },
+  Drinks: { image: "/Drink.avif", description: "A selection of refreshing beverages." },
+  "Chow Mein": { image: "/Chow_Mein.png", description: "600 cal" },
+  "Super Greens": { image: "/Super_Greens.png", description: "130 cal" },
+  "White Rice": { image: "/White_Rice.png", description: "520 cal" },
+  "Fried Rice": { image: "/Fried_Rice.png", description: "620 cal" },
+  "Beijing Beef": { image: "/Beijing_Beef.png", description: "480 cal" },
+  "The Original Orange Chicken": { image: "/The_Original_Orange_Chicken.png", description: "510 cal" },
+  "Broccoli Beef": { image: "/Broccoli_Beef.png", description: "150 cal" },
+  "Mushroom Chicken": { image: "/Mushroom_Chicken.png", description: "220 cal" },
+  "Grilled Teriyaki Chicken": { image: "/Grilled_Teriyaki_Chicken.png", description: "275 cal" },
+  "Beyond Original Orange Chicken": { image: "/Beyond_Original_Orange_Chicken.png", description: "+1.50 | 440 cal" },
+  "Black Pepper Sirloin Steak": { image: "/Black_Pepper_Sirloin_Steak.png", description: "+1.50 | 180 cal" },
+  "Honey Sesame Chicken Breast": { image: "/Honey_Sesame_Chicken_Breast.png", description: "340 cal" },
+  "Honey Walnut Shrimp": { image: "/Honey_Walnut_Shrimp.png", description: "+1.50 | 430 cal" },
+  "Hot Ones Blazing Bourbon Chicken": { image: "/Hot_Ones_Blazing_Bourbon_Chicken.png", description: "400 cal" },
+  "Kung Pao Chicken": { image: "/Kung_Pao_Chicken.png", description: "320 cal" },
+  "String Bean Chicken Breast": { image: "/String_Bean_Chicken_Breast.png", description: "210 cal" },
+  "Sweet Fire Chicken Breast": { image: "/Sweet_Fire_Chicken_Breast.png", description: "380 cal" },
+  "Chicken Egg Roll": { image: "/Chicken_Egg_Roll.avif", description: "" },
+  "Veggie Spring Roll": { image: "/Veggie_Spring_Roll.avif", description: "" },
+  "Cream Cheese Rangoon": { image: "/Cream_Cheese_Rangoon.avif", description: "" },
+  "Apple Pie Roll": { image: "/Apple_Pie_Roll.avif", description: "" },
+  "Dr Pepper": { image: "/Dr_Pepper.avif", description: "" },
+  "Coca Cola": { image: "/Coca_Cola.avif", description: "" },
+  "Diet Coke": { image: "/Diet_Coke.avif", description: "" },
+  "Mango Guava Flavored Tea": { image: "/Mango_Guava_Flavored_Tea.avif", description: "" },
+  "Peach Lychee Flavored Refresher": { image: "/Peach_Lychee_Flavored_Refresher.avif", description: "" },
+  "Pomegranate Pineapple Flavored Lemonade": { image: "/Pomegranate_Pineapple_Flavored_Lemonade.avif", description: "" },
+  "Watermelon Mango Flavored Refresher": { image: "/Watermelon_Mango_Flavored_Refresher.avif", description: "" },
+  "Barqs Root Beer": { image: "/Barqs_Root_Beer.avif", description: "" },
+  "Fanta Orange": { image: "/Fanta_Orange.avif", description: "" },
+  "Minute Maid Lemonade": { image: "/Minute_Maid_Lemonade.avif", description: "" },
+  "Powerade Mountain Berry Blast": { image: "/Powerade_Mountain_Berry_Blast.avif", description: "" },
+  Sprite: { image: "/Sprite.avif", description: "" },
+  "Coca Cola Cherry": { image: "/Coca_Cola_Cherry.avif", description: "" },
+  "Fuze Raspberry Iced Tea": { image: "/Fuze_Raspberry_Iced_Tea.avif", description: "" },
+  "Powerade Fruit Punch": { image: "/Powerade_Fruit_Punch.avif", description: "" },
+  Dasani: { image: "/Dasani.avif", description: "" },
+  "Minute Maid Apple Juice": { image: "/Minute_Maid_Apple_Juice.avif", description: "" },
+  "Coke Mexico": { image: "/Coke_Mexico.avif", description: "" },
+  "Coke Zero": { image: "/Coke_Zero.avif", description: "" },
+  Smartwater: { image: "/Smartwater.avif", description: "" },
 };
+
 
 const displayOrder = [
   "Bowl",
@@ -194,11 +90,12 @@ const CustomerHome = () => {
   const [selectedSide, setSelectedSide] = useState(null); // State to track the selected side for the modal
   const [selectedDrink, setSelectedDrink] = useState(null); // State for selected drink
   const [isDrinkModalOpen, setIsDrinkModalOpen] = useState(false); // Drink modal visibility
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch(`${backendURL}/kiosk/meal-types`);
+        const response = await fetch(`http://localhost:3000/kiosk/meal-types`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -238,7 +135,7 @@ const CustomerHome = () => {
   // Fetch sides when an item is selected
   const fetchSides = async () => {
     try {
-      const response = await fetch(`${backendURL}/kiosk/sides`);
+      const response = await fetch(`http://localhost:3000/kiosk/sides`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -252,7 +149,7 @@ const CustomerHome = () => {
   // Fetch entrees when an item is selected
   const fetchEntrees = async () => {
     try {
-      const response = await fetch(`${backendURL}/kiosk/entrees`);
+      const response = await fetch(`http://localhost:3000/kiosk/entrees`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -269,7 +166,7 @@ const CustomerHome = () => {
 
   const fetchAppetizers = async () => {
     try {
-      const response = await fetch(`${backendURL}/kiosk/appetizers`);
+      const response = await fetch(`http://localhost:3000/kiosk/appetizers`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -282,7 +179,7 @@ const CustomerHome = () => {
 
   const fetchDrinks = async () => {
     try {
-      const response = await fetch(`${backendURL}/kiosk/drinks`);
+      const response = await fetch(`http://localhost:3000/kiosk/drinks`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -295,6 +192,8 @@ const CustomerHome = () => {
 
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
+
+    navigate(`/category/${item.item_name}`);
 
     if (item.item_name === "Appetizer") {
       fetchAppetizers();
@@ -460,7 +359,7 @@ const CustomerHome = () => {
     setSelectedSides([]); // Reset selected sides
     setSelectedEntrees([]); // Reset selected entrees
     resetSelections();
-  };
+  };  
 
   const sortedItems = [...menuItems].sort(
     (a, b) =>
@@ -470,7 +369,7 @@ const CustomerHome = () => {
   return (
     <div className="background">
       <div className="navbar">
-        <img src={logo} alt="Logo" className="navbar-logo" />
+        <img src="/logo.png" alt="Logo" className="navbar-logo" />
         <div className="navbar-links">
           <a href="/">Home</a>
           <span className="divider">|</span>
