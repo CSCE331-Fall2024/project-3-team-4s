@@ -11,7 +11,6 @@ html {
 }
 
 .background {
-  padding-top: 70px; /* Adjust according to the height of your navbar */
   background-image: linear-gradient(
       rgba(255, 255, 255, 0.6),
       rgba(255, 255, 255, 0.6)
@@ -93,10 +92,6 @@ html {
   gap: 10px;
 }
 
-.navbar-logo {
-  height: 45px;
-}
-
 .navbar-links {
   display: flex;
   align-items: center;
@@ -114,28 +109,70 @@ html {
   font-weight: 300;
 }
 
-.navbar-button {
-  background: none;
-  border: 1px solid white;
-  color: white;
-  padding: 5px 10px; /* Reduced padding for more room */
-  border-radius: 5px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: white;
-  color: #d22028; /* Match the red background */
-  font-size: 22px;
-  white-space: nowrap;
-  font-weight: 700;
+.navbar-logo {
+  height: 100px;
 }
 
-.navbar-button:hover {
-  background-color: #d22028;
-  color: white;
+.nav-header {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center the text initially */
+  position: relative; /* Allow the button to be positioned absolutely */
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 260px;
+  padding-left: 260px;
 }
+
+.navbar-button {
+  position: absolute;
+  right: 0; /* Align the button to the right */
+  font-size: 32px; /* Adjust the button's font size if needed */
+  padding: 10px 15px; /* Add padding for better appearance */
+  top: 2.5%;
+  right: 2%;
+  background-color: #c7212a; /* Panda Express red */
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-button-2 {
+  position: absolute;
+  right: 0; /* Align the button to the right */
+  font-size: 32px; /* Adjust the button's font size if needed */
+  padding: 10px 15px; /* Add padding for better appearance */
+  top: 2.5%;
+  right: 83%;
+  background-color: #c7212a; /* Panda Express red */
+  color: white;
+  font-weight: bold;
+}
+
+.order-heading {
+  text-align: center;
+  font-family: "Rubik", sans-serif;
+  font-size: 46px;
+  color: black;
+  font-weight: bold;
+  text-shadow: 0 3px 3px white, 0 5px 5px white;
+  margin: 0;
+  flex: 1;
+}
+
+
+.navbar-button:hover {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+.navbar-button-2:hover {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+
 
 .navbar-icon {
   font-size: 24px;
@@ -143,15 +180,6 @@ html {
   color: white;
 }
 
-.order-heading {
-  text-align: center;
-  margin-top: 20px;
-  font-family: "Rubik", sans-serif;
-  font-size: 40px;
-  color: white;
-  font-weight: 700;
-  text-shadow: 0 3px 3px black, 0 5px 5px black;
-}
 
 .menu-container {
   display: flex;
@@ -236,6 +264,8 @@ html {
 
 .steps-container h3 {
   font-size: 36px;
+  text-align: center;
+  margin: 0;
   color: #333;
 }
 
@@ -253,7 +283,14 @@ html {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  margin-right: auto;
+  font-size: 32px;
+  font-weight: bold;
+  position:absolute;
+  left: 0;
+  padding-top: 45px;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6);
+
 }
 
 .back-button:hover {
@@ -295,6 +332,22 @@ html {
     font-size: 18px;
     color: #333;
 } */
+
+.steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px; /* Adjust spacing as needed */
+  padding-bottom: 40px;
+}
+
+.steps-header h3 {
+  flex: 1; /* Allow the heading to occupy the center */
+  text-align: center; /* Center the heading text */
+  margin: 0; /* Remove default margin */
+  font-size: 40px;
+}
+
 
 .appetizers-container {
   display: flex;
@@ -450,7 +503,32 @@ html {
   align-items: center;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  padding-bottom: 25px;
 }
+
+.add-to-order-button-bottom {
+  padding: 10px 20px;
+  background-color: #c7212a;
+  color: white;
+  cursor: pointer;
+  width: 200px;
+  margin-right: 50px;
+  font-size: large;
+  font-weight: bold;
+}
+
+.selected-items ul {
+  list-style-type: none; /* Removes default bullet points */
+  padding: 0;
+  margin: 0;
+  display: flex; /* Arrange items in a single line */
+  gap: 10px; /* Adds space between items */
+}
+
+.selected-items li {
+  display: inline-block; /* Ensure items stay inline */
+}
+
 
 .selected-items {
   display: flex;

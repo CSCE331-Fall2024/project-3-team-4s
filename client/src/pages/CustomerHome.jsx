@@ -7,6 +7,7 @@ import SideModal from "../components/SideModal";
 import EntreeModal from "../components/EntreeModal";
 import DrinkModal from "../components/DrinkModal";
 import BottomBar from "../components/BottomBar";
+import SauceModal from "../components/SauceModal";
 import { useOrder } from "./OrderContext";
 
 
@@ -59,6 +60,12 @@ const imageMap = {
   "Coke Mexico": { image: "/Coke_Mexico.avif", description: "" },
   "Coke Zero": { image: "/Coke_Zero.avif", description: "" },
   Smartwater: { image: "/Smartwater.avif", description: "" },
+  "Sauces": { image: "/Soy_Sauce.png", description: "" },
+  "Soy Sauce": { image: "/Soy_Sauce.png", description: "" },
+  "Sweet & Sour Sauce": { image: "/Sweet_&_Sour_Sauce.png", description: "" },
+  "Chili Sauce": { image: "/Chilli_Sauce.png", description: "" },
+  "Teriyaki Sauce": { image: "/Teriyaki_Sauce.png", description: "" },
+  "Hot Mustard": { image: "/Hot_Mustard.png", description: "" },
 };
 
 
@@ -74,6 +81,7 @@ const displayOrder = [
 
 const CustomerHome = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const logo = "/logo.png";
 
   const { addToOrder } = useOrder();
   const [menuItems, setMenuItems] = useState([]);
@@ -90,6 +98,9 @@ const CustomerHome = () => {
   const [selectedSide, setSelectedSide] = useState(null); // State to track the selected side for the modal
   const [selectedDrink, setSelectedDrink] = useState(null); // State for selected drink
   const [isDrinkModalOpen, setIsDrinkModalOpen] = useState(false); // Drink modal visibility
+  const [selectedSauce, setSelectedSauce] = useState(null); // State for selected sauce
+  const [isSauceModalOpen, setIsSauceModalOpen] = useState(false); // Modal visibility state
+  const [sauces, setSauces] = useState([]); // State for sauces
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -131,6 +142,19 @@ const CustomerHome = () => {
     };
     fetchMenuItems();
   }, []);
+
+
+  // Fetch sauces from backend
+  const fetchSauces = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/kiosk/sauces`);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setSauces(data);
+    } catch (error) {
+      console.error("Error fetching sauces:", error);
+    }
+  };
 
   // Fetch sides when an item is selected
   const fetchSides = async () => {
@@ -193,8 +217,6 @@ const CustomerHome = () => {
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
 
-    navigate(`/category/${item.item_name}`);
-
     if (item.item_name === "Appetizer") {
       fetchAppetizers();
     } else if (item.item_name === "A La Carte Side") {
@@ -209,6 +231,8 @@ const CustomerHome = () => {
       fetchDrinks(); // Load only drinks
       setSides([]);
       setEntrees([]);
+    } else if (item.item_name === "Sauces") {
+      fetchSauces(); // Fetch sauces
     } else {
       fetchSides();
       fetchEntrees();
@@ -221,10 +245,25 @@ const CustomerHome = () => {
       setSelectedEntrees([]); // Reset selected entrees
     }
   };
+
   const resetSelections = () => {
     setSelectedSides([]);
     setSelectedEntrees([]);
     setSelectedItem(null);
+  };
+
+  const handleSauceClick = (sauce) => {
+    setSelectedSauce({
+      name: sauce.item_name,
+      image: imageMap[sauce.item_name]?.image || logo,
+      price: sauce.item_price,
+    });
+    setIsSauceModalOpen(true); // Open the modal
+  };
+
+  const closeSauceModal = () => {
+    setSelectedSauce(null);
+    setIsSauceModalOpen(false); // Close the modal
   };
 
   const handleSideSelect = (side) => {
@@ -359,6 +398,7 @@ const CustomerHome = () => {
     setSelectedSides([]); // Reset selected sides
     setSelectedEntrees([]); // Reset selected entrees
     resetSelections();
+    setSauces([]);
   };  
 
   const sortedItems = [...menuItems].sort(
@@ -367,33 +407,28 @@ const CustomerHome = () => {
   );
 
   return (
+    
     <div className="background">
-      <div className="navbar">
-        <img src="/logo.png" alt="Logo" className="navbar-logo" />
-        <div className="navbar-links">
-          <a href="/">Home</a>
-          <span className="divider">|</span>
-          <a href="#">About</a>
-          <span className="divider">|</span>
-          <a href="#">Services</a>
-          <span className="divider">|</span>
-          <a href="/order">Our Rewards</a>
-        </div>
-        <div className="navbar-actions">
-          <button className="navbar-button">
-            <a href="/order">ORDER</a>
-          </button>
-          <span role="img" aria-label="user" className="navbar-icon">
-            👤
-          </span>
-        </div>
-      </div>
+
+    <div className="nav-header">      
 
       <h2 className="order-heading">
         {selectedItem
           ? `Customize your ${selectedItem.item_name}`
           : "Choose your meal type to start your order"}
       </h2>
+
+    </div>
+
+    <button className="navbar-button">
+        View Order
+    </button>
+
+    <button className="navbar-button-2">
+        View Order
+    </button>
+
+      
 
       <div className="menu-container">
         {!selectedItem ? (
@@ -421,12 +456,47 @@ const CustomerHome = () => {
               </p>
             </div>
           ))
+        ) : selectedItem.item_name === "Sauces" ? (
+          <div className="steps-container">
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Choose Your Sauce</h3>
+            </div>
+            <div className="drinks-container">
+              {sauces.map((sauce) => (
+                <div
+                  key={sauce.menu_item_id}
+                  className="menu-item"
+                  onClick={() => handleSauceClick(sauce)}
+                >
+                  <img
+                    src={imageMap[sauce.item_name]?.image || logo}
+                    alt={sauce.item_name}
+                    className="menu-item-image"
+                  />
+                  <h2>{sauce.item_name}</h2>
+                  <p className="image_price">${sauce.item_price.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+            {isSauceModalOpen && selectedSauce && (
+            <SauceModal
+              sauce={selectedSauce}
+              onClose={closeSauceModal}
+              addToOrder={addToOrder}
+            />
+          )}
+          </div>
         ) : selectedItem.item_name === "Appetizer" ? (
           <div className="steps-container">
-            <button onClick={handleBackToMenu} className="back-button">
-              Back to Menu
-            </button>
-            <h3>Select an Appetizer</h3>
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Choose Your Appetizer</h3>
+            </div>
             <div className="appetizers-container">
               {appetizers.map((appetizer) => (
                 <div
@@ -451,10 +521,12 @@ const CustomerHome = () => {
           </div>
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
-            <button onClick={handleBackToMenu} className="back-button">
-              Back to Menu
-            </button>
-            <h3>Choose Your Side</h3>
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Choose Your Side</h3>
+            </div>
             <div className="sides-container">
               {sides.map((side) => (
                 <div
@@ -484,10 +556,12 @@ const CustomerHome = () => {
           </div>
         ) : selectedItem.item_name === "A La Carte Entree" ? (
           <div className="steps-container">
-            <button onClick={handleBackToMenu} className="back-button">
-              Back to Menu
-            </button>
-            <h3>Choose Your Entree</h3>
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Choose Your Entree</h3>
+            </div>
             <div className="entrees-container">
               {entrees.map((entree) => (
                 <div
@@ -517,10 +591,12 @@ const CustomerHome = () => {
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
-            <button onClick={handleBackToMenu} className="back-button">
-              Back to Menu
-            </button>
-            <h3>Select Your Drink</h3>
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Choose Your Drink</h3>
+            </div>
             <div className="drinks-container">
               {drinks.map((drink) => (
                 <div
@@ -550,11 +626,12 @@ const CustomerHome = () => {
           </div>
         ) : (
           <div className="steps-container">
-            <button onClick={handleBackToMenu} className="back-button">
-              Back to Menu
-            </button>
-
-            <h3>Step 1: Choose Your Side</h3>
+            <div className="steps-header">
+              <button onClick={handleBackToMenu} className="back-button">
+               Go Back
+              </button>
+              <h3>Step 1 : Choose Your Side</h3>
+            </div>
             <div className="sides-container">
               {sides.map((side) => (
                 <div
@@ -583,8 +660,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-
+            <br></br><br></br><br></br>
             <h3>Step 2: Choose Your Entree</h3>
+            <br></br>
             <div className="entrees-container">
               {entrees.map((entree) => {
                 const entreeData = selectedEntrees.find(
@@ -631,7 +709,6 @@ const CustomerHome = () => {
             resetSelections={resetSelections}
           />
         )}
-      {/* <OrderPage orderList={orderList} /> */}
     </div>
   );
 };
