@@ -6,19 +6,33 @@ import ResponsiveLineChart from "../components/ResponsiveLineChart";
 import ResponsiveMultiLineChart from "../components/ResponsiveMultiLineChart";
 
 const ReportsPage = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
   const [graphType, setGraphType] = useState(""); // Report type (X, Product Usage, Z)
-  const [reportData, setReportData] = useState(null); // Data returned from API or file input
+  const [reportData, setReportData] = useState(null); // Data returned from API
   const [startDate, setStartDate] = useState(""); // Start date for X and Product Usage
   const [endDate, setEndDate] = useState(""); // End date for X and Product Usage
+  const [date, setDate] = useState(""); // Date for Z Report
   const [startHour, setStartHour] = useState(9); // Start hour for X report only
   const [endHour, setEndHour] = useState(21); // End hour for X report only
   const [loading, setLoading] = useState(false); // Loading state for API request
 
   const fetchReportData = async () => {
-    if (!graphType || !startDate || !endDate) {
-      alert("Please select a report type and both dates.");
+    if (!graphType) {
+      alert("Please select a report type.");
+      return;
+    }
+
+    if (
+      (graphType === "x-report" || graphType === "product-usage") &&
+      (!startDate || !endDate)
+    ) {
+      alert("Please select both a start date and an end date.");
+      return;
+    }
+
+    if (graphType === "z-report" && !date) {
+      alert("Please select a date for the Z Report.");
       return;
     }
 
@@ -36,12 +50,24 @@ const ReportsPage = () => {
       return;
     }
 
+    if (
+      graphType === "z-report" &&
+      new Date(date).toISOString().split("T")[0] ===
+        new Date().toISOString().split("T")[0]
+    ) {
+      const confirm = window.confirm(
+        "You are generating a Z Report for the current day. The data might not be complete. Do you want to proceed?"
+      );
+      if (!confirm) return;
+    }
+
     setLoading(true);
     try {
       const response = await axios.get(`${backendURL}/reports/${graphType}`, {
         params: {
-          startDate,
-          endDate,
+          startDate: graphType !== "z-report" ? startDate : undefined,
+          endDate: graphType !== "z-report" ? endDate : undefined,
+          date: graphType === "z-report" ? date : undefined,
           startHour: graphType === "x-report" ? startHour : undefined,
           endHour: graphType === "x-report" ? endHour : undefined,
         },
@@ -59,41 +85,6 @@ const ReportsPage = () => {
   const handleGraphTypeChange = (event) => {
     setGraphType(event.target.value);
     setReportData(null); // Clear previous report data
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        console.log("Loaded Z Report Data:", data); // Log the loaded data for debugging
-
-        // Validate structure
-        if (
-          !Array.isArray(data.sales) ||
-          !Array.isArray(data.itemsSold) ||
-          typeof data.transactionTypes !== "object"
-        ) {
-          console.error("Invalid structure detected", {
-            sales: data.sales,
-            itemsSold: data.itemsSold,
-            transactionTypes: data.transactionTypes,
-          });
-          throw new Error("Invalid data structure for Z Report.");
-        }
-
-        setReportData(data);
-      } catch (error) {
-        console.error("Error parsing or validating the JSON file:", error);
-        alert(
-          "Invalid file format or structure. Please select a valid JSON Z report."
-        );
-      }
-    };
-    reader.readAsText(file);
   };
 
   const renderChart = () => {
@@ -202,6 +193,20 @@ const ReportsPage = () => {
         </div>
       )}
 
+      {/* Date Selector for Z Report */}
+      {graphType === "z-report" && (
+        <div style={{ marginBottom: "20px" }}>
+          <label htmlFor="date">Select Date: </label>
+          <input
+            type="date"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+      )}
+
       {/* Start and End Hour Inputs (Only for X Report) */}
       {graphType === "x-report" && (
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
@@ -232,28 +237,15 @@ const ReportsPage = () => {
         </div>
       )}
 
-      {/* Generate Report Button for X and Product Usage Reports */}
-      {graphType !== "z-report" && (
-        <button
-          onClick={fetchReportData}
-          disabled={!graphType || !startDate || !endDate}
-        >
-          Generate Report
-        </button>
-      )}
-
-      {/* File Input for Selecting a Local Z Report */}
-      {graphType === "z-report" && (
-        <div style={{ marginTop: "10px" }}>
-          <label htmlFor="zReportFile">Select Z Report File: </label>
-          <input
-            type="file"
-            id="zReportFile"
-            accept=".json"
-            onChange={handleFileChange}
-          />
-        </div>
-      )}
+      <button
+        onClick={fetchReportData}
+        disabled={
+          (graphType === "x-report" || graphType === "product-usage") &&
+          (!startDate || !endDate)
+        }
+      >
+        Generate Report
+      </button>
 
       <div
         style={{
