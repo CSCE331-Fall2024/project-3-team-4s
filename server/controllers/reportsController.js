@@ -72,10 +72,10 @@ const getXReport = async (req, res) => {
 // Function to get the Z Report data for a single date
 const getZReport = async (req, res) => {
     try {
-        const { date } = req.query;
+        const { startDate } = req.query; // Accept `startDate` from frontend
 
-        if (!date) {
-            return res.status(400).json({ message: "A date is required for the Z Report." });
+        if (!startDate) {
+            return res.status(400).json({ message: "A start date is required for the Z Report." });
         }
 
         const salesData = await db.any(
@@ -85,7 +85,7 @@ const getZReport = async (req, res) => {
              AND EXTRACT(HOUR FROM transaction_time) BETWEEN 9 AND 21
              GROUP BY hour
              ORDER BY hour`,
-            [date]
+            [startDate]
         );
 
         const itemsSoldData = await db.any(
@@ -96,7 +96,7 @@ const getZReport = async (req, res) => {
              AND EXTRACT(HOUR FROM transaction_time) BETWEEN 9 AND 21
              GROUP BY hour
              ORDER BY hour`,
-            [date]
+            [startDate]
         );
 
         const rawTransactionTypesData = await db.any(
@@ -106,24 +106,24 @@ const getZReport = async (req, res) => {
              AND EXTRACT(HOUR FROM transaction_time) BETWEEN 9 AND 21
              GROUP BY transaction_type, hour
              ORDER BY hour`,
-            [date]
+            [startDate]
         );
 
         const transactionTypesData = {};
-        rawTransactionTypesData.forEach(row => {
+        rawTransactionTypesData.forEach((row) => {
             if (!transactionTypesData[row.transaction_type]) {
                 transactionTypesData[row.transaction_type] = [];
             }
             transactionTypesData[row.transaction_type].push({
                 label: `Hour ${row.hour}`,
-                value: row.count
+                value: row.count,
             });
         });
 
         res.json({
-            sales: salesData.map(row => ({ label: `Hour ${row.hour}`, value: parseFloat(row.value) })),
-            itemsSold: itemsSoldData.map(row => ({ label: `Hour ${row.hour}`, value: row.total_items })),
-            transactionTypes: transactionTypesData
+            sales: salesData.map((row) => ({ label: `Hour ${row.hour}`, value: parseFloat(row.value) })),
+            itemsSold: itemsSoldData.map((row) => ({ label: `Hour ${row.hour}`, value: row.total_items })),
+            transactionTypes: transactionTypesData,
         });
     } catch (err) {
         console.error("Error fetching Z report:", err);
