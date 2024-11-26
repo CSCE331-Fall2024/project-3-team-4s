@@ -8,18 +8,27 @@ import Button from "../components/Button";
 const Restock = () => {
   // const backendURL = import.meta.env.VITE_BACKEND_URL;
   const backendURL = "http://localhost:3000";
+
   const [minStockInventory, setMinStockInventory] = useState([]);
+  const [nonMinStockInventory, setNonMinStockInventory] = useState([]);
   const [order, setOrder] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [orderTotal, setOrderTotal] = useState(0);
+  const [selectedItemID, setSelectedItemID] = useState("");
+  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState(0);
 
-  // Fetch all min stock inventory items
+  // Fetch all min stock and non min stock inventory items
   useEffect(() => {
     const fetchInventory = async () => {
       try {
         const res = await axios.get(`${backendURL}/inventory/get-min-stock`);
+        const res2 = await axios.get(
+          `${backendURL}/inventory/get-non-min-stock`
+        );
 
         setMinStockInventory(res.data);
+        setNonMinStockInventory(res2.data);
       } catch (err) {
         console.error(err);
       }
@@ -31,6 +40,7 @@ const Restock = () => {
   // Handle quantity input change
   const handleQuantityChange = (id, quantity) => {
     setQuantities((quantities) => ({ ...quantities, [id]: quantity }));
+    console.log(quantities);
   };
 
   // Add item to order cart
@@ -38,7 +48,7 @@ const Restock = () => {
     const quantity = quantities[id];
 
     // Validate quantity
-    if (!quantity || quantity <= 0 || quantity.toLowerCase() === "e") {
+    if (!quantity || quantity <= 0 || quantity === "e" || quantity === "E") {
       alert("Please enter a valid quantity.");
       return;
     }
@@ -58,6 +68,15 @@ const Restock = () => {
 
     setOrder((order) => [...order, item]);
     setOrderTotal(orderTotal + item.total_price);
+
+    // Reset quantity for the item
+    setQuantities((quantities) => ({ ...quantities, [id]: "" }));
+  };
+
+  const clearOrder = () => {
+    setOrder([]);
+    setOrderTotal(0);
+    setQuantities({});
   };
 
   return (
@@ -110,11 +129,71 @@ const Restock = () => {
                 </tr>
               ))}
 
-              <td colSpan="6">
-                <div className="order-details">
-                  <Button text="Add Stocked Item"></Button>
-                </div>
-              </td>
+              <tr>
+                <td colSpan="6">
+                  <div className="order-details">
+                    <h3>Add Stocked Item</h3>
+
+                    <select
+                      defaultValue=""
+                      id="item"
+                      name="item"
+                      onChange={(e) => {
+                        // Get selected item details
+                        const selectedID = e.target.value;
+                        const selectedItem = nonMinStockInventory.find(
+                          (item) => item.ingredient_id === Number(selectedID)
+                        );
+
+                        // Set selected item details
+                        setSelectedItemID(selectedID);
+                        setSelectedItem(selectedItem.ingredient_name);
+                        setSelectedPrice(selectedItem.price);
+                      }}
+                    >
+                      <option value="" disabled>
+                        Select Item
+                      </option>
+                      {nonMinStockInventory.map((item) => (
+                        <option
+                          key={item.ingredient_id}
+                          value={item.ingredient_id}
+                        >
+                          {item.ingredient_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      placeholder="Quantity"
+                      value={quantities[selectedItemID] || ""}
+                      onChange={(e) =>
+                        handleQuantityChange(
+                          selectedItemID,
+                          Number(e.target.value)
+                        )
+                      }
+                    />
+
+                    <p>
+                      Price: $
+                      {isNaN(selectedPrice * quantities[selectedItemID])
+                        ? "0.00"
+                        : (selectedPrice * quantities[selectedItemID]).toFixed(
+                            2
+                          )}
+                    </p>
+
+                    <Button
+                      text="Add to Order"
+                      onClick={() =>
+                        addToOrder(selectedItemID, selectedItem, selectedPrice)
+                      }
+                    ></Button>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -129,12 +208,13 @@ const Restock = () => {
                 <th>Inventory Item</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {order.length === 0 ? (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
                     No items in order
                   </td>
                 </tr>
@@ -145,16 +225,34 @@ const Restock = () => {
                     <td>{item.ingredient_name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.total_price.toFixed(2)}</td>
+                    <td>
+                      <Icon
+                        src="/delete-icon.svg"
+                        alt="delete icon"
+                        onClick={() => {
+                          // Remove item from order
+                          setOrderTotal(orderTotal - item.total_price);
+                          setOrder(
+                            order.filter((orderItem) => orderItem !== item)
+                          );
+                        }}
+                      />
+                    </td>
                   </tr>
                 ))
               )}
 
-              <td colSpan="4">
-                <div className="order-details">
-                  Order Total: ${orderTotal.toFixed(2)}
-                  <Button text="Submit Order"></Button>
-                </div>
-              </td>
+              <tr>
+                <td colSpan="5">
+                  <div className="order-details">
+                    Order Total: ${orderTotal.toFixed(2)}
+                    <div class="restock-buttons">
+                      <Button text="Submit Order"></Button>
+                      <Button text="Clear Order" onClick={clearOrder}></Button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

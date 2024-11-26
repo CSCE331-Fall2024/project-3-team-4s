@@ -26,6 +26,19 @@ const getMinStockInventoryItems = async (req, res) => {
   }
 };
 
+const getNonMinStockInventoryItems = async (req, res) => {
+  try {
+    const inventoryItems = await db.any(
+      "SELECT * FROM inventory WHERE in_stock = true and current_stock >= min_stock"
+    );
+
+    res.json(inventoryItems);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const addInventoryItem = async (req, res) => {
   try {
     // Extract the ingredient_name, price, unit, and min_stock from the request body
@@ -124,6 +137,7 @@ const deleteInventoryItem = async (req, res) => {
 export {
   getInventoryItems,
   getMinStockInventoryItems,
+  getNonMinStockInventoryItems,
   addInventoryItem,
   updateInventoryItem,
   restockInventoryItem,

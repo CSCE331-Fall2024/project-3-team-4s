@@ -152,7 +152,7 @@ const Employees = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Role</th>
-                <th>Options</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -165,12 +165,12 @@ const Employees = () => {
                   <td>{employee.role}</td>
                   <td className="icons-container">
                     <Icon
-                      src="src/assets/edit-icon.svg"
+                      src="/edit-icon.svg"
                       alt="edit icon"
                       onClick={() => openEditModal(employee)}
                     />
                     <Icon
-                      src="src/assets/delete-icon.svg"
+                      src="/delete-icon.svg"
                       alt="delete icon"
                       onClick={() => openDeleteModal(employee)}
                     />
