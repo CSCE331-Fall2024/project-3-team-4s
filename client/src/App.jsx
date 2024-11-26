@@ -10,6 +10,8 @@ import InventoryManage from "./pages/InventoryManage";
 import EditMenu from "./pages/EditMenu";
 import Employees from "./pages/Employees";
 import OrderPage from "./pages/OrderPage";
+import { LanguageProvider } from './pages/LanguageContext'; // Correct import
+// Removed import LanguageContext from './pages/LanguageContext';
 
 const App = () => {
   const navigate = useNavigate();
@@ -51,47 +53,48 @@ const App = () => {
 
   const handleEmployeesClick = () => {
     navigate("/employees");
-  }
+  };
 
   const handleInventoryClick = () => {
     navigate("/inventory");
   };
 
-
   return (
-    <div className="global">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <GreetingPage
-              handleManagerClick={handleManagerClick}
-              handleCashierClick={handleCashierClick}
-              handlePlaceOrderClick={handlePlaceOrderClick}
-            />
-          }
-        />
+    <LanguageProvider>
+      <div className="global">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <GreetingPage
+                handleManagerClick={handleManagerClick}
+                handleCashierClick={handleCashierClick}
+                handlePlaceOrderClick={handlePlaceOrderClick}
+              />
+            }
+          />
 
-        <Route path="/customer" element={<CustomerHome />} />
-        <Route
-          path="/manager"
-          element={
-            <ManagerHome
-              handleMenuClick={handleMenuClick}
-              handleReportsClick={handleReportsClick}
-              handleInventoryClick={handleInventoryClick}
-              handleEmployeesClick={handleEmployeesClick}
-            />
-          }
-        />
-        <Route path="/cashier" element={<CashierHome />} />
-        <Route path="/menu" element={<EditMenu />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/inventory" element={<InventoryManage />} />
-        <Route path="/employees" element={<Employees />} />
-        <Route path="/order" element={<OrderPage />} />
-      </Routes>
-    </div>
+          <Route path="/customer" element={<CustomerHome />} />
+          <Route
+            path="/manager"
+            element={
+              <ManagerHome
+                handleMenuClick={handleMenuClick}
+                handleReportsClick={handleReportsClick}
+                handleInventoryClick={handleInventoryClick}
+                handleEmployeesClick={handleEmployeesClick}
+              />
+            }
+          />
+          <Route path="/cashier" element={<CashierHome />} />
+          <Route path="/menu" element={<EditMenu />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/inventory" element={<InventoryManage />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/order" element={<OrderPage />} />
+        </Routes>
+      </div>
+    </LanguageProvider>
   );
 };
 

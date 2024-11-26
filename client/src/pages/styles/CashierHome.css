@@ -1,116 +1,332 @@
-body, html {
+/* CashierHome.css */
+
+/* Reset some default styles */
+body, html, ul, li, h1, h2, h3, h4, h5, h6, p, button {
     margin: 0;
     padding: 0;
-    height: 100vh;
-    width: 100vw;
-    font-family: 'Rubik', sans-serif;
-    background-image: none;
+    box-sizing: border-box;
 }
-body{
 
-    background-image: none;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    overflow-y: auto;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
 }
-.cashierbackground {
-    position: relative;
-    height: 90vh; /* Full viewport height */
-    width: 100vw;  /* Full viewport width */
-    margin: 0;     /* Remove default margin */
-    padding: 0;    /* Remove default padding */
+
+/* Main container */
+.overall {
     display: flex;
-    /*align-items: center; /* Optional: Center content vertically */
-    /*justify-content: center; /* Optional: Center content horizontally */
-    overflow: hidden; /* Ensure the pseudo-element does not overflow */
+    flex-direction: column;
+    height: 100vh;
 }
-.cashierbackground::before {
-    content: "";
-    position: absolute;
-    height: 90vh; /* Full viewport height */
-    width: 100vw;  /* Full viewport width */
-    top: 0;
+
+/* Background for the cashier interface */
+.cashierbackground {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    background-color: #f5f5f5;
+    overflow: auto; /* Allow scrolling if content overflows */
+}
+
+/* Menu section */
+.menu {
+    flex: 2;
+    background-color: darkgray;
+    padding: 20px;
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+
+}
+
+/* Tabs at the top */
+.tabs {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tab buttons container */
+.tab {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+/* Individual tab buttons */
+.tablinks {
+    background-color: #e53935;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.tablinks:hover {
+    background-color: #d32f2f;
+}
+
+.tablinks:active {
+    background-color: #c62828;
+}
+
+/* Menu items container */
+.menuItems {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Category titles */
+.menuItems h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #424242;
+}
+
+/* List of menu items */
+.menu-item-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+/* Individual menu item buttons */
+.menu-item-button {
+    background-color: #eeeeee;
+    color: #212121;
+    padding: 10px 15px;
+    margin: 5px;
+    border: 1px solid #bdbdbd;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    min-width: 80px;
+}
+
+.menu-item-button:hover {
+    background-color: #e0e0e0;
+}
+
+.menu-item-button:disabled {
+    background-color: #f5f5f5;
+    color: #9e9e9e;
+    cursor: not-allowed;
+}
+
+/* Order section */
+.order {
+    flex: 1;
+    background-color: #fafafa;
+    padding: 20px;
+    border-left: 1px solid #e0e0e0;
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+}
+
+/* Order items */
+.orderItems {
+    margin-bottom: 20px;
+}
+
+.orderItems h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #424242;
+}
+
+.orderItems ul {
+    list-style: none;
+}
+
+.orderItems li {
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #212121;
+}
+
+/* Buttons in order section */
+.order .order-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.orderButtons button{
+    background-color: #e53935;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.order button:hover {
+    background-color: #d32f2f;
+}
+
+.order button:active {
+    background-color: #c62828;
+}
+
+/* Specific buttons */
+.checkoutCHECK {
+    background-color: #c62828;
+}
+
+.checkoutCHECK:hover {
+    background-color: #c62828;
+}
+
+.enter_item {
+    background-color: #c62828;
+}
+
+.enter_item:hover {
+    background-color: #c62828;
+}
+
+.clear_order {
+    background-color: #c62828;
+}
+
+.clear_order:hover {
+    background-color: #c62828;
+}
+
+.Confirm {
+    background-color: #c62828;
+}
+
+.Confirm:hover {
+    background-color: #c62828;
+}
+
+.debug {
+    background-color: #c62828;
+}
+
+.debug:hover {
+    background-color: #c62828;
+}
+
+/* Input fields */
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+}
+
+/* Keyboard container */
+.keyboard-container {
+    position: fixed;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background-image: url('../../cashierimages/cashierbackground.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    opacity: 0.4; /* Adjust the opacity as needed */
-    z-index: -1; /* Ensure the pseudo-element is behind the content */
-}
-.tablinks{
-
-    justify-content: center;
-    border: 2px solid black;
-
+    background-color: #fff;
+    z-index: 1000;
 }
 
-.menu{
+/* Adjust the overall container when keyboard is visible */
+.keyboard-visible .cashierbackground {
+    flex: 1 1 auto;
+    overflow: auto;
+}
 
-    outline: black;
-    width: 69%;
-    margin: 1vw;
-    border: 2px solid black;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cashierbackground {
+        flex-direction: column;
+    }
 
+    .menu, .order {
+        width: 100%;
+    }
+
+    .tab {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .tablinks {
+        flex: 1;
+    }
+}
+
+/* Order Items List */
+.current-orders-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
 }
-.order{
-    margin: 1vw;
 
-    width: 29vw;
+.order-text {
+    flex: 1;
+    font-size: 16px;
+    color: #212121;
 }
-.orderItems{
 
-    width: 100%;
-    height: 70%;
-    border: 1px solid red;
-
-}
-.menu-item-button {
+.remove-button {
+    background-color: transparent;
+    border: none;
+    color: #e53935;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 10%;
-    height: 10%;
-    font-size: 10px;
-    padding: 0;
-    gap: 1%;
-    margin: 5px;
+    font-size: 18px;
+    line-height: 1;
 }
 
-.menuItems {
-    overflow-y: auto; /* Allows vertical scrolling */
-    border: 2px solid black; /* Keep or adjust border as needed */
-    max-height: 80%; /* Adjust as needed */
-
-  }
-  
-  .menu-item-list-container {
-    height: 5%;
-    overflow-y: auto;
-  }
-  
-  .menu-item-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-.menu-item-button{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    width: 10%;
-    height: 10%;
-    font-size: 10px;
-    padding: 0;
-    gap: 1%;
-    margin: 5px;
-    border: 1px solid black;
+.remove-button:hover {
+    color:white;
 }
 
+.remove-button:focus {
+    outline: none;
+}
+.back-button {
+    position: fixed; /* Position the button relative to the viewport */
+    bottom: 5px; /* 5px above the bottom of the page */
+    right: 5px; /* 5px from the right edge of the page */
+
+    background-color: #e53935; /* Example background color */
+    color: white; /* Example text color */
+    padding: 10px 20px; /* Example padding */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Example border radius */
+    cursor: pointer; /* Change cursor to pointer */
+    font-size: 16px; /* Example font size */
+}
+
+.back-button:hover {
+    background-color: #d32f2f; /* Darken background color on hover */
+}
+
+.back-button:focus {
+    outline: none; /* Remove focus outline */
+}
