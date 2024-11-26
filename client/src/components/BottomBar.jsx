@@ -25,14 +25,14 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
         <h3>Selected: {selectedItem.item_name}</h3>
         <ul>
           {selectedSides.map((side, index) => (
-            <li key={index}>{side.item_name} (Side)</li>
+            <li key={index}><strong>(Side)</strong> {side.item_name}</li>
           ))}
           {selectedEntrees.map((entree, index) => (
-            <li key={index}>{entree.item.item_name} (Entree) x {entree.count}</li>
-          ))}
+              <li key={index}><strong>(Entree) </strong> {entree.item.item_name} x {entree.count}</li>
+            ))}
         </ul>
       </div>
-      <button className="add-to-order-button" onClick={handleAddToOrder}>Add to Order</button>
+      <button className="add-to-order-button-bottom" onClick={handleAddToOrder}>Add to Order</button>
     </div>
   );
 };
