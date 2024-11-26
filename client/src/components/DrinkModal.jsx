@@ -3,7 +3,7 @@ import { useOrder } from '../pages/OrderContext';
 import '../pages/CustomerHome.css';
 
 
-const DrinkModal = ({ drink, onClose }) => {
+const DrinkModal = ({ drink, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -15,6 +15,7 @@ const DrinkModal = ({ drink, onClose }) => {
   const handleAddToOrder = () => {
     addToOrder(drink.name, quantity);
     onClose(); // Close the modal after adding to the order
+    resetSelections(); // Reset the selections in the parent component
   };
 
   return (

@@ -4,7 +4,7 @@ import '../pages/CustomerHome.css';
 
 
 
-const EntreeModal = ({ entree, onClose }) => {
+const EntreeModal = ({ entree, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
   if (!entree) return null;
@@ -13,6 +13,7 @@ const EntreeModal = ({ entree, onClose }) => {
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
+    resetSelections(); // Reset the selections in the parent component
     addToOrder(entree.name, quantity);
     onClose(); // Close the modal after adding to the order
   };

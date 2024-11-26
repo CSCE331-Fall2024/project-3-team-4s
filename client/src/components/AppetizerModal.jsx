@@ -3,7 +3,7 @@ import { useOrder } from '../pages/OrderContext';
 import '../pages/CustomerHome.css';
 
 
-const AppetizerModal = ({ appetizer, onClose }) => {
+const AppetizerModal = ({ appetizer, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -15,6 +15,7 @@ const AppetizerModal = ({ appetizer, onClose }) => {
   const handleAddToOrder = () => {
     addToOrder(appetizer.name, quantity);
     onClose(); 
+    resetSelections();
   };
 
   return (

@@ -4,7 +4,7 @@ import '../pages/CustomerHome.css';
 
 
 
-const SideModal = ({ side, onClose, }) =>{
+const SideModal = ({ side, onClose,resetSelections }) =>{
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -16,6 +16,7 @@ const SideModal = ({ side, onClose, }) =>{
   const handleAddToOrder = () => {
     addToOrder(side.name, quantity);
     onClose(); // Close the modal after adding to the order
+    resetSelections(); // Reset the selections in the parent component
   };
 
   return (
