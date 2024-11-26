@@ -35,10 +35,36 @@ const getMealTypes = async (req, res) => {
   }
 };
 
+const getItems = async (req, res) => {
+  try {
+    const mealTypes = await db.any(
+      "SELECT * FROM menu_item"
+    );
+
+    res.json(mealTypes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const getEntrees = async (req, res) => {
   try {
     const entrees = await db.any(
       "SELECT * FROM menu_item WHERE item_category = 'Entree'"
+    );
+
+    res.json(entrees);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getSauces = async (req, res) => {
+  try {
+    const entrees = await db.any(
+      "SELECT * FROM menu_item WHERE item_category = 'Sauces'"
     );
 
     res.json(entrees);
@@ -137,4 +163,4 @@ const postOrder = async (req, res) => {
     }
 };
 
-export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks,getItemPrice,postOrder };
+export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks,getItemPrice,postOrder,getSauces,getItems };
