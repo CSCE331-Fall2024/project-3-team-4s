@@ -61,9 +61,17 @@ const EditMenu = () => {
 
   const addMenuItem = async (name, price, category, servings) => {
     try {
-      const menuItem = { item_name: name, item_price: price, item_category: category, current_servings: servings };
+      const menuItem = {
+        item_name: name,
+        item_price: price,
+        item_category: category,
+        current_servings: servings,
+      };
 
-      const res = await axios.post(`${backendURL}/menu/add-menu-item`, menuItem);
+      const res = await axios.post(
+        `${backendURL}/menu/add-menu-item`,
+        menuItem
+      );
 
       setMenuItems([...menuItems, res.data]);
       closeAddModal();
@@ -74,7 +82,12 @@ const EditMenu = () => {
 
   const editMenuItem = async (name, price, category, servings) => {
     try {
-      const menuItem = { item_name: name, item_price: price, item_category: category, current_servings: servings };
+      const menuItem = {
+        item_name: name,
+        item_price: price,
+        item_category: category,
+        current_servings: servings,
+      };
 
       const res = await axios.put(
         `${backendURL}/menu/update-menu-item/${selectedMenuItem.menu_item_id}`,
@@ -97,10 +110,14 @@ const EditMenu = () => {
 
   const deleteMenuItem = async () => {
     try {
-      await axios.put(`${backendURL}/menu/delete-menu-item/${selectedMenuItem.menu_item_id}`);
+      await axios.put(
+        `${backendURL}/menu/delete-menu-item/${selectedMenuItem.menu_item_id}`
+      );
 
       setMenuItems(
-        menuItems.filter((item) => item.menu_item_id !== selectedMenuItem.menu_item_id)
+        menuItems.filter(
+          (item) => item.menu_item_id !== selectedMenuItem.menu_item_id
+        )
       );
 
       closeDeleteModal();
@@ -110,7 +127,7 @@ const EditMenu = () => {
   };
 
   return (
-    <div className="menu-container">
+    <div className="edit-menu-container">
       <PageHeader pageTitle="Edit Menu" />
       <div className="table-outer-container">
         <div className="table-inner-container">
@@ -134,8 +151,16 @@ const EditMenu = () => {
                   <td>{item.item_category}</td>
                   <td>{item.current_servings}</td>
                   <td className="icons-container">
-                    <Icon src="/edit-icon.svg" alt="edit" onClick={() => openEditModal(item)} />
-                    <Icon src="/delete-icon.svg" alt="delete" onClick={() => openDeleteModal(item)} />
+                    <Icon
+                      src="/edit-icon.svg"
+                      alt="edit"
+                      onClick={() => openEditModal(item)}
+                    />
+                    <Icon
+                      src="/delete-icon.svg"
+                      alt="delete"
+                      onClick={() => openDeleteModal(item)}
+                    />
                   </td>
                 </tr>
               ))}
@@ -147,9 +172,15 @@ const EditMenu = () => {
         <Button text="+" onClick={openAddModal} />
       </div>
 
-      {showAddModal && <AddMenuItemModal onCancel={closeAddModal} onAdd={addMenuItem} />}
+      {showAddModal && (
+        <AddMenuItemModal onCancel={closeAddModal} onAdd={addMenuItem} />
+      )}
       {showEditModal && (
-        <EditMenuItemModal onCancel={closeEditModal} onEdit={editMenuItem} menuItem={selectedMenuItem} />
+        <EditMenuItemModal
+          onCancel={closeEditModal}
+          onEdit={editMenuItem}
+          menuItem={selectedMenuItem}
+        />
       )}
       {showDeleteModal && (
         <DeleteModal
