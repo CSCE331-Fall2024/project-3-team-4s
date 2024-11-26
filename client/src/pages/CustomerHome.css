@@ -569,8 +569,45 @@ html {
 }
 
 .checkout {
-  font-size: large;
+  font-size: 24px;
   font-weight: bold;
   background-color: red;
   color: white;
+}
+
+.popup-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+  font-weight: bold;
+  animation: fadein 0.3s, fadeout 0.5s 4.7s;
+  z-index: 10000;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    bottom: 10px;
+  }
+  to {
+    opacity: 1;
+    bottom: 20px;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+    bottom: 20px;
+  }
+  to {
+    opacity: 0;
+    bottom: 10px;
+  }
 }

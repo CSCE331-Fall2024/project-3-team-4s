@@ -8,6 +8,7 @@ import EntreeModal from "../components/EntreeModal";
 import DrinkModal from "../components/DrinkModal";
 import BottomBar from "../components/BottomBar";
 import SauceModal from "../components/SauceModal";
+import PopupNotification from "../components/PopupNotification";
 import { useOrder } from "./OrderContext";
 
 
@@ -82,6 +83,7 @@ const displayOrder = [
 const CustomerHome = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const logo = "/logo.png";
+  const { popupDetails } = useOrder();
 
   const { addToOrder } = useOrder();
   const [menuItems, setMenuItems] = useState([]);
@@ -410,25 +412,25 @@ const CustomerHome = () => {
     
     <div className="background">
 
-    <div className="nav-header">      
+      <div className="nav-header">      
 
-      <h2 className="order-heading">
-        {selectedItem
-          ? `Customize your ${selectedItem.item_name}`
-          : "Choose your meal type to start your order"}
-      </h2>
+        <h2 className="order-heading">
+          {selectedItem
+            ? `Customize your ${selectedItem.item_name}`
+            : "Choose your meal type to start your order"}
+        </h2>
 
-    </div>
+      </div>
 
-    <button className="navbar-button">
-        View Order
-    </button>
+      <button className="navbar-button" onClick={() => navigate('/order')}>
+          View Order
+      </button>
 
-    <button className="navbar-button-2">
-        View Order
-    </button>
+      <button className="navbar-button-2" onClick={() => navigate('/order')}>
+          View Order
+      </button>
 
-      
+      <PopupNotification popupDetails={popupDetails} />
 
       <div className="menu-container">
         {!selectedItem ? (
@@ -486,6 +488,7 @@ const CustomerHome = () => {
               sauce={selectedSauce}
               onClose={closeSauceModal}
               addToOrder={addToOrder}
+              resetSelections = {resetSelections}
             />
           )}
           </div>
@@ -517,6 +520,7 @@ const CustomerHome = () => {
               appetizer={selectedAppetizer}
               onClose={closeAppetizerModal}
               addToOrder={addToOrder}
+              resetSelections={resetSelections}
             />
           </div>
         ) : selectedItem.item_name === "A La Carte Side" ? (
@@ -551,6 +555,7 @@ const CustomerHome = () => {
                 side={selectedSide}
                 onClose={closeSideModal}
                 addToOrder={addToOrder}
+                resetSelections = {resetSelections}
               />
             )}
           </div>
@@ -586,6 +591,7 @@ const CustomerHome = () => {
                 entree={selectedEntree}
                 onClose={closeEntreeModal}
                 addToOrder={addToOrder}
+                resetSelections = {resetSelections}
               />
             )}
           </div>
@@ -621,6 +627,7 @@ const CustomerHome = () => {
                 drink={selectedDrink}
                 onClose={closeDrinkModal}
                 addToOrder={addToOrder}
+                resetSelections = {resetSelections}
               />
             )}
           </div>
