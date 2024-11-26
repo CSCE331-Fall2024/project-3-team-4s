@@ -7,6 +7,7 @@ import reportsRoutes from "./routes/reportsRoutes.js";
 import cashierRoutes from "./routes/cashierRoutes.js";
 import translateRoutes from "./routes/translateRoutes.js";
 import weatherRoutes from "./routes/weatherRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
 
 const app = express(); // Create an Express app
 const port = process.env.PORT || 3000; // Dynamically set the port or default to 3000
@@ -23,6 +24,7 @@ app.use("/reports", reportsRoutes); // Use the reports routes
 app.use("/cashier", cashierRoutes); // Use the cashier routes
 app.use("/translate", translateRoutes); // Use the translate routes
 app.use("/weather", weatherRoutes); // Use the weather routes
+app.use("/menu", menuRoutes); // use the menu routes
 
 console.log("Translate route initialized");
 
