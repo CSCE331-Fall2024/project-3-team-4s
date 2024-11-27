@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link
 
 const OrderPage = () => {
-  const backendURL = "http://localhost:3000"; // Backend URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
@@ -20,7 +20,7 @@ const OrderPage = () => {
       setOrderList(updatedOrderList);
     }
   };
-  
+
   const decrementQuantity = (index) => {
     const updatedOrderList = [...orderList];
     if (updatedOrderList[index] && updatedOrderList[index].quantity > 1) {
@@ -28,10 +28,9 @@ const OrderPage = () => {
       setOrderList(updatedOrderList);
     }
   };
-  
 
-   // Fetch all item data initially
-   useEffect(() => {
+  // Fetch all item data initially
+  useEffect(() => {
     const fetchAllItems = async () => {
       try {
         const response = await axios.get(`${backendURL}/kiosk/items`);
@@ -81,15 +80,15 @@ const OrderPage = () => {
     return prices[name];
   };
 
-
   console.log(orderList);
   const clearOrder = () => {
-    const confirmed = window.confirm("Do you really want to Remove all the items?");
-    if(confirmed){
+    const confirmed = window.confirm(
+      "Do you really want to Remove all the items?"
+    );
+    if (confirmed) {
       setOrderList([]);
       localStorage.removeItem("orderList");
     }
-    
   };
 
   // Fetch all prices initially for items in the order list
@@ -114,51 +113,65 @@ const OrderPage = () => {
 
   const getItemTotalPrice = (item, index) => {
     const itemPrice = prices[item.name] || 0;
-  
+
     // Fetch the category of the item
-    let categoryName = itemData.find((data) => data.item_name === item.name)?.item_category;
-  
+    let categoryName = itemData.find(
+      (data) => data.item_name === item.name
+    )?.item_category;
+
     // Adjust category names for sides/entrees
     if (categoryName === "Side") {
       categoryName = "A La Carte Side";
     } else if (categoryName === "Entree") {
       categoryName = "A La Carte Entree";
     }
-  
+
     const categoryPrice = categoryName ? prices[categoryName] || 0 : 0;
-  
+
     // Special handling for Bowls, Plates, and Bigger Plates
-    if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+    if (
+      item.name === "Bowl" ||
+      item.name === "Plate" ||
+      item.name === "Bigger Plate"
+    ) {
       const sideCount = 1; // All combos have one side
-      const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
-  
+      const entreeCount =
+        item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+
       // Gather sides and entrees associated with this combo
-      const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
-  
+      const sidesAndEntrees = orderList.slice(
+        index + 1,
+        index + 1 + sideCount + entreeCount
+      );
+
       // Calculate the total price of sides and entrees
       const sidesAndEntreesPrice = sidesAndEntrees.reduce((sum, subItem) => {
         const subItemPrice = prices[subItem.name] || 0;
-  
-        let subCategoryName = itemData.find((data) => data.item_name === subItem.name)?.item_category;
+
+        let subCategoryName = itemData.find(
+          (data) => data.item_name === subItem.name
+        )?.item_category;
         if (subCategoryName === "Side") {
           subCategoryName = "A La Carte Side";
         } else if (subCategoryName === "Entree") {
           subCategoryName = "A La Carte Entree";
         }
-  
-        const subCategoryPrice = subCategoryName ? prices[subCategoryName] || 0 : 0;
-  
-        return sum + subItemPrice ;
+
+        const subCategoryPrice = subCategoryName
+          ? prices[subCategoryName] || 0
+          : 0;
+
+        return sum + subItemPrice;
       }, 0);
-  
+
       // Return the total price for the combo, including sides and entrees
       return (itemPrice + categoryPrice + sidesAndEntreesPrice) * item.quantity;
     }
-  
+
     // For regular items, calculate price normally
     return (itemPrice + categoryPrice) * item.quantity;
   };
-  
+
   const imageMap = {
     Bowl: "/bowl.avif",
     Plate: "/plate.avif",
@@ -189,8 +202,10 @@ const OrderPage = () => {
     "Diet Coke": "/Diet_Coke.avif",
     "Mango Guava Flavored Tea": "/Mango_Guava_Flavored_Tea.avif",
     "Peach Lychee Flavored Refresher": "/Peach_Lychee_Flavored_Refresher.avif",
-    "Pomegranate Pineapple Flavored Lemonade": "/Pomegranate_Pineapple_Flavored_Lemonade.avif",
-    "Watermelon Mango Flavored Refresher": "/Watermelon_Mango_Flavored_Refresher.avif",
+    "Pomegranate Pineapple Flavored Lemonade":
+      "/Pomegranate_Pineapple_Flavored_Lemonade.avif",
+    "Watermelon Mango Flavored Refresher":
+      "/Watermelon_Mango_Flavored_Refresher.avif",
     "Barq's Root Beer": "/Barqs_Root_Beer.avif",
     "Fanta Orange": "/Fanta_Orange.avif",
     "Minute Maid Lemonade": "/Minute_Maid_Lemonade.avif",
@@ -204,64 +219,79 @@ const OrderPage = () => {
     "Coke Mexico": "/Coke_Mexico.avif",
     "Coke Zero": "/Coke_Zero.avif",
     Smartwater: "/Smartwater.avif",
-    "Sauces": "/Sauces.png",
+    Sauces: "/Sauces.png",
     "Soy Sauce": "/Soy_Sauce.png",
     "Sweet & Sour Sauce": "/Sweet_&_Sour_Sauce.png",
     "Teriyaki Sauce": "/Teriyaki_Sauce.png",
     "Chili Sauce": "/Chilli_Sauce.png",
-    "Hot Mustard" : "/Hot_Mustard.png",
+    "Hot Mustard": "/Hot_Mustard.png",
     default: "/logo.png", // Default image if no match is found
   };
-  
+
   const getItemImage = (itemName) => {
     return imageMap[itemName] || imageMap.default;
   };
-  
 
   const removeItem = (indexToRemove) => {
     const confirmed = window.confirm("Do you really want to delete this item?");
     if (!confirmed) return;
-  
+
     const updatedOrderList = [...orderList];
-  
+
     // Check if the item is part of a Bowl, Plate, or Bigger Plate combo
     const item = updatedOrderList[indexToRemove];
-  
+
     // If the item is a main combo item, delete it and its sides/entrees
-    if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+    if (
+      item.name === "Bowl" ||
+      item.name === "Plate" ||
+      item.name === "Bigger Plate"
+    ) {
       const sideCount = 1;
-      const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+      const entreeCount =
+        item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
       updatedOrderList.splice(indexToRemove, 1 + sideCount + entreeCount);
     } else {
       // If the item is not part of a combo, check if it belongs to a previous combo
       let mainIndex = -1;
       for (let i = indexToRemove - 1; i >= 0; i--) {
         const prevItem = updatedOrderList[i];
-        if (prevItem.name === "Bowl" || prevItem.name === "Plate" || prevItem.name === "Bigger Plate") {
+        if (
+          prevItem.name === "Bowl" ||
+          prevItem.name === "Plate" ||
+          prevItem.name === "Bigger Plate"
+        ) {
           mainIndex = i;
           break;
         }
       }
-  
+
       if (
         mainIndex !== -1 &&
         indexToRemove > mainIndex &&
-        indexToRemove <= mainIndex + 1 + (updatedOrderList[mainIndex].name === "Bowl" ? 1 : updatedOrderList[mainIndex].name === "Plate" ? 2 : 3)
+        indexToRemove <=
+          mainIndex +
+            1 +
+            (updatedOrderList[mainIndex].name === "Bowl"
+              ? 1
+              : updatedOrderList[mainIndex].name === "Plate"
+              ? 2
+              : 3)
       ) {
         // If the item is part of the combo, remove the whole combo
         const mainItem = updatedOrderList[mainIndex];
         const sideCount = 1;
-        const entreeCount = mainItem.name === "Bowl" ? 1 : mainItem.name === "Plate" ? 2 : 3;
+        const entreeCount =
+          mainItem.name === "Bowl" ? 1 : mainItem.name === "Plate" ? 2 : 3;
         updatedOrderList.splice(mainIndex, 1 + sideCount + entreeCount);
       } else {
         // Otherwise, treat it as a standalone item and remove it
         updatedOrderList.splice(indexToRemove, 1);
       }
     }
-  
+
     setOrderList(updatedOrderList);
   };
-  
 
   const handleCheckout = async () => {
     const confirmed = window.confirm(
@@ -289,7 +319,7 @@ const OrderPage = () => {
         alert("There was an error processing your order. Please try again.");
       }
     }
-    navigate("/"); 
+    navigate("/");
   };
 
   const navigate = useNavigate(); // Initialize the navigate function
@@ -299,29 +329,31 @@ const OrderPage = () => {
 
   const calculateTotalPrice = () => {
     let total = 0;
-  
+
     for (let index = 0; index < orderList.length; index++) {
       const item = orderList[index];
-  
+
       // Add the total price for the item
       total += getItemTotalPrice(item, index);
-  
+
       // Skip over sides and entrees for combos
-      if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+      if (
+        item.name === "Bowl" ||
+        item.name === "Plate" ||
+        item.name === "Bigger Plate"
+      ) {
         const sideCount = 1;
-        const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+        const entreeCount =
+          item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
         index += sideCount + entreeCount; // Adjust index to skip sides/entrees
       }
     }
-  
+
     return total;
   };
-  
-  
 
   return (
     <div className="background">
-
       <h2 className="page-title">Your Current Order</h2>
 
       <div className="container">
@@ -329,7 +361,9 @@ const OrderPage = () => {
           <button className="add-more" onClick={goToCustomerPage}>
             + Add More Items
           </button>
-          <button className="add-more-2" onClick={clearOrder}>Remove All Items</button>
+          <button className="add-more-2" onClick={clearOrder}>
+            Remove All Items
+          </button>
           <h2>Your Order</h2>
 
           {orderList.length > 0 ? (
@@ -338,14 +372,22 @@ const OrderPage = () => {
               for (let index = 0; index < orderList.length; index++) {
                 const item = orderList[index];
 
-                if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+                if (
+                  item.name === "Bowl" ||
+                  item.name === "Plate" ||
+                  item.name === "Bigger Plate"
+                ) {
                   const sideCount = 1;
-                  const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
-                  const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
-                
+                  const entreeCount =
+                    item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+                  const sidesAndEntrees = orderList.slice(
+                    index + 1,
+                    index + 1 + sideCount + entreeCount
+                  );
+
                   const sides = sidesAndEntrees.slice(0, sideCount);
                   const entrees = sidesAndEntrees.slice(sideCount);
-                
+
                   items.push(
                     <div className="order-item" key={index}>
                       <img
@@ -357,9 +399,11 @@ const OrderPage = () => {
                         {/* Name and Price */}
                         <div className="item-row">
                           <span className="item-name">{item.name}</span>
-                          <span className="item-price">${getItemTotalPrice(item).toFixed(2)}</span>
+                          <span className="item-price">
+                            ${getItemTotalPrice(item).toFixed(2)}
+                          </span>
                         </div>
-                
+
                         {/* Sides and Entrees */}
                         <div className="item-sides-entrees">
                           {sides.length > 0 && (
@@ -383,7 +427,7 @@ const OrderPage = () => {
                             </>
                           )}
                         </div>
-                
+
                         {/* Quantity Selector */}
                         <div className="item-row">
                           <button
@@ -393,17 +437,20 @@ const OrderPage = () => {
                             Remove
                           </button>
                           <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>-</button>
+                            <button onClick={() => decrementQuantity(index)}>
+                              -
+                            </button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>+</button>
+                            <button onClick={() => incrementQuantity(index)}>
+                              +
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
                   );
                   index += sideCount + entreeCount; // Skip over sides and entrees in the order list
-                }
-                 else {
+                } else {
                   items.push(
                     <div className="order-item" key={index}>
                       <img
@@ -414,7 +461,9 @@ const OrderPage = () => {
                       <div className="item-details">
                         <div className="item-row">
                           <span className="item-name">{item.name}</span>
-                          <span className="item-price">${getItemTotalPrice(item).toFixed(2)}</span>
+                          <span className="item-price">
+                            ${getItemTotalPrice(item).toFixed(2)}
+                          </span>
                         </div>
                         <div className="item-row">
                           <button
@@ -424,9 +473,13 @@ const OrderPage = () => {
                             Remove
                           </button>
                           <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>-</button>
+                            <button onClick={() => decrementQuantity(index)}>
+                              -
+                            </button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>+</button>
+                            <button onClick={() => incrementQuantity(index)}>
+                              +
+                            </button>
                           </div>
                         </div>
                       </div>

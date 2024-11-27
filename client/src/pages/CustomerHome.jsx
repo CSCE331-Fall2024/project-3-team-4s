@@ -11,64 +11,140 @@ import SauceModal from "../components/SauceModal";
 import PopupNotification from "../components/PopupNotification";
 import { useOrder } from "./OrderContext";
 
-
 const imageMap = {
   Bowl: { image: "/bowl.avif", description: "1 Side & 1 Entree" },
   Plate: { image: "/plate.avif", description: "1 Side & 2 Entree" },
-  "Bigger Plate": { image: "/Bigger_Plate.avif", description: "1 Side & 3 Entree" },
-  Appetizer: { image: "/Appetizer.avif", description: "Choose from a variety of appetizers." },
-  "A La Carte Side": { image: "/A_La_Carte_Side.avif", description: "Side options available à la carte." },
-  "A La Carte Entree": { image: "/A_La_Carte_Entree.avif", description: "Individual entrees served à la carte." },
-  Drinks: { image: "/Drink.avif", description: "A selection of refreshing beverages." },
+  "Bigger Plate": {
+    image: "/Bigger_Plate.avif",
+    description: "1 Side & 3 Entree",
+  },
+  Appetizer: {
+    image: "/Appetizer.avif",
+    description: "Choose from a variety of appetizers.",
+  },
+  "A La Carte Side": {
+    image: "/A_La_Carte_Side.avif",
+    description: "Side options available à la carte.",
+  },
+  "A La Carte Entree": {
+    image: "/A_La_Carte_Entree.avif",
+    description: "Individual entrees served à la carte.",
+  },
+  Drinks: {
+    image: "/Drink.avif",
+    description: "A selection of refreshing beverages.",
+  },
   "Chow Mein": { image: "/Chow_Mein.png", description: "600 cal" },
   "Super Greens": { image: "/Super_Greens.png", description: "130 cal" },
   "White Rice": { image: "/White_Rice.png", description: "520 cal" },
   "Fried Rice": { image: "/Fried_Rice.png", description: "620 cal" },
   "Beijing Beef": { image: "/Beijing_Beef.png", description: "480 cal" },
-  "The Original Orange Chicken": { image: "/The_Original_Orange_Chicken.png", description: "510 cal" },
+  "The Original Orange Chicken": {
+    image: "/The_Original_Orange_Chicken.png",
+    description: "510 cal",
+  },
   "Broccoli Beef": { image: "/Broccoli_Beef.png", description: "150 cal" },
-  "Mushroom Chicken": { image: "/Mushroom_Chicken.png", description: "220 cal" },
-  "Grilled Teriyaki Chicken": { image: "/Grilled_Teriyaki_Chicken.png", description: "275 cal" },
-  "Beyond Original Orange Chicken": { image: "/Beyond_Original_Orange_Chicken.png", description: "+1.50 | 440 cal" },
-  "Black Pepper Sirloin Steak": { image: "/Black_Pepper_Sirloin_Steak.png", description: "+1.50 | 180 cal" },
-  "Honey Sesame Chicken Breast": { image: "/Honey_Sesame_Chicken_Breast.png", description: "340 cal" },
-  "Honey Walnut Shrimp": { image: "/Honey_Walnut_Shrimp.png", description: "+1.50 | 430 cal" },
-  "Hot Ones Blazing Bourbon Chicken": { image: "/Hot_Ones_Blazing_Bourbon_Chicken.png", description: "400 cal" },
-  "Kung Pao Chicken": { image: "/Kung_Pao_Chicken.png", description: "320 cal" },
-  "String Bean Chicken Breast": { image: "/String_Bean_Chicken_Breast.png", description: "210 cal" },
-  "Sweet Fire Chicken Breast": { image: "/Sweet_Fire_Chicken_Breast.png", description: "380 cal" },
+  "Mushroom Chicken": {
+    image: "/Mushroom_Chicken.png",
+    description: "220 cal",
+  },
+  "Grilled Teriyaki Chicken": {
+    image: "/Grilled_Teriyaki_Chicken.png",
+    description: "275 cal",
+  },
+  "Beyond Original Orange Chicken": {
+    image: "/Beyond_Original_Orange_Chicken.png",
+    description: "+1.50 | 440 cal",
+  },
+  "Black Pepper Sirloin Steak": {
+    image: "/Black_Pepper_Sirloin_Steak.png",
+    description: "+1.50 | 180 cal",
+  },
+  "Honey Sesame Chicken Breast": {
+    image: "/Honey_Sesame_Chicken_Breast.png",
+    description: "340 cal",
+  },
+  "Honey Walnut Shrimp": {
+    image: "/Honey_Walnut_Shrimp.png",
+    description: "+1.50 | 430 cal",
+  },
+  "Hot Ones Blazing Bourbon Chicken": {
+    image: "/Hot_Ones_Blazing_Bourbon_Chicken.png",
+    description: "400 cal",
+  },
+  "Kung Pao Chicken": {
+    image: "/Kung_Pao_Chicken.png",
+    description: "320 cal",
+  },
+  "String Bean Chicken Breast": {
+    image: "/String_Bean_Chicken_Breast.png",
+    description: "210 cal",
+  },
+  "Sweet Fire Chicken Breast": {
+    image: "/Sweet_Fire_Chicken_Breast.png",
+    description: "380 cal",
+  },
   "Chicken Egg Roll": { image: "/Chicken_Egg_Roll.avif", description: "" },
   "Veggie Spring Roll": { image: "/Veggie_Spring_Roll.avif", description: "" },
-  "Cream Cheese Rangoon": { image: "/Cream_Cheese_Rangoon.avif", description: "" },
+  "Cream Cheese Rangoon": {
+    image: "/Cream_Cheese_Rangoon.avif",
+    description: "",
+  },
   "Apple Pie Roll": { image: "/Apple_Pie_Roll.avif", description: "" },
   "Dr Pepper": { image: "/Dr_Pepper.avif", description: "" },
   "Coca Cola": { image: "/Coca_Cola.avif", description: "" },
   "Diet Coke": { image: "/Diet_Coke.avif", description: "" },
-  "Mango Guava Flavored Tea": { image: "/Mango_Guava_Flavored_Tea.avif", description: "" },
-  "Peach Lychee Flavored Refresher": { image: "/Peach_Lychee_Flavored_Refresher.avif", description: "" },
-  "Pomegranate Pineapple Flavored Lemonade": { image: "/Pomegranate_Pineapple_Flavored_Lemonade.avif", description: "" },
-  "Watermelon Mango Flavored Refresher": { image: "/Watermelon_Mango_Flavored_Refresher.avif", description: "" },
+  "Mango Guava Flavored Tea": {
+    image: "/Mango_Guava_Flavored_Tea.avif",
+    description: "",
+  },
+  "Peach Lychee Flavored Refresher": {
+    image: "/Peach_Lychee_Flavored_Refresher.avif",
+    description: "",
+  },
+  "Pomegranate Pineapple Flavored Lemonade": {
+    image: "/Pomegranate_Pineapple_Flavored_Lemonade.avif",
+    description: "",
+  },
+  "Watermelon Mango Flavored Refresher": {
+    image: "/Watermelon_Mango_Flavored_Refresher.avif",
+    description: "",
+  },
   "Barqs Root Beer": { image: "/Barqs_Root_Beer.avif", description: "" },
   "Fanta Orange": { image: "/Fanta_Orange.avif", description: "" },
-  "Minute Maid Lemonade": { image: "/Minute_Maid_Lemonade.avif", description: "" },
-  "Powerade Mountain Berry Blast": { image: "/Powerade_Mountain_Berry_Blast.avif", description: "" },
+  "Minute Maid Lemonade": {
+    image: "/Minute_Maid_Lemonade.avif",
+    description: "",
+  },
+  "Powerade Mountain Berry Blast": {
+    image: "/Powerade_Mountain_Berry_Blast.avif",
+    description: "",
+  },
   Sprite: { image: "/Sprite.avif", description: "" },
   "Coca Cola Cherry": { image: "/Coca_Cola_Cherry.avif", description: "" },
-  "Fuze Raspberry Iced Tea": { image: "/Fuze_Raspberry_Iced_Tea.avif", description: "" },
-  "Powerade Fruit Punch": { image: "/Powerade_Fruit_Punch.avif", description: "" },
+  "Fuze Raspberry Iced Tea": {
+    image: "/Fuze_Raspberry_Iced_Tea.avif",
+    description: "",
+  },
+  "Powerade Fruit Punch": {
+    image: "/Powerade_Fruit_Punch.avif",
+    description: "",
+  },
   Dasani: { image: "/Dasani.avif", description: "" },
-  "Minute Maid Apple Juice": { image: "/Minute_Maid_Apple_Juice.avif", description: "" },
+  "Minute Maid Apple Juice": {
+    image: "/Minute_Maid_Apple_Juice.avif",
+    description: "",
+  },
   "Coke Mexico": { image: "/Coke_Mexico.avif", description: "" },
   "Coke Zero": { image: "/Coke_Zero.avif", description: "" },
   Smartwater: { image: "/Smartwater.avif", description: "" },
-  "Sauces": { image: "/Soy_Sauce.png", description: "" },
+  Sauces: { image: "/Soy_Sauce.png", description: "" },
   "Soy Sauce": { image: "/Soy_Sauce.png", description: "" },
   "Sweet & Sour Sauce": { image: "/Sweet_&_Sour_Sauce.png", description: "" },
   "Chili Sauce": { image: "/Chilli_Sauce.png", description: "" },
   "Teriyaki Sauce": { image: "/Teriyaki_Sauce.png", description: "" },
   "Hot Mustard": { image: "/Hot_Mustard.png", description: "" },
 };
-
 
 const displayOrder = [
   "Bowl",
@@ -81,8 +157,8 @@ const displayOrder = [
 ];
 
 const CustomerHome = () => {
-  const backendURL = "http://localhost:3000"; // URL for the backend
-  const URL = import.meta.env.VITE_BACKEND_URL
+  // const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const logo = "/logo.png";
   const { popupDetails } = useOrder();
 
@@ -145,7 +221,6 @@ const CustomerHome = () => {
     };
     fetchMenuItems();
   }, []);
-
 
   // Fetch sauces from backend
   const fetchSauces = async () => {
@@ -366,9 +441,9 @@ const CustomerHome = () => {
   const handleDrinkClick = (drink, event) => {
     const cursorX = event.clientX;
     const cursorY = event.clientY;
-  
+
     let price;
-  
+
     if (drink.item_category === "Bottle") {
       price = drink.item_price;
     } else if (drink.item_category === "Drink") {
@@ -378,17 +453,16 @@ const CustomerHome = () => {
     } else {
       price = 0;
     }
-  
+
     setSelectedDrink({
       name: drink.item_name,
       image: imageMap[drink.item_name]?.image,
       price: price,
       position: { x: cursorX, y: cursorY }, // Pass the cursor position
     });
-  
+
     setIsDrinkModalOpen(true);
   };
-  
 
   const closeDrinkModal = () => {
     setSelectedDrink(null);
@@ -405,7 +479,7 @@ const CustomerHome = () => {
     setSelectedEntrees([]); // Reset selected entrees
     resetSelections();
     setSauces([]);
-  };  
+  };
 
   const sortedItems = [...menuItems].sort(
     (a, b) =>
@@ -413,25 +487,21 @@ const CustomerHome = () => {
   );
 
   return (
-    
     <div className="background">
-
-      <div className="nav-header">      
-
+      <div className="nav-header">
         <h2 className="order-heading">
           {selectedItem
             ? `Customize your ${selectedItem.item_name}`
             : "Choose your meal type to start your order"}
         </h2>
-
       </div>
 
-      <button className="navbar-button" onClick={() => navigate('/order')}>
-          View Order
+      <button className="navbar-button" onClick={() => navigate("/order")}>
+        View Order
       </button>
 
-      <button className="navbar-button-2" onClick={() => navigate('/order')}>
-          View Order
+      <button className="navbar-button-2" onClick={() => navigate("/order")}>
+        View Order
       </button>
 
       <PopupNotification popupDetails={popupDetails} />
@@ -466,7 +536,7 @@ const CustomerHome = () => {
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Choose Your Sauce</h3>
             </div>
@@ -487,13 +557,12 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            
           </div>
         ) : selectedItem.item_name === "Appetizer" ? (
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Choose Your Appetizer</h3>
             </div>
@@ -524,7 +593,7 @@ const CustomerHome = () => {
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Choose Your Side</h3>
             </div>
@@ -552,7 +621,7 @@ const CustomerHome = () => {
                 side={selectedSide}
                 onClose={closeSideModal}
                 addToOrder={addToOrder}
-                resetSelections = {resetSelections}
+                resetSelections={resetSelections}
               />
             )}
           </div>
@@ -560,7 +629,7 @@ const CustomerHome = () => {
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Choose Your Entree</h3>
             </div>
@@ -583,13 +652,12 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Choose Your Drink</h3>
             </div>
@@ -598,7 +666,7 @@ const CustomerHome = () => {
                 <div
                   key={drink.menu_item_id}
                   className="menu-item"
-                  onClick={(eve) => handleDrinkClick(drink,event)}
+                  onClick={(eve) => handleDrinkClick(drink, event)}
                 >
                   <img
                     src={imageMap[drink.item_name]?.image || logo}
@@ -612,13 +680,12 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            
           </div>
         ) : (
           <div className="steps-container">
             <div className="steps-header">
               <button onClick={handleBackToMenu} className="back-button">
-               Go Back
+                Go Back
               </button>
               <h3>Step 1 : Choose Your Side</h3>
             </div>
@@ -650,7 +717,9 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            <br></br><br></br><br></br>
+            <br></br>
+            <br></br>
+            <br></br>
             <h3>Step 2: Choose Your Entree</h3>
             <br></br>
             <div className="entrees-container">
@@ -700,31 +769,31 @@ const CustomerHome = () => {
           />
         )}
 
-{isDrinkModalOpen && selectedDrink && (
-              <DrinkModal
-                drink={selectedDrink}
-                onClose={closeDrinkModal}
-                addToOrder={addToOrder}
-                resetSelections = {resetSelections}
-              />
-            )}
+      {isDrinkModalOpen && selectedDrink && (
+        <DrinkModal
+          drink={selectedDrink}
+          onClose={closeDrinkModal}
+          addToOrder={addToOrder}
+          resetSelections={resetSelections}
+        />
+      )}
 
-{isEntreeModalOpen && selectedEntree && (
-              <EntreeModal
-                entree={selectedEntree}
-                onClose={closeEntreeModal}
-                addToOrder={addToOrder}
-                resetSelections = {resetSelections}
-              />
-            )}
-            {isSauceModalOpen && selectedSauce && (
-            <SauceModal
-              sauce={selectedSauce}
-              onClose={closeSauceModal}
-              addToOrder={addToOrder}
-              resetSelections = {resetSelections}
-            />
-          )}
+      {isEntreeModalOpen && selectedEntree && (
+        <EntreeModal
+          entree={selectedEntree}
+          onClose={closeEntreeModal}
+          addToOrder={addToOrder}
+          resetSelections={resetSelections}
+        />
+      )}
+      {isSauceModalOpen && selectedSauce && (
+        <SauceModal
+          sauce={selectedSauce}
+          onClose={closeSauceModal}
+          addToOrder={addToOrder}
+          resetSelections={resetSelections}
+        />
+      )}
     </div>
   );
 };
