@@ -3,17 +3,17 @@ import { useOrder } from '../pages/OrderContext';
 import '../pages/CustomerHome.css';
 
 
-const AppetizerModal = ({ appetizer, onClose, resetSelections }) => {
+const SauceModal = ({ sauce, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
-  if (!appetizer) return null;
+  if (!sauce) return null;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
-    addToOrder(appetizer.name, quantity);
+    addToOrder(sauce.name, quantity);
     onClose(); 
     resetSelections();
   };
@@ -22,9 +22,9 @@ const AppetizerModal = ({ appetizer, onClose, resetSelections }) => {
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <div className='modal-name'><h2>{appetizer.name} </h2></div>
-        <img src={appetizer.image} alt={appetizer.name} className="modal-image" />  
-        <div className='modal-name'><h2 className="appetizer-price">${appetizer.price.toFixed(2)}</h2></div>
+        <div className='modal-name'><h2>{sauce.name} </h2></div>
+        <img src={sauce.image} alt={sauce.name} className="modal-image" />  
+        <div className='modal-name'><h2 className="appetizer-price">${sauce.price.toFixed(2)}</h2></div>
 
         {/* Quantity Selector */}
         <div className="quantity-selector">
@@ -39,4 +39,4 @@ const AppetizerModal = ({ appetizer, onClose, resetSelections }) => {
   );
 };
 
-export default AppetizerModal;
+export default SauceModal;

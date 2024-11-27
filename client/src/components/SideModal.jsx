@@ -4,7 +4,7 @@ import '../pages/CustomerHome.css';
 
 
 
-const SideModal = ({ side, onClose, }) =>{
+const SideModal = ({ side, onClose,resetSelections }) =>{
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -16,17 +16,18 @@ const SideModal = ({ side, onClose, }) =>{
   const handleAddToOrder = () => {
     addToOrder(side.name, quantity);
     onClose(); // Close the modal after adding to the order
+    resetSelections(); // Reset the selections in the parent component
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{side.name}</h2>
+        <div className='modal-name'><h2>{side.name}</h2></div>
         <img src={side.image} alt={side.name} className="modal-image" />
         
 
-        <h2 className='appetizer-price'>${side.price.toFixed(2)}</h2>
+        <div className='modal-name'><h2 className='appetizer-price'>${side.price.toFixed(2)}</h2></div>
         {/* Quantity Selector */}
         <div className="quantity-selector">
           <button onClick={decrementQuantity}>-</button>

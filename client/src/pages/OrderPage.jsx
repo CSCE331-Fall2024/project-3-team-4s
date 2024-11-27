@@ -1,73 +1,74 @@
 import React, { useEffect, useState } from "react";
 import "./OrderPage.css";
 import { useOrder } from "./OrderContext";
-import Bowl from "../../public/bowl.avif";
-import Plate from "../../public/plate.avif";
-import Bigger_Plate from "../../public/Bigger_Plate.avif";
-import logo from "../../public/logo.png";
-import Chow_Mein from "../../public/Chow_Mein.png";
-import Super_Greens from "../../public/Super_Greens.png";
-import White_Rice from "../../public/White_Rice.png";
-import Fried_Rice from "../../public/Fried_Rice.png";
-import Beijing_Beef from "../../public/Beijing_Beef.png";
-import The_Original_Orange_Chicken from "../../public/The_Original_Orange_Chicken.png";
-import Broccoli_Beef from "../../public/Broccoli_Beef.png";
-import Mushroom_Chicken from "../../public/Mushroom_Chicken.png";
-import Grilled_Teriyaki_Chicken from "../../public/Grilled_Teriyaki_Chicken.png";
-import Beyond_Original_Orange_Chicken from "../../public/Beyond_Original_Orange_Chicken.png";
-import Black_Pepper_Sirloin_Steak from "../../public/Black_Pepper_Sirloin_Steak.png";
-import Honey_Sesame_Chicken_Breast from "../../public/Honey_Sesame_Chicken_Breast.png";
-import Honey_Walnut_Shrimp from "../../public/Honey_Walnut_Shrimp.png";
-import Hot_Ones_Blazing_Bourbon_Chicken from "../../public/Hot_Ones_Blazing_Bourbon_Chicken.png";
-import Kung_Pao_Chicken from "../../public/Kung_Pao_Chicken.png";
-import String_Bean_Chicken_Breast from "../../public/String_Bean_Chicken_Breast.png";
-import Sweet_Fire_Chicken_Breast from "../../public/Sweet_Fire_Chicken_Breast.png";
-import Chicken_Egg_Roll from "../../public/Chicken_Egg_Roll.avif";
-import Veggie_Spring_Roll from "../../public/Veggie_Spring_Roll.avif";
-import Cream_Cheese_Rangoon from "../../public/Cream_Cheese_Rangoon.avif";
-import Apple_Pie_Roll from "../../public/Apple_Pie_Roll.avif";
-import Dr_Pepper from "../../public/Dr_Pepper.avif";
-import Coca_Cola from "../../public/Coca_Cola.avif";
-import Diet_Coke from "../../public/Diet_Coke.avif";
-import Mango_Guava_Flavored_Tea from "../../public/Mango_Guava_Flavored_Tea.avif";
-import Peach_Lychee_Flavored_Refresher from "../../public/Peach_Lychee_Flavored_Refresher.avif";
-import Pomegranate_Pineapple_Flavored_Lemonade from "../../public/Pomegranate_Pineapple_Flavored_Lemonade.avif";
-import Watermelon_Mango_Flavored_Refresher from "../../public/Watermelon_Mango_Flavored_Refresher.avif";
-import Barqs_Root_Beer from "../../public/Barqs_Root_Beer.avif";
-import Fanta_Orange from "../../public/Fanta_Orange.avif";
-import Minute_Maid_Lemonade from "../../public/Minute_Maid_Lemonade.avif";
-import Powerade_Mountain_Berry_Blast from "../../public/Powerade_Mountain_Berry_Blast.avif";
-import Sprite from "../../public/Sprite.avif";
-import Coca_Cola_Cherry from "../../public/Coca_Cola_Cherry.avif";
-import Fuze_Raspberry_Iced_Tea from "../../public/Fuze_Raspberry_Iced_Tea.avif";
-import Powerade_Fruit_Punch from "../../public/Powerade_Fruit_Punch.avif";
-import Dasani from "../../public/Dasani.avif";
-import Minute_Maid_Apple_Juice from "../../public/Minute_Maid_Apple_Juice.avif";
-import Coke_Mexico from "../../public/Coke_Mexico.avif";
-import Coke_Zero from "../../public/Coke_Zero.avif";
-import Smartwater from "../../public/Smartwater.avif";
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { Link } from "react-router-dom"; // Import Link
+
 const OrderPage = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000"; // Backend URL
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
-  const [categoryPrices, setCategoryPrices] = useState({}); // Cache for category prices
+  const [itemData, setItemData] = useState([]); // Cache for fetched item data
+
+  const incrementQuantity = (index) => {
+    const updatedOrderList = [...orderList];
+    if (updatedOrderList[index]) {
+      updatedOrderList[index].quantity += 1;
+      setOrderList(updatedOrderList);
+    }
+  };
+  
+  const decrementQuantity = (index) => {
+    const updatedOrderList = [...orderList];
+    if (updatedOrderList[index] && updatedOrderList[index].quantity > 1) {
+      updatedOrderList[index].quantity -= 1;
+      setOrderList(updatedOrderList);
+    }
+  };
+  
+
+   // Fetch all item data initially
+   useEffect(() => {
+    const fetchAllItems = async () => {
+      try {
+        const response = await axios.get(`${backendURL}/kiosk/items`);
+        setItemData(response.data); // Assuming response.data is an array of item objects
+      } catch (error) {
+        console.error("Error fetching item data:", error);
+      }
+    };
+    fetchAllItems();
+  }, []);
+
+  // Populate prices cache
+  useEffect(() => {
+    const cachePrices = () => {
+      const newPrices = {};
+      itemData.forEach((item) => {
+        if (item.item_name) {
+          newPrices[item.item_name] = item.item_price || 0;
+        }
+      });
+      setPrices(newPrices);
+    };
+    if (itemData.length > 0) {
+      cachePrices();
+    }
+  }, [itemData]);
 
   // Fetch item or category price
-  const fetchPrice = async (name) => {
+  const fetchPrice = async (name, category = null) => {
     if (!prices[name]) {
-      // Cache lookup for both item and category names
       try {
         const response = await axios.get(`${backendURL}/kiosk/prices`, {
           params: { itemName: name },
         });
-        console.log(`Fetched price for ${name}:`, response.data.price); // Log the fetched price
+        console.log(`Fetched price for ${name}:`, response.data.price);
         setPrices((prev) => ({ ...prev, [name]: response.data.price }));
+
         return response.data.price;
       } catch (error) {
         console.error(
@@ -80,10 +81,15 @@ const OrderPage = () => {
     return prices[name];
   };
 
+
   console.log(orderList);
   const clearOrder = () => {
-    setOrderList([]);
-    localStorage.removeItem("orderList");
+    const confirmed = window.confirm("Do you really want to Remove all the items?");
+    if(confirmed){
+      setOrderList([]);
+      localStorage.removeItem("orderList");
+    }
+    
   };
 
   // Fetch all prices initially for items in the order list
@@ -92,12 +98,11 @@ const OrderPage = () => {
       const newPrices = {};
       for (const item of orderList) {
         // Fetch individual item price
-        if (!prices[item.name]) {
-          const price = await fetchPrice(item.name);
-          newPrices[item.name] = price;
-        }
+        const itemPrice = await fetchPrice(item.name, item.category);
+        newPrices[item.name] = itemPrice;
+
         // Fetch category price (if category exists in the database as an item)
-        if (item.category && !prices[item.category]) {
+        if (item.category) {
           const categoryPrice = await fetchPrice(item.category);
           newPrices[item.category] = categoryPrice;
         }
@@ -107,124 +112,156 @@ const OrderPage = () => {
     fetchAllPrices();
   }, [orderList]);
 
-  // Calculate total price for an item with category price if applicable
-  const getItemTotalPrice = (item) => {
+  const getItemTotalPrice = (item, index) => {
     const itemPrice = prices[item.name] || 0;
-    const categoryPrice = prices[item.category] || 0; // Use category name as key
+  
+    // Fetch the category of the item
+    let categoryName = itemData.find((data) => data.item_name === item.name)?.item_category;
+  
+    // Adjust category names for sides/entrees
+    if (categoryName === "Side") {
+      categoryName = "A La Carte Side";
+    } else if (categoryName === "Entree") {
+      categoryName = "A La Carte Entree";
+    }
+  
+    const categoryPrice = categoryName ? prices[categoryName] || 0 : 0;
+  
+    // Special handling for Bowls, Plates, and Bigger Plates
+    if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+      const sideCount = 1; // All combos have one side
+      const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+  
+      // Gather sides and entrees associated with this combo
+      const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
+  
+      // Calculate the total price of sides and entrees
+      const sidesAndEntreesPrice = sidesAndEntrees.reduce((sum, subItem) => {
+        const subItemPrice = prices[subItem.name] || 0;
+  
+        let subCategoryName = itemData.find((data) => data.item_name === subItem.name)?.item_category;
+        if (subCategoryName === "Side") {
+          subCategoryName = "A La Carte Side";
+        } else if (subCategoryName === "Entree") {
+          subCategoryName = "A La Carte Entree";
+        }
+  
+        const subCategoryPrice = subCategoryName ? prices[subCategoryName] || 0 : 0;
+  
+        return sum + subItemPrice ;
+      }, 0);
+  
+      // Return the total price for the combo, including sides and entrees
+      return (itemPrice + categoryPrice + sidesAndEntreesPrice) * item.quantity;
+    }
+  
+    // For regular items, calculate price normally
     return (itemPrice + categoryPrice) * item.quantity;
   };
-
-  // Calculate total price for main items with sides and entrees
-  const getTotalPrice = (item, sidesAndEntrees) => {
-    const mainItemPrice = getItemTotalPrice(item);
-    const sidesAndEntreesPrice = sidesAndEntrees.reduce(
-      (sum, subItem) => sum + getItemTotalPrice(subItem),
-      0
-    );
-    return (mainItemPrice + sidesAndEntreesPrice).toFixed(2);
+  
+  const imageMap = {
+    Bowl: "/bowl.avif",
+    Plate: "/plate.avif",
+    "Bigger Plate": "/Bigger_Plate.avif",
+    "Chow Mein": "/Chow_Mein.png",
+    "Super Greens": "/Super_Greens.png",
+    "White Rice": "/White_Rice.png",
+    "Fried Rice": "/Fried_Rice.png",
+    "Beijing Beef": "/Beijing_Beef.png",
+    "The Original Orange Chicken": "/The_Original_Orange_Chicken.png",
+    "Broccoli Beef": "/Broccoli_Beef.png",
+    "Mushroom Chicken": "/Mushroom_Chicken.png",
+    "Grilled Teriyaki Chicken": "/Grilled_Teriyaki_Chicken.png",
+    "Beyond Original Orange Chicken": "/Beyond_Original_Orange_Chicken.png",
+    "Black Pepper Sirloin Steak": "/Black_Pepper_Sirloin_Steak.png",
+    "Honey Sesame Chicken Breast": "/Honey_Sesame_Chicken_Breast.png",
+    "Honey Walnut Shrimp": "/Honey_Walnut_Shrimp.png",
+    "Hot Ones Blazing Bourbon Chicken": "/Hot_Ones_Blazing_Bourbon_Chicken.png",
+    "Kung Pao Chicken": "/Kung_Pao_Chicken.png",
+    "String Bean Chicken Breast": "/String_Bean_Chicken_Breast.png",
+    "Sweet Fire Chicken Breast": "/Sweet_Fire_Chicken_Breast.png",
+    "Chicken Egg Roll": "/Chicken_Egg_Roll.avif",
+    "Veggie Spring Roll": "/Veggie_Spring_Roll.avif",
+    "Cream Cheese Rangoon": "/Cream_Cheese_Rangoon.avif",
+    "Apple Pie Roll": "/Apple_Pie_Roll.avif",
+    "Dr Pepper": "/Dr_Pepper.avif",
+    "Coca Cola": "/Coca_Cola.avif",
+    "Diet Coke": "/Diet_Coke.avif",
+    "Mango Guava Flavored Tea": "/Mango_Guava_Flavored_Tea.avif",
+    "Peach Lychee Flavored Refresher": "/Peach_Lychee_Flavored_Refresher.avif",
+    "Pomegranate Pineapple Flavored Lemonade": "/Pomegranate_Pineapple_Flavored_Lemonade.avif",
+    "Watermelon Mango Flavored Refresher": "/Watermelon_Mango_Flavored_Refresher.avif",
+    "Barq's Root Beer": "/Barqs_Root_Beer.avif",
+    "Fanta Orange": "/Fanta_Orange.avif",
+    "Minute Maid Lemonade": "/Minute_Maid_Lemonade.avif",
+    "Powerade Mountain Berry Blast": "/Powerade_Mountain_Berry_Blast.avif",
+    Sprite: "/Sprite.avif",
+    "Coca Cola Cherry": "/Coca_Cola_Cherry.avif",
+    "Fuze Raspberry Iced Tea": "/Fuze_Raspberry_Iced_Tea.avif",
+    "Powerade Fruit Punch": "/Powerade_Fruit_Punch.avif",
+    Dasani: "/Dasani.avif",
+    "Minute Maid Apple Juice": "/Minute_Maid_Apple_Juice.avif",
+    "Coke Mexico": "/Coke_Mexico.avif",
+    "Coke Zero": "/Coke_Zero.avif",
+    Smartwater: "/Smartwater.avif",
+    "Sauces": "/Sauces.png",
+    "Soy Sauce": "/Soy_Sauce.png",
+    "Sweet & Sour Sauce": "/Sweet_&_Sour_Sauce.png",
+    "Teriyaki Sauce": "/Teriyaki_Sauce.png",
+    "Chili Sauce": "/Chilli_Sauce.png",
+    "Hot Mustard" : "/Hot_Mustard.png",
+    default: "/logo.png", // Default image if no match is found
   };
-
+  
   const getItemImage = (itemName) => {
-    switch (itemName) {
-      case "Broccoli Beef":
-        return Broccoli_Beef;
-      case "Super Greens":
-        return Super_Greens;
-      case "White Rice":
-        return White_Rice;
-      case "Fried Rice":
-        return Fried_Rice;
-      case "Beijing Beef":
-        return Beijing_Beef;
-      case "The Original Orange Chicken":
-        return The_Original_Orange_Chicken;
-      case "Mushroom Chicken":
-        return Mushroom_Chicken;
-      case "Grilled Teriyaki Chicken":
-        return Grilled_Teriyaki_Chicken;
-      case "Beyond Original Orange Chicken":
-        return Beyond_Original_Orange_Chicken;
-      case "Black Pepper Sirloin Steak":
-        return Black_Pepper_Sirloin_Steak;
-      case "Honey Sesame Chicken Breast":
-        return Honey_Sesame_Chicken_Breast;
-      case "Honey Walnut Shrimp":
-        return Honey_Walnut_Shrimp;
-      case "Hot Ones Blazing Bourbon Chicken":
-        return Hot_Ones_Blazing_Bourbon_Chicken;
-      case "Kung Pao Chicken":
-        return Kung_Pao_Chicken;
-      case "String Bean Chicken Breast":
-        return String_Bean_Chicken_Breast;
-      case "Sweet Fire Chicken Breast":
-        return Sweet_Fire_Chicken_Breast;
-      case "Chicken Egg Roll":
-        return Chicken_Egg_Roll;
-      case "Veggie Spring Roll":
-        return Veggie_Spring_Roll;
-      case "Cream Cheese Rangoon":
-        return Cream_Cheese_Rangoon;
-      case "Apple Pie Roll":
-        return Apple_Pie_Roll;
-      case "Dr Pepper":
-        return Dr_Pepper;
-      case "Coca Cola":
-        return Coca_Cola;
-      case "Diet Coke":
-        return Diet_Coke;
-      case "Mango Guava Flavored Tea":
-        return Mango_Guava_Flavored_Tea;
-      case "Peach Lychee Flavored Refresher":
-        return Peach_Lychee_Flavored_Refresher;
-      case "Pomegranate Pineapple Flavored Lemonade":
-        return Pomegranate_Pineapple_Flavored_Lemonade;
-      case "Watermelon Mango Flavored Refresher":
-        return Watermelon_Mango_Flavored_Refresher;
-      case "Barq's Root Beer":
-        return Barqs_Root_Beer;
-      case "Fanta Orange":
-        return Fanta_Orange;
-      case "Minute Maid Lemonade":
-        return Minute_Maid_Lemonade;
-      case "Powerade Mountain Berry Blast":
-        return Powerade_Mountain_Berry_Blast;
-      case "Sprite":
-        return Sprite;
-      case "Coca Cola Cherry":
-        return Coca_Cola_Cherry;
-      case "Fuze Raspberry Iced Tea":
-        return Fuze_Raspberry_Iced_Tea;
-      case "Powerade Fruit Punch":
-        return Powerade_Fruit_Punch;
-      case "Dasani":
-        return Dasani;
-      case "Minute Maid Apple Juice":
-        return Minute_Maid_Apple_Juice;
-      case "Coke Mexico":
-        return Coke_Mexico;
-      case "Coke Zero":
-        return Coke_Zero;
-      case "Smartwater":
-        return Smartwater;
-      case "Chow Mein":
-        return Chow_Mein;
-      case "Bigger Plate":
-        return Bigger_Plate;
-      case "Plate":
-        return Plate;
-      case "Bowl":
-        return Bowl;
-      default:
-        return logo; // default image if item not found
-    }
+    return imageMap[itemName] || imageMap.default;
   };
+  
 
   const removeItem = (indexToRemove) => {
-    const updatedOrderList = orderList.filter(
-      (_, index) => index !== indexToRemove
-    );
+    const confirmed = window.confirm("Do you really want to delete this item?");
+    if (!confirmed) return;
+  
+    const updatedOrderList = [...orderList];
+  
+    // Check if the item is part of a Bowl, Plate, or Bigger Plate combo
+    const item = updatedOrderList[indexToRemove];
+  
+    // If the item is a main combo item, delete it and its sides/entrees
+    if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+      const sideCount = 1;
+      const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+      updatedOrderList.splice(indexToRemove, 1 + sideCount + entreeCount);
+    } else {
+      // If the item is not part of a combo, check if it belongs to a previous combo
+      let mainIndex = -1;
+      for (let i = indexToRemove - 1; i >= 0; i--) {
+        const prevItem = updatedOrderList[i];
+        if (prevItem.name === "Bowl" || prevItem.name === "Plate" || prevItem.name === "Bigger Plate") {
+          mainIndex = i;
+          break;
+        }
+      }
+  
+      if (
+        mainIndex !== -1 &&
+        indexToRemove > mainIndex &&
+        indexToRemove <= mainIndex + 1 + (updatedOrderList[mainIndex].name === "Bowl" ? 1 : updatedOrderList[mainIndex].name === "Plate" ? 2 : 3)
+      ) {
+        // If the item is part of the combo, remove the whole combo
+        const mainItem = updatedOrderList[mainIndex];
+        const sideCount = 1;
+        const entreeCount = mainItem.name === "Bowl" ? 1 : mainItem.name === "Plate" ? 2 : 3;
+        updatedOrderList.splice(mainIndex, 1 + sideCount + entreeCount);
+      } else {
+        // Otherwise, treat it as a standalone item and remove it
+        updatedOrderList.splice(indexToRemove, 1);
+      }
+    }
+  
     setOrderList(updatedOrderList);
   };
+  
 
   const handleCheckout = async () => {
     const confirmed = window.confirm(
@@ -252,6 +289,7 @@ const OrderPage = () => {
         alert("There was an error processing your order. Please try again.");
       }
     }
+    navigate("/"); 
   };
 
   const navigate = useNavigate(); // Initialize the navigate function
@@ -259,31 +297,39 @@ const OrderPage = () => {
     navigate("/customer"); // Navigate to the customer page
   };
 
+  const calculateTotalPrice = () => {
+    let total = 0;
+  
+    for (let index = 0; index < orderList.length; index++) {
+      const item = orderList[index];
+  
+      // Add the total price for the item
+      total += getItemTotalPrice(item, index);
+  
+      // Skip over sides and entrees for combos
+      if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
+        const sideCount = 1;
+        const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+        index += sideCount + entreeCount; // Adjust index to skip sides/entrees
+      }
+    }
+  
+    return total;
+  };
+  
+  
+
   return (
     <div className="background">
-      <div className="navbar">
-        <img src={logo} alt="Logo" className="navbar-logo" />
-        <div className="navbar-links">
-          <a href="/">Home</a> | <a href="#">About</a> |{" "}
-          <a href="#">Services</a> | <a href="/order">Our Rewards</a>
-        </div>
-        <div className="navbar-actions">
-          <button className="navbar-button">
-            <Link to="/customer">Go Back To Menu</Link>
-          </button>
-          <span role="img" aria-label="user" className="navbar-icon">
-            👤
-          </span>
-        </div>
-      </div>
 
-      <h2 className="page-title">Order</h2>
+      <h2 className="page-title">Your Current Order</h2>
 
       <div className="container">
         <div className="order-summary">
           <button className="add-more" onClick={goToCustomerPage}>
             + Add More Items
           </button>
+          <button className="add-more-2" onClick={clearOrder}>Remove All Items</button>
           <h2>Your Order</h2>
 
           {orderList.length > 0 ? (
@@ -292,19 +338,14 @@ const OrderPage = () => {
               for (let index = 0; index < orderList.length; index++) {
                 const item = orderList[index];
 
-                if (
-                  item.name === "Bowl" ||
-                  item.name === "Plate" ||
-                  item.name === "Bigger Plate"
-                ) {
+                if (item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") {
                   const sideCount = 1;
-                  const entreeCount =
-                    item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
-                  const sidesAndEntrees = orderList.slice(
-                    index + 1,
-                    index + 1 + sideCount + entreeCount
-                  );
-
+                  const entreeCount = item.name === "Bowl" ? 1 : item.name === "Plate" ? 2 : 3;
+                  const sidesAndEntrees = orderList.slice(index + 1, index + 1 + sideCount + entreeCount);
+                
+                  const sides = sidesAndEntrees.slice(0, sideCount);
+                  const entrees = sidesAndEntrees.slice(sideCount);
+                
                   items.push(
                     <div className="order-item" key={index}>
                       <img
@@ -313,25 +354,56 @@ const OrderPage = () => {
                         className="order-item-image"
                       />
                       <div className="item-details">
-                        <h3>{item.name}</h3>
-                        {sidesAndEntrees.map((subItem, subIndex) => (
-                          <p key={subIndex}>{subItem.name}</p>
-                        ))}
-                        <p>Quantity: {item.quantity}</p>
-                        <p className="item-price">
-                          Total: ${getTotalPrice(item, sidesAndEntrees)}
-                        </p>
-                        <button
-                          className="remove-button"
-                          onClick={() => removeItem(index)}
-                        >
-                          Remove
-                        </button>
+                        {/* Name and Price */}
+                        <div className="item-row">
+                          <span className="item-name">{item.name}</span>
+                          <span className="item-price">${getItemTotalPrice(item).toFixed(2)}</span>
+                        </div>
+                
+                        {/* Sides and Entrees */}
+                        <div className="item-sides-entrees">
+                          {sides.length > 0 && (
+                            <>
+                              <h4>Sides</h4>
+                              <ul>
+                                {sides.map((side, sideIndex) => (
+                                  <li key={sideIndex}>{side.name}</li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                          {entrees.length > 0 && (
+                            <>
+                              <h4>Entrees</h4>
+                              <ul>
+                                {entrees.map((entree, entreeIndex) => (
+                                  <li key={entreeIndex}>{entree.name}</li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                        </div>
+                
+                        {/* Quantity Selector */}
+                        <div className="item-row">
+                          <button
+                            className="remove-button"
+                            onClick={() => removeItem(index)}
+                          >
+                            Remove
+                          </button>
+                          <div className="quantity-selector">
+                            <button onClick={() => decrementQuantity(index)}>-</button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => incrementQuantity(index)}>+</button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
-                  index += sideCount + entreeCount;
-                } else {
+                  index += sideCount + entreeCount; // Skip over sides and entrees in the order list
+                }
+                 else {
                   items.push(
                     <div className="order-item" key={index}>
                       <img
@@ -340,17 +412,23 @@ const OrderPage = () => {
                         className="order-item-image"
                       />
                       <div className="item-details">
-                        <h3>{item.name}</h3>
-                        <p>Quantity: {item.quantity}</p>
-                        <p className="item-price">
-                          Total: ${getItemTotalPrice(item).toFixed(2)}
-                        </p>
-                        <button
-                          className="remove-button"
-                          onClick={() => removeItem(index)}
-                        >
-                          Remove
-                        </button>
+                        <div className="item-row">
+                          <span className="item-name">{item.name}</span>
+                          <span className="item-price">${getItemTotalPrice(item).toFixed(2)}</span>
+                        </div>
+                        <div className="item-row">
+                          <button
+                            className="remove-button"
+                            onClick={() => removeItem(index)}
+                          >
+                            Remove
+                          </button>
+                          <div className="quantity-selector">
+                            <button onClick={() => decrementQuantity(index)}>-</button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => incrementQuantity(index)}>+</button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
@@ -401,40 +479,15 @@ const OrderPage = () => {
             </label>
           </div>
           <br />
+          <div className="total-price">
+            <h3>Subtotal: ${calculateTotalPrice().toFixed(2)}</h3>
+            <h3>Tax (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
+            <h3>Total: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+          </div>
 
           <button className="checkout" onClick={handleCheckout}>
             Checkout
           </button>
-          <br />
-          <br />
-          <label>
-            Subtotal : $
-            {orderList
-              .reduce((sum, item) => sum + prices[item.name] * item.quantity, 0)
-              .toFixed(2)}
-          </label>
-          <br />
-          <br />
-          <label>
-            Tax : $
-            {(
-              orderList.reduce(
-                (sum, item) => sum + prices[item.name] * item.quantity,
-                0
-              ) * 0.06
-            ).toFixed(2)}
-          </label>
-          <br />
-          <br />
-          <label>
-            Total : $
-            {(
-              orderList.reduce(
-                (sum, item) => sum + prices[item.name] * item.quantity,
-                0
-              ) * 1.06
-            ).toFixed(2)}
-          </label>
         </div>
       </div>
     </div>

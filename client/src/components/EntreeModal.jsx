@@ -4,7 +4,7 @@ import '../pages/CustomerHome.css';
 
 
 
-const EntreeModal = ({ entree, onClose }) => {
+const EntreeModal = ({ entree, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
   if (!entree) return null;
@@ -13,6 +13,7 @@ const EntreeModal = ({ entree, onClose }) => {
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
+    resetSelections(); // Reset the selections in the parent component
     addToOrder(entree.name, quantity);
     onClose(); // Close the modal after adding to the order
   };
@@ -21,10 +22,10 @@ const EntreeModal = ({ entree, onClose }) => {
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{entree.name}</h2>
+        <div className='modal-name'><h2>{entree.name}</h2></div>
         <img src={entree.image} alt={entree.name} className="modal-image" />
 
-        <h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2>
+        <div className='modal-name'><h2 className='appetizer-price'>${entree.price.toFixed(2)}</h2></div>
         
         {/* Quantity Selector */}
         <div className="quantity-selector">

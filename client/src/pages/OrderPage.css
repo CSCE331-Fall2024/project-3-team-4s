@@ -1,3 +1,83 @@
+
+.background {
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.6)
+    ),
+    url("/bamboo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow-y: auto;
+  min-height: 100vh; /* Ensure background covers full viewport height */
+  display: flex; /* Optional: for vertical alignment */
+  flex-direction: column; /* Optional: stack children vertically */
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.item-sides-entrees{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-right: 350px;
+}
+
+.item-name {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.item-price {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.remove-button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #d32f2f;
+}
+
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-selector button {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.quantity-selector button:hover {
+  background-color: black;
+  color: white;
+}
+
+.quantity-selector span {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .container {
     display: flex;
     gap: 20px;
@@ -26,8 +106,20 @@
     padding: 10px;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
+  }
+
+  .add-more-2 {
+    margin-left: 629px;
+    background-color: #e60000;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
   }
   
   .order-item {

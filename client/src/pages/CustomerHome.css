@@ -11,7 +11,6 @@ html {
 }
 
 .background {
-  padding-top: 70px; /* Adjust according to the height of your navbar */
   background-image: linear-gradient(
       rgba(255, 255, 255, 0.6),
       rgba(255, 255, 255, 0.6)
@@ -22,6 +21,36 @@ html {
   background-repeat: no-repeat;
   background-attachment: fixed;
   overflow-y: auto;
+}
+
+.background-category {
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.6)
+    ),
+    url("/bamboo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow-y: auto;
+}
+
+.category-header {
+  width: 100%;
+  background-color: #c7212a;
+  text-align: center;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  font-size: 16px;
+  z-index: 1000;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  padding-left: 10px 20px;
+  overflow: hidden;
 }
 
 .navbar {
@@ -39,14 +68,28 @@ html {
   font-size: 22px;
   z-index: 1000; /* Ensure it stays above other content */
 }
+
+.navbar-category {
+  position: fixed; /* Fix the navbar at the top */
+  top: 0; /* Align it to the top of the viewport */
+  left: 0; /* Align it to the left edge */
+  width: 100%; /* Full width across the screen */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #c7212a; /* Panda Express red */
+  color: white;
+  font-family: "Rubik", sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  z-index: 1000; /* Ensure it stays above other content */
+}
+
+
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.navbar-logo {
-  height: 45px;
 }
 
 .navbar-links {
@@ -66,27 +109,70 @@ html {
   font-weight: 300;
 }
 
-.navbar-button {
-  background: none;
-  border: 1px solid white;
-  color: white;
-  padding: 5px 10px; /* Reduced padding for more room */
-  border-radius: 5px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: white;
-  color: #d22028; /* Match the red background */
-  font-size: 22px;
-  font-weight: 700;
+.navbar-logo {
+  height: 100px;
 }
 
-.navbar-button:hover {
-  background-color: #d22028;
-  color: white;
+.nav-header {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center the text initially */
+  position: relative; /* Allow the button to be positioned absolutely */
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 260px;
+  padding-left: 260px;
 }
+
+.navbar-button {
+  position: absolute;
+  right: 0; /* Align the button to the right */
+  font-size: 32px; /* Adjust the button's font size if needed */
+  padding: 10px 15px; /* Add padding for better appearance */
+  top: 2.5%;
+  right: 2%;
+  background-color: #c7212a; /* Panda Express red */
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-button-2 {
+  position: absolute;
+  right: 0; /* Align the button to the right */
+  font-size: 32px; /* Adjust the button's font size if needed */
+  padding: 10px 15px; /* Add padding for better appearance */
+  top: 2.5%;
+  right: 83%;
+  background-color: #c7212a; /* Panda Express red */
+  color: white;
+  font-weight: bold;
+}
+
+.order-heading {
+  text-align: center;
+  font-family: "Rubik", sans-serif;
+  font-size: 46px;
+  color: black;
+  font-weight: bold;
+  text-shadow: 0 3px 3px white, 0 5px 5px white;
+  margin: 0;
+  flex: 1;
+}
+
+
+.navbar-button:hover {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+.navbar-button-2:hover {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+
 
 .navbar-icon {
   font-size: 24px;
@@ -94,15 +180,6 @@ html {
   color: white;
 }
 
-.order-heading {
-  text-align: center;
-  margin-top: 20px;
-  font-family: "Rubik", sans-serif;
-  font-size: 40px;
-  color: white;
-  font-weight: 700;
-  text-shadow: 0 3px 3px black, 0 5px 5px black;
-}
 
 .menu-container {
   display: flex;
@@ -110,6 +187,20 @@ html {
   justify-content: center;
   gap: 20px;
   padding: 20px 100px 100px 100px;
+}
+
+.category-container {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.category-title {
+  flex-grow: 1; /* Allow the title to take up the remaining space */
+  text-align: center; /* Center-align text inside the title */
 }
 
 .menu-item {
@@ -173,6 +264,8 @@ html {
 
 .steps-container h3 {
   font-size: 36px;
+  text-align: center;
+  margin: 0;
   color: #333;
 }
 
@@ -190,7 +283,14 @@ html {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  margin-right: auto;
+  font-size: 32px;
+  font-weight: bold;
+  position:absolute;
+  left: 0;
+  padding-top: 45px;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6);
+
 }
 
 .back-button:hover {
@@ -232,6 +332,22 @@ html {
     font-size: 18px;
     color: #333;
 } */
+
+.steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px; /* Adjust spacing as needed */
+  padding-bottom: 40px;
+}
+
+.steps-header h3 {
+  flex: 1; /* Allow the heading to occupy the center */
+  text-align: center; /* Center the heading text */
+  margin: 0; /* Remove default margin */
+  font-size: 40px;
+}
+
 
 .appetizers-container {
   display: flex;
@@ -296,12 +412,22 @@ html {
   align-items: center;
 }
 
+.modal-name{
+  display: flex;
+  flex-direction: column; /* Stack name and price vertically */
+  align-items: center; /* Horizontally center-align */
+  justify-content: center; /* Vertically center-align */
+  font-size: 20px;
+}
+
 .modal {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   width: 400px;
   position: fixed;
+  align-items: center; /* Horizontally center-align */
+  justify-content: center;
 }
 
 .close-button {
@@ -317,16 +443,6 @@ html {
 .modal-image {
   width: 100%;
   border-radius: 8px;
-}
-
-.add-to-order-button {
-  width: 100%;
-  padding: 10px;
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 .size-selector {
@@ -387,7 +503,32 @@ html {
   align-items: center;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  padding-bottom: 25px;
 }
+
+.add-to-order-button-bottom {
+  padding: 10px 20px;
+  background-color: #c7212a;
+  color: white;
+  cursor: pointer;
+  width: 200px;
+  margin-right: 50px;
+  font-size: large;
+  font-weight: bold;
+}
+
+.selected-items ul {
+  list-style-type: none; /* Removes default bullet points */
+  padding: 0;
+  margin: 0;
+  display: flex; /* Arrange items in a single line */
+  gap: 10px; /* Adds space between items */
+}
+
+.selected-items li {
+  display: inline-block; /* Ensure items stay inline */
+}
+
 
 .selected-items {
   display: flex;
@@ -397,7 +538,7 @@ html {
 
 .add-to-order-button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #c7212a;
   color: white;
   border: none;
   border-radius: 5px;
@@ -408,7 +549,8 @@ html {
 }
 
 .add-to-order-button:hover {
-  background-color: #0056b3;
+  background-color: rgb(250, 228, 232);
+  color: black;
 }
 
 .order-item-image {
@@ -427,8 +569,45 @@ html {
 }
 
 .checkout {
-  font-size: large;
+  font-size: 24px;
   font-weight: bold;
   background-color: red;
   color: white;
+}
+
+.popup-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+  font-weight: bold;
+  animation: fadein 0.3s, fadeout 0.5s 4.7s;
+  z-index: 10000;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    bottom: 10px;
+  }
+  to {
+    opacity: 1;
+    bottom: 20px;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+    bottom: 20px;
+  }
+  to {
+    opacity: 0;
+    bottom: 10px;
+  }
 }

@@ -3,7 +3,7 @@ import { useOrder } from '../pages/OrderContext';
 import '../pages/CustomerHome.css';
 
 
-const DrinkModal = ({ drink, onClose }) => {
+const DrinkModal = ({ drink, onClose, resetSelections }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -15,16 +15,17 @@ const DrinkModal = ({ drink, onClose }) => {
   const handleAddToOrder = () => {
     addToOrder(drink.name, quantity);
     onClose(); // Close the modal after adding to the order
+    resetSelections()
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>X</button>
-        <h2>{drink.name}</h2>
+        <div className='modal-name'><h2>{drink.name}</h2></div>
         <img src={drink.image} alt={drink.name} className="modal-image" />
 
-        <h2 className='appetizer-price'>${drink.price.toFixed(2)}</h2>
+        <div className='modal-name'><h2 className='appetizer-price'>${drink.price.toFixed(2)}</h2></div>
         
         {/* Quantity Selector */}
         <div className="quantity-selector">

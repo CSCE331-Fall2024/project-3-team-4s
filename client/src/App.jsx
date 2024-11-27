@@ -9,6 +9,8 @@ import Restock from "./pages/Restock";
 import EditMenu from "./pages/EditMenu";
 import Employees from "./pages/Employees";
 import OrderPage from "./pages/OrderPageWrapper";
+import CategoryPage from "./pages/CategoryPage";
+import { OrderProvider } from "./pages/OrderContext";
 
 const App = () => {
   return (
@@ -24,6 +26,14 @@ const App = () => {
         <Route path="/restock" element={<Restock />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/order" element={<OrderPage />} />
+        <Route
+          path="/category/:categoryName"
+          element={
+            <OrderProvider>
+              <CategoryPage />
+            </OrderProvider>
+          }
+        />
       </Routes>
     </div>
   );
