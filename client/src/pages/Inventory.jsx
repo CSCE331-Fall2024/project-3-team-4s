@@ -10,8 +10,8 @@ import EditInventoryModal from "../components/EditInventoryModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Inventory = () => {
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
   const navigate = useNavigate();
 
   const [inventory, setInventory] = useState([]);

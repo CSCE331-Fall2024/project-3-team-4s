@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import CustomerHome from "./pages/CustomerHome";
+import CustomerHome from "./pages/CustomerHomeWrapper";
 import ManagerHome from "./pages/ManagerHome";
 import CashierHome from "./pages/CashierHome";
 import ReportsPage from "./pages/ReportsPage";
@@ -8,7 +8,7 @@ import Inventory from "./pages/Inventory";
 import Restock from "./pages/Restock";
 import EditMenu from "./pages/EditMenu";
 import Employees from "./pages/Employees";
-import OrderPage from "./pages/OrderPage";
+import OrderPage from "./pages/OrderPageWrapper";
 
 const App = () => {
   return (

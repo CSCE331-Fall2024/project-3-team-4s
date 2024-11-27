@@ -6,9 +6,9 @@ import Icon from "../components/Icon";
 import Button from "../components/Button";
 
 const Restock = () => {
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const backendURL = "http://localhost:3000";
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
+  
   const [minStockInventory, setMinStockInventory] = useState([]);
   const [nonMinStockInventory, setNonMinStockInventory] = useState([]);
   const [order, setOrder] = useState([]);
