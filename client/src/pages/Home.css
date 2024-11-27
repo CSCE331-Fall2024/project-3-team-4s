@@ -1,0 +1,48 @@
+.home-container {
+  display: flex;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.6)
+    ),
+    url("/bamboo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  height: 100vh;
+}
+
+.home-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.home-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 2rem;
+}
+
+.home-heading {
+  font-size: 5rem;
+  text-align: center;
+  margin: 0;
+}
+
+.panda-logo {
+  width: 17.5rem;
+  height: auto;
+}
+
+.home-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./EditEmployeeModal.css";
+import "./EditModal.css";
 import Button from "./Button";
 
 const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
@@ -8,19 +8,19 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
   const [role, setRole] = useState(employee.role);
 
   return (
-    <div className="modal-ee">
-      <div className="modal-content-ee">
+    <div className="modal-edit">
+      <div className="modal-content-edit">
         <h2>Edit Employee</h2>
-        <form className="modal-form-ee">
+        <form className="modal-form-edit">
           <input
-            className="input-ee"
+            className="input-edit"
             type="text"
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <input
-            className="input-ae"
+            className="input-edit"
             type="text"
             placeholder="Last Name"
             value={lastName}
@@ -28,7 +28,7 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
           />
 
           <select
-            className="input-ee"
+            className="input-edit"
             id="role"
             name="role"
             value={role}
@@ -43,7 +43,7 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
           </select>
         </form>
 
-        <div className="modal-actions-ae">
+        <div className="modal-actions-edit">
           <Button text={"Cancel"} onClick={onCancel} />
           <Button
             text={"Update"}

@@ -168,12 +168,18 @@ const CashierHome = () => {
   };
 
   // Preloading all data
+  // Preloading all data
   useEffect(() => {
     const fetchFood = async () => {
       try {
         // Preload all data so requests are not needed repeatedly
         const res = await axios.get(`${backendURL}/kiosk/entrees`);
+        // Preload all data so requests are not needed repeatedly
+        const res = await axios.get(`${backendURL}/kiosk/entrees`);
         setEntrees(res.data);
+        setOriginalEntrees(res.data);
+
+        const res2 = await axios.get(`${backendURL}/kiosk/sides`);
         setOriginalEntrees(res.data);
 
         const res2 = await axios.get(`${backendURL}/kiosk/sides`);
@@ -181,7 +187,13 @@ const CashierHome = () => {
         setOriginalSides(res2.data);
 
         const res3 = await axios.get(`${backendURL}/kiosk/appetizers`);
+        setOriginalSides(res2.data);
+
+        const res3 = await axios.get(`${backendURL}/kiosk/appetizers`);
         setAppetizers(res3.data);
+        setOriginalAppetizers(res3.data);
+
+        const res4 = await axios.get(`${backendURL}/kiosk/drinks`);
         setOriginalAppetizers(res3.data);
 
         const res4 = await axios.get(`${backendURL}/kiosk/drinks`);
@@ -231,7 +243,10 @@ const CashierHome = () => {
 
     fetchFood();
     fetchWeather();
+    fetchWeather();
   }, []);
+
+  // ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
 
   // ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
 
@@ -243,6 +258,7 @@ const CashierHome = () => {
     setCost("");
     setCurrentOrder([]);
     setCurrentOrderIDs([]);
+    setCurrentOrderCost([]);
     setCurrentOrderCost([]);
     setShowInput(!showInput);
     setKeyboardVisible(!keyboardVisible);
@@ -259,9 +275,11 @@ const CashierHome = () => {
       }
       setNumPadVisible(true); // Show the numpad after entering the item name
       setInputValue(""); // Clear the input field after adding the item to the order
+      setInputValue(""); // Clear the input field after adding the item to the order
       setShowInput(false); // Hide the input field after adding the item to the order
       setKeyboardVisible(false);
 
+      setActiveTab("Orders");
       setActiveTab("Orders");
       setNumAppetizers(1);
       setNumDrinks(1);
@@ -271,20 +289,27 @@ const CashierHome = () => {
     }
   };
 
+
   const handleNumPadChange = (input) => {
     setCost(input);
+    console.log("Cost input changed:", input);
     console.log("Cost input changed:", input);
   };
 
   const handleNumPadKeyPress = (button) => {
     if (button === "{enter}") {
+    if (button === "{enter}") {
       try {
+        if (cost === "") {
+          console.log("Cost is empty");
         if (cost === "") {
           console.log("Cost is empty");
           return;
         }
 
+
         Number(cost);
+        console.log("Cost entered:", cost);
         console.log("Cost entered:", cost);
         setNumPadVisible(false); // Hide the numpad after entering the cost
         currentOrder.push(Number(cost).toFixed(2));
@@ -293,6 +318,8 @@ const CashierHome = () => {
         setCurrentOrders([...currentOrders]);
         console.log("Current Orders: ");
         console.log(currentOrders);
+        setInputValue(""); // Clear the input field after adding the item to the order
+        setCurrentOrder([]); // Clear the current order
         setInputValue(""); // Clear the input field after adding the item to the order
         setCurrentOrder([]); // Clear the current order
         setCurrentOrderIDs([]);
@@ -307,6 +334,7 @@ const CashierHome = () => {
           numSides > 1
         ) {
           currentOrdersIDs.push([999]);
+        } else {
         } else {
           currentOrdersIDs.push(currentOrderIDs);
         }
@@ -326,7 +354,9 @@ const CashierHome = () => {
   };
 
   // END OF ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
+  // END OF ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
 
+  // GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
   // GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
 
   const reset = () => {
@@ -343,6 +373,8 @@ const CashierHome = () => {
     reset();
     console.log("Resetting all orders");
     setActiveTab("Orders");
+    console.log("Resetting all orders");
+    setActiveTab("Orders");
     setCurrentOrder([]);
     setCurrentOrderIDs([]);
     setCurrentOrderCost([]);
@@ -353,9 +385,25 @@ const CashierHome = () => {
   }, [currentOrder]);
 
   // END OF GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
+  };
+
+  useEffect(() => {
+    console.log("Current Order after reset:", currentOrder);
+  }, [currentOrder]);
+
+  // END OF GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
 
   // TAB FUNCTIONALITIES --------------------------------------------------------------------------------------------
+  // TAB FUNCTIONALITIES --------------------------------------------------------------------------------------------
 
+  const openTab = (e, tabName) => {
+    // Handles tab clicks and sets the number of items
+    console.log("Tab name:", tabName);
+    // Reset the current order and cost then assign
+    setCurrentOrder([]);
+    setCurrentOrderIDs([]);
+    setActiveTab(tabName.item_name);
+    reset();
   const openTab = (e, tabName) => {
     // Handles tab clicks and sets the number of items
     console.log("Tab name:", tabName);
@@ -516,8 +564,10 @@ const CashierHome = () => {
       );
     }
   };
+  };
 
   const checkout = async () => {
+    console.log("Checkout clicked");
     console.log("Checkout clicked");
     if (currentOrders.length > 0) {
       console.log("Processing checkout...");
@@ -894,3 +944,4 @@ const CashierHome = () => {
 };
 
 export default CashierHome;
+

@@ -1,16 +1,41 @@
+import { useNavigate } from "react-router-dom";
 import "./ManagerHome.css";
 import PageHeader from "../components/PageHeader";
-import Button from "../components/Button"; 
+import Button from "../components/Button";
 
-const ManagerHome = ({ handleMenuClick, handleReportsClick, handleEmployeesClick, handleInventoryClick }) => {
+const ManagerHome = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="ManagerHome-container">
-      <PageHeader pageTitle="Admin Page" />
-      <div className="bigButton-container">
-        <Button text="Edit Menu" onClick={handleMenuClick} className="big-button" />
-        <Button text="Reports" onClick={handleReportsClick} className="big-button" />
-        <Button text="Manage Employees" onClick={handleEmployeesClick} className="big-button" />
-        <Button text="Manage Inventory" onClick={handleInventoryClick} className="big-button" />
+    <div className="manager-home-container">
+      <PageHeader pageTitle="Admin" />
+
+      <div className="manager-button-container">
+        <div className="manager-button-col">
+          <Button
+            text="Edit Menu"
+            onClick={() => navigate("/menu")}
+            className="big-custom-button"
+          />
+          <Button
+            text="Manage Employees"
+            onClick={() => navigate("/employees")}
+            className="big-custom-button"
+          />
+        </div>
+
+        <div className="manager-button-col">
+          <Button
+            text="Reports"
+            onClick={() => navigate("/reports")}
+            className="big-custom-button"
+          />
+          <Button
+            text="Manage Inventory"
+            onClick={() => navigate("/inventory")}
+            className="big-custom-button"
+          />
+        </div>
       </div>
     </div>
   );

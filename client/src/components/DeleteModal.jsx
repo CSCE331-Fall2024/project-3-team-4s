@@ -1,18 +1,15 @@
 import "./DeleteModal.css";
 import Button from "./Button";
 
-const DeleteModal = ({ onCancel, onDelete, employee }) => {
+const DeleteModal = ({ onCancel, onDelete, heading, text }) => {
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <h2 className="modal-header">Delete Employee</h2>
+    <div className="modal-del">
+      <div className="modal-content-del">
+        <h2 className="modal-header-del">{heading}</h2>
 
-        <p className="modal-text">
-          Are you sure you want to delete {employee.first_name}{" "}
-          {employee.last_name}?
-        </p>
+        <p className="modal-text-del">{text}</p>
 
-        <div className="modal-actions">
+        <div className="modal-actions-del">
           <Button text={"Cancel"} onClick={onCancel} />
           <Button text={"Delete"} onClick={onDelete} />
         </div>
