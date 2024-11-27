@@ -1,58 +1,74 @@
-import React, { useEffect, useState } from "react";
+// CashierHome.js
+import React, { useEffect, useState, useContext } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import "./CashierHome.css";
 import axios from "axios";
 import "./Employees.css";
+import { LanguageContext } from "./LanguageContext";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
-  // const backendURL = "http://localhost:3000";
+  //const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate(); //back to homepage
+  const backendURL = "http://localhost:3000";
+
+  const { language, setLanguage } = useContext(LanguageContext);
+  const [translatedTexts, setTranslatedTexts] = useState({});
 
   const [activeTab, setActiveTab] = useState("Orders");
-  const [showInput, setShowInput] = useState(false); // State to manage input field visibility
-  const [inputValue, setInputValue] = useState(""); // State to manage input value
-  const [keyboardVisible, setKeyboardVisible] = useState(false); // State to manage keyboard visibility
-  const [numPadVisible, setNumPadVisible] = useState(false); // State to manage num pad visibility
-  const [currentOrder, setCurrentOrder] = useState([]); // Initialize currentOrder state
-  const [entrees, setEntrees] = useState([]); // Initialize entrees state
-  const [sides, setSides] = useState([]); // Initialize sides state
-  const [appetizers, setAppetizers] = useState([]); // Initialize appetizers state
-  const [drinks, setDrinks] = useState([]); // Initialize drinks state
-  const [numEntrees, setNumEntrees] = useState(0); // Initialize numEntrees state
-  const [numSides, setNumSides] = useState(0); // Initialize numSides state
-  const [numAppetizers, setNumAppetizers] = useState(0); // Initialize numAppetizers state
-  const [numDrinks, setNumDrinks] = useState(0); // Initialize numDrinks state
-  const [currentOrders, setCurrentOrders] = useState([]); // Initialize currentOrders state
-  const [cost, setCost] = useState(""); // Initialize cost state
-  const [currentOrderCost, setCurrentOrderCost] = useState([]); // Initialize currentOrderCost state
-  const [mealTypes, setMealTypes] = useState([]); // Initialize mealTypes state
-  const [currentOrderIDs, setCurrentOrderIDs] = useState([]); // Initialize currentOrderIDs state
-  const [currentOrdersIDs, setCurrentOrdersIDs] = useState([]); // Initialize currentOrdersIDs state
+  const [showInput, setShowInput] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [numPadVisible, setNumPadVisible] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState([]);
+  const [entrees, setEntrees] = useState([]);
+  const [sides, setSides] = useState([]);
+  const [appetizers, setAppetizers] = useState([]);
+  const [sauces, setSauces] = useState([]);
+  const [drinks, setDrinks] = useState([]);
+  const [numEntrees, setNumEntrees] = useState(0);
+  const [numSides, setNumSides] = useState(0);
+  const [numAppetizers, setNumAppetizers] = useState(0);
+  const [numDrinks, setNumDrinks] = useState(0);
+  const [numSauces, setNumSauces] = useState(0);
+  const [currentOrders, setCurrentOrders] = useState([]);
+  const [cost, setCost] = useState("");
+  const [currentOrderCost, setCurrentOrderCost] = useState([]);
+  const [mealTypes, setMealTypes] = useState([]);
+  const [currentOrderIDs, setCurrentOrderIDs] = useState([]);
+  const [currentOrdersIDs, setCurrentOrdersIDs] = useState([]);
   const [weatherData, setWeatherData] = useState(null);
+  const [halfSides, setHalfSides] = useState(0);
 
   // Added state for original items to preserve English data
   const [originalEntrees, setOriginalEntrees] = useState([]);
   const [originalSides, setOriginalSides] = useState([]);
   const [originalAppetizers, setOriginalAppetizers] = useState([]);
   const [originalDrinks, setOriginalDrinks] = useState([]);
+  const [originalMealTypes, setOriginalMealTypes] = useState([]);
+  const [originalSauces, setOriginalSauces] = useState([]);
 
-  // Language selection and translated texts
-  const [language, setLanguage] = useState("en");
-  const [translatedTexts, setTranslatedTexts] = useState({});
+  // State to track data fetching completion
+  const [dataFetched, setDataFetched] = useState(false);
+  //edge case with bottle and refresher
+  const [refresherCost, setRefresherCost] = useState(0);
+  const [bottleCost, setBottleCost] = useState(0);
 
   // Default text to translate
   const defaultTexts = {
     currentOrderTitle: "Current Order",
     checkout: "Checkout",
-    enterItem: "Enter Item",
+    enterItem: "Enter Custom Item",
     clearOrder: "Clear Order",
     confirmOrder: "Confirm Order",
+    exitPage: "Return to Home",
     debug: "Debug",
     entreesTitle: "Entrees",
     sidesTitle: "Sides",
     appetizersTitle: "Appetizer",
     drinksTitle: "Drinks",
+    saucesTitle: "Sauces",
     enterItemDetails: "Enter item details",
     correctNumberItems: "Please select the correct number of items",
   };
@@ -78,6 +94,11 @@ const CashierHome = () => {
   // Translate UI text and menu items when language changes
   useEffect(() => {
     const translateUI = async () => {
+      if (!dataFetched) {
+        // Data hasn't been fetched yet; wait before translating, this is so it finds the correct names
+        return;
+      }
+
       if (language === "en") {
         // If language is English, revert to default texts and original item names
         setTranslatedTexts(defaultTexts);
@@ -85,8 +106,11 @@ const CashierHome = () => {
         setSides(originalSides);
         setAppetizers(originalAppetizers);
         setDrinks(originalDrinks);
+        setMealTypes(originalMealTypes); // Revert meal types to original
+        setSauces(originalSauces);
         return;
       }
+
       // Translate static UI texts
       const translations = {};
       for (const [key, value] of Object.entries(defaultTexts)) {
@@ -97,7 +121,7 @@ const CashierHome = () => {
 
       // Translate menu item names
       const translateMenuItems = async (items) => {
-        if (!items || !Array.isArray(items)) return items;
+        if (!items || !Array.isArray(items) || items.length === 0) return [];
         const translatedItems = [];
         for (const item of items) {
           const translatedName = await translateText(item.item_name, language);
@@ -109,15 +133,27 @@ const CashierHome = () => {
       // Update each category with translated names
       const translatedEntrees = await translateMenuItems(originalEntrees);
       setEntrees(translatedEntrees);
+
       const translatedSides = await translateMenuItems(originalSides);
       setSides(translatedSides);
+
       const translatedAppetizers = await translateMenuItems(originalAppetizers);
       setAppetizers(translatedAppetizers);
+
       const translatedDrinks = await translateMenuItems(originalDrinks);
       setDrinks(translatedDrinks);
+
+      // **Include Sauces**
+      const translatedSauces = await translateMenuItems(originalSauces);
+      setSauces(translatedSauces);
+
+      // Translate meal types
+      const translatedMealTypes = await translateMenuItems(originalMealTypes);
+      setMealTypes(translatedMealTypes);
     };
+
     translateUI();
-  }, [language]);
+  }, [language, dataFetched]); // Added dataFetched to dependency array
 
   // Fetch weather data
   const fetchWeather = async () => {
@@ -151,11 +187,45 @@ const CashierHome = () => {
         const res4 = await axios.get(`${backendURL}/kiosk/drinks`);
         setDrinks(res4.data);
         setOriginalDrinks(res4.data);
+        //console.log("Drinks" ,res4.data);
+        const res6 = await axios.get(`${backendURL}/kiosk/sauces`);
+        setSauces(res6.data);
+        setOriginalSauces(res6.data);
+        //console.log("Sauces" ,res6.data);
 
         const res5 = await axios.get(`${backendURL}/kiosk/meal-types`);
-        setMealTypes(res5.data);
+
+        // Extract "refresher" and "bottle" items
+        const refresherItem = res5.data.find(
+          (item) => item.item_name.toLowerCase() === "refresher"
+        );
+        const bottleItem = res5.data.find(
+          (item) => item.item_name.toLowerCase() === "bottle"
+        );
+
+        // Save their costs to state variables
+        if (refresherItem) {
+          setRefresherCost(refresherItem.item_price);
+        }
+        if (bottleItem) {
+          setBottleCost(bottleItem.item_price);
+        }
+
+        // Filter out "refresher" and "bottle" from meal types
+        const filteredMealTypes = res5.data.filter(
+          (item) =>
+            item.item_name.toLowerCase() !== "refresher" &&
+            item.item_name.toLowerCase() !== "bottle"
+        );
+
+        // Update the state with the filtered meal types
+        setMealTypes(filteredMealTypes);
+        setOriginalMealTypes(filteredMealTypes); // Store original meal types
+
+        // Set dataFetched to true after all data is fetched
+        setDataFetched(true);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching food data:", err);
       }
     };
 
@@ -166,6 +236,11 @@ const CashierHome = () => {
   // ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
 
   const toggleKeyboard = () => {
+    reset();
+    if (numPadVisible === true) {
+      setNumPadVisible(false);
+    }
+    setCost("");
     setCurrentOrder([]);
     setCurrentOrderIDs([]);
     setCurrentOrderCost([]);
@@ -177,7 +252,11 @@ const CashierHome = () => {
     // For item name
     if (button === "{enter}") {
       console.log("Input value:", inputValue);
-      currentOrder.push(inputValue);
+      if (inputValue === "") {
+        console.log("Input value is empty");
+      } else {
+        currentOrder.push(inputValue);
+      }
       setNumPadVisible(true); // Show the numpad after entering the item name
       setInputValue(""); // Clear the input field after adding the item to the order
       setShowInput(false); // Hide the input field after adding the item to the order
@@ -187,7 +266,8 @@ const CashierHome = () => {
       setNumAppetizers(1);
       setNumDrinks(1);
       setNumEntrees(1);
-      setNumSides(1);
+      setNumSauces(6);
+      setNumSides(2);
     }
   };
 
@@ -223,12 +303,14 @@ const CashierHome = () => {
           numAppetizers > 0 &&
           numDrinks > 0 &&
           numEntrees > 0 &&
-          numSides > 0
+          numSauces > 0 &&
+          numSides > 1
         ) {
           currentOrdersIDs.push([999]);
         } else {
           currentOrdersIDs.push(currentOrderIDs);
         }
+        reset();
       } catch (err) {
         console.error(err);
       }
@@ -252,6 +334,9 @@ const CashierHome = () => {
     setNumSides(0);
     setNumAppetizers(0);
     setNumDrinks(0);
+    setHalfSides(0);
+    setNumSauces(0);
+    setCurrentOrderCost([]);
   };
 
   const resetAll = () => {
@@ -283,27 +368,30 @@ const CashierHome = () => {
     if (tabName.item_name === "Bowl") {
       reset();
       setNumEntrees(1);
-      setNumSides(1);
+      setNumSides(2);
     } else if (tabName.item_name === "Plate") {
       reset();
       setNumEntrees(2);
-      setNumSides(1);
+      setNumSides(2);
     } else if (tabName.item_name === "Bigger Plate") {
       reset();
       setNumEntrees(3);
-      setNumSides(1);
+      setNumSides(2);
     } else if (tabName.item_name.includes("Entree")) {
       reset();
       setNumEntrees(1);
     } else if (tabName.item_name.includes("Side")) {
       reset();
-      setNumSides(1);
+      setNumSides(2);
     } else if (tabName.item_name === "Appetizer") {
       reset();
       setNumAppetizers(1);
     } else if (tabName.item_name.includes("Drink")) {
       reset();
       setNumDrinks(1);
+    } else if (tabName.item_name.includes("Sauces")) {
+      reset();
+      setNumSauces(6);
     }
 
     handleOrderTypeClick(tabName);
@@ -314,6 +402,7 @@ const CashierHome = () => {
   // HANDLES CURRENT ORDERS AND NUMBER OF ITEMS -------------------------------------------------------------------------------------------
 
   const handleFoodClick = (item) => {
+    console.log("handle food click", item.item_category, numSauces);
     // Decrement counts and add items to the current order
     if (item.item_category === "Entree" && numEntrees > 0) {
       setNumEntrees(numEntrees - 1);
@@ -322,6 +411,9 @@ const CashierHome = () => {
       currentOrderCost.push(item.item_price);
     } else if (item.item_category === "Side" && numSides > 0) {
       setNumSides(numSides - 1);
+      if (numSides === 0) {
+        setHalfSides(1);
+      }
       currentOrder.push(item.item_name);
       currentOrderIDs.push(item.menu_item_id);
       currentOrderCost.push(item.item_price);
@@ -330,19 +422,55 @@ const CashierHome = () => {
       currentOrder.push(item.item_name);
       currentOrderIDs.push(item.menu_item_id);
       currentOrderCost.push(item.item_price);
-    } else if (item.item_category === "Drink" && numDrinks > 0) {
+    } else if (
+      (item.item_category === "Drink" ||
+        item.item_category === "Refresher" ||
+        item.item_category === "Bottle") &&
+      numDrinks > 0
+    ) {
       setNumDrinks(numDrinks - 1);
+      currentOrder.push(item.item_name);
+      currentOrderIDs.push(item.menu_item_id);
+      if (item.item_category === "Drink") {
+        currentOrderCost.push(item.item_price);
+      } else if (item.item_category === "Refresher") {
+        currentOrderCost.push(refresherCost + item.item_price);
+        currentOrderCost[0] = 0;
+        console.log("dsafsdafsadfs", refresherCost + item.item_price);
+      } else if (item.item_category === "Bottle") {
+        currentOrderCost.push(bottleCost + item.item_price);
+        currentOrderCost[0] = 0;
+      }
+    } else if (item.item_category === "Sauces" && numSauces > 0) {
+      console.log("Sauces", item.item_name);
+      setNumSauces(numSauces - 1);
       currentOrder.push(item.item_name);
       currentOrderIDs.push(item.menu_item_id);
       currentOrderCost.push(item.item_price);
     }
   };
+  const home_screen = () => {
+    navigate("/");
+  };
 
   const debug = async () => {
+    console.log("Current Order", currentOrder);
     console.log("Translation:" + (await translateText("Hello", "es")));
-    console.log("Weather:" + weatherData.main.temp);
+    console.log("Weather:" + weatherData?.main?.temp);
     console.log("Weather:", JSON.stringify(weatherData, null, 2));
-    console.log("Weather: ", weatherData.weather[0].description);
+    console.log("Weather: ", weatherData?.weather[0]?.description);
+    console.log(numAppetizers, numDrinks, numEntrees, numSides);
+    console.log(
+      numPadVisible === true &&
+        numAppetizers > 0 &&
+        numDrinks > 0 &&
+        numEntrees > 0 &&
+        numSides > 1
+    );
+    console.log("Current Order Cost:", currentOrders);
+    console.log("Current Orders IDS:", currentOrdersIDs);
+
+    console.log("Current Order Cost: ", currentOrderCost);
   };
 
   const handleOrderTypeClick = (id) => {
@@ -364,15 +492,19 @@ const CashierHome = () => {
       numAppetizers === 0 &&
       numDrinks === 0 &&
       numEntrees === 0 &&
-      numSides === 0 &&
+      numSauces === 0 &&
+      (numSides === 0 || numSides === 1) &&
       currentOrder.length > 0
     ) {
       currentOrder.push(
         currentOrderCost.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2)
       );
+      console.log("testing CurrentOrderCost", currentOrderCost);
       currentOrdersIDs.push(currentOrderIDs);
       currentOrders.push(currentOrder);
       setCurrentOrders([...currentOrders]);
+      console.log("Current Orders: ");
+      console.log(currentOrders);
       setInputValue(""); // Clear the input field after adding the item to the order
       setCurrentOrder([]); // Clear the current order
       setCurrentOrderIDs([]);
@@ -388,26 +520,96 @@ const CashierHome = () => {
   const checkout = async () => {
     console.log("Checkout clicked");
     if (currentOrders.length > 0) {
-      console.log("Checkout successful");
+      console.log("Processing checkout...");
+      const userConfirmed = window.confirm(
+        "Are you sure you want to checkout?"
+      );
+      if (userConfirmed) {
+        // Proceed with the checkout
+        console.log("User confirmed. Proceeding with checkout...");
+      } else {
+        // User canceled the action
+        console.log("User canceled checkout.");
+      }
+      try {
+        // Step 1: Calculate Total Cost
+        let totalCost = 0;
+        currentOrders.forEach((order) => {
+          // Assuming the cost is the last element in each order array
+          const cost = parseFloat(order[order.length - 1]);
+          totalCost += cost;
+        });
 
-      // Iterate over each sublist in currentOrders
-      for (const order of currentOrders) {
-        // Iterate over each item in the sublist
-        for (const item of order) {
-          try {
-            // Make an Axios PUT request for each item
-            await axios.put(`${backendURL}/cashier/get-menu`, {
-              item_name: item,
+        // Step 2: Create a New Transaction
+        const transactionData = {
+          total_cost: parseFloat(totalCost.toFixed(2)), // Ensure it's a number
+          transaction_time: new Date()
+            .toISOString()
+            .split("T")[1]
+            .split(".")[0], // "HH:MM:SS"
+          transaction_date: new Date().toISOString().split("T")[0], // "YYYY-MM-DD"
+          transaction_type: "Credit/Debit",
+          customer_id: 1,
+          employee_id: 1,
+          week_number: 1,
+        };
+
+        console.log("Transaction Data:", transactionData);
+
+        const transactionResponse = await axios.post(
+          `${backendURL}/cashier/post-transaction`,
+          transactionData
+        );
+
+        // Extract the generated transaction_id
+        const transactionId =
+          transactionResponse.data.transaction.transaction_id;
+        console.log("Transaction created with ID:", transactionId);
+
+        // Step 3: Process Each Order
+        for (let i = 0; i < currentOrders.length; i++) {
+          const order = currentOrders[i];
+          const orderItemIDs = currentOrdersIDs[i];
+
+          // Skip the last element if it's the total cost
+          const itemsInOrder = order.slice(0, -1);
+          const itemIDsInOrder = orderItemIDs;
+
+          // Step 3a: Insert Items into menu_item_transaction
+          for (let j = 0; j < itemIDsInOrder.length; j++) {
+            const menuItemId = itemIDsInOrder[j];
+            const itemQuantity = 1; // Assuming quantity is 1 for each item
+
+            // Send a POST request to insert into menu_item_transaction
+            await axios.post(`${backendURL}/cashier/post-transaction-menu`, {
+              menu_item_id: menuItemId,
+              transaction_id: transactionId,
+              item_quantity: itemQuantity,
             });
-            console.log(`Updated item: ${item}`);
-          } catch (error) {
-            console.error(`Error updating item: ${item}`, error);
+
+            console.log(
+              `Inserted into menu_item_transaction: menu_item_id=${menuItemId}, transaction_id=${transactionId}, item_quantity=${itemQuantity}`
+            );
+
+            // Step 3b: Update menu_item Table
+            await axios.put(`${backendURL}/cashier/put-menu`, {
+              menu_item_id: menuItemId,
+            });
+
+            console.log(`Updated menu_item: menu_item_id=${menuItemId}`);
           }
         }
-      }
 
-      // Clear currentOrders after processing
-      setCurrentOrders([]);
+        // Step 4: Clear Current Orders
+        setCurrentOrders([]);
+        setCurrentOrdersIDs([]);
+        alert("Checkout successful!");
+      } catch (error) {
+        console.error("Error during checkout:", error);
+        alert("Checkout failed. Please try again.");
+      }
+    } else {
+      alert("No items in the current order.");
     }
   };
 
@@ -445,71 +647,154 @@ const CashierHome = () => {
               ))}
             </div>
             <div className="menuItems">
-              <h3>
+              <div className="menu-section">
                 {translatedTexts.entreesTitle || defaultTexts.entreesTitle}
-              </h3>
-              <div className="menu-item-list">
-                {entrees.map((entree) => (
-                  <button
-                    key={entree.menu_item_id}
-                    className="menu-item-button"
-                    onClick={() => handleFoodClick(entree)}
-                    disabled={numEntrees === 0}
-                  >
-                    {entree.item_name}
-                  </button>
-                ))}
+                <div className="menu-item-list">
+                  {entrees && entrees.length > 0 ? (
+                    entrees.map((entree) => (
+                      <button
+                        key={entree.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(entree)}
+                        disabled={
+                          numEntrees === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {entree.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading entrees...</p>
+                  )}
+                </div>
               </div>
 
-              <h3>{translatedTexts.sidesTitle || defaultTexts.sidesTitle}</h3>
-              <div className="menu-item-list">
-                {sides.map((side) => (
-                  <button
-                    key={side.menu_item_id}
-                    className="menu-item-button"
-                    onClick={() => handleFoodClick(side)}
-                    disabled={numSides === 0}
-                  >
-                    {side.item_name}
-                  </button>
-                ))}
+              <div className="menu-section">
+                {translatedTexts.sidesTitle || defaultTexts.sidesTitle}
+                <div className="menu-item-list">
+                  {sides && sides.length > 0 ? (
+                    sides.map((side) => (
+                      <button
+                        key={side.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(side)}
+                        disabled={
+                          numSides === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {side.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading sides...</p>
+                  )}
+                </div>
               </div>
 
-              <h3>
+              <div className="menu-section">
                 {translatedTexts.appetizersTitle ||
                   defaultTexts.appetizersTitle}
-              </h3>
-              <div className="menu-item-list">
-                {appetizers.map((appetizer) => (
-                  <button
-                    key={appetizer.menu_item_id}
-                    className="menu-item-button"
-                    onClick={() => handleFoodClick(appetizer)}
-                    disabled={numAppetizers === 0}
-                  >
-                    {appetizer.item_name}
-                  </button>
-                ))}
+                <div className="menu-item-list">
+                  {appetizers && appetizers.length > 0 ? (
+                    appetizers.map((appetizer) => (
+                      <button
+                        key={appetizer.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(appetizer)}
+                        disabled={
+                          numAppetizers === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {appetizer.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading appetizers...</p>
+                  )}
+                </div>
               </div>
 
-              <h3>{translatedTexts.drinksTitle || defaultTexts.drinksTitle}</h3>
-              <div className="menu-item-list">
-                {drinks.map((drink) => (
-                  <button
-                    key={drink.menu_item_id}
-                    className="menu-item-button"
-                    onClick={() => handleFoodClick(drink)}
-                    disabled={numDrinks === 0}
-                  >
-                    {drink.item_name}
-                  </button>
-                ))}
+              <div className="menu-section">
+                {translatedTexts.drinksTitle || defaultTexts.drinksTitle}
+                <div className="menu-item-list">
+                  {drinks && drinks.length > 0 ? (
+                    drinks.map((drink) => (
+                      <button
+                        key={drink.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(drink)}
+                        disabled={
+                          numDrinks === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {drink.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading drinks...</p>
+                  )}
+                </div>
               </div>
-
-              <div className="current-order">
-                {translatedTexts.currentOrderTitle ||
-                  defaultTexts.currentOrderTitle}
-                : {currentOrder.join(", ")}
+              <div className="menu-section">
+                {translatedTexts.saucesTitle || defaultTexts.saucesTitle}
+                <div className="menu-item-list">
+                  {sauces && sauces.length > 0 ? (
+                    sauces.map((sauce) => (
+                      <button
+                        key={sauce.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(sauce)}
+                        disabled={
+                          numSauces === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {sauce.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading sauces...</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -521,30 +806,40 @@ const CashierHome = () => {
               {translatedTexts.currentOrderTitle ||
                 defaultTexts.currentOrderTitle}
             </h2>
-            <ul>
-              {currentOrders.map((order, index) => (
-                <li key={index}>
-                  <button onClick={() => removeItem(index)}>X </button>
-                  {order.join(", ")}
-                </li>
-              ))}
-            </ul>
+            currentOrder: {currentOrder.join(", ")}
           </div>
-
-          <button className="checkoutCHECK" onClick={checkout}>
-            {translatedTexts.checkout || defaultTexts.checkout}
-          </button>
-          <button className="enter_item" onClick={toggleKeyboard}>
-            {translatedTexts.enterItem || defaultTexts.enterItem}
-          </button>
-          <button className="clear_order" onClick={resetAll}>
-            {translatedTexts.clearOrder || defaultTexts.clearOrder}
-          </button>
-          <button className="Confirm" onClick={orderEntered}>
-            {translatedTexts.confirmOrder || defaultTexts.confirmOrder}
-          </button>
-          <button className="debug" onClick={debug}>
-            {translatedTexts.debug || defaultTexts.debug}
+          <ul className="current-orders-list">
+            {currentOrders.map((order, index) => (
+              <li key={index} className="order-item">
+                <span className="order-text">{order.join(", ")}</span>
+                <button
+                  className="remove-button"
+                  onClick={() => removeItem(index)}
+                >
+                  X
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="orderButtons">
+            <button className="checkoutCHECK" onClick={checkout}>
+              {translatedTexts.checkout || defaultTexts.checkout}
+            </button>
+            <button className="enter_item" onClick={toggleKeyboard}>
+              {translatedTexts.enterItem || defaultTexts.enterItem}
+            </button>
+            <button className="clear_order" onClick={resetAll}>
+              {translatedTexts.clearOrder || defaultTexts.clearOrder}
+            </button>
+            <button className="Confirm" onClick={orderEntered}>
+              {translatedTexts.confirmOrder || defaultTexts.confirmOrder}
+            </button>
+            <button className="debug" onClick={debug}>
+              {translatedTexts.debug || defaultTexts.debug}
+            </button>
+          </div>
+          <button className="back-button" onClick={home_screen}>
+            {translatedTexts.exitPage || defaultTexts.exitPage}
           </button>
 
           {showInput && ( // Text box for custom item name
@@ -573,22 +868,26 @@ const CashierHome = () => {
       </div>
 
       {keyboardVisible && (
-        <Keyboard
-          onChange={onChange}
-          onKeyPress={handleKeyPress} // Handles the Enter key press event
-          inputName="inputValue"
-          layoutName="default"
-        />
+        <div className="keyboard-container">
+          <Keyboard
+            onChange={onChange}
+            onKeyPress={handleKeyPress} // Handles the Enter key press event
+            inputName="inputValue"
+            layoutName="default"
+          />
+        </div>
       )}
       {numPadVisible && (
-        <Keyboard
-          onChange={handleNumPadChange}
-          onKeyPress={handleNumPadKeyPress}
-          inputName="cost"
-          layout={{
-            default: ["1 2 3", "4 5 6", "7 8 9", "{bksp} 0 . {enter}"],
-          }}
-        />
+        <div className="keyboard-container">
+          <Keyboard
+            onChange={handleNumPadChange}
+            onKeyPress={handleNumPadKeyPress}
+            inputName="cost"
+            layout={{
+              default: ["1 2 3", "4 5 6", "7 8 9", "{bksp} 0 . {enter}"],
+            }}
+          />
+        </div>
       )}
     </div>
   );

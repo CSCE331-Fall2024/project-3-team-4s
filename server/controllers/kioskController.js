@@ -21,7 +21,6 @@ const getItemPrice = async (req, res) => {
   }
 };
 
-
 const getMealTypes = async (req, res) => {
   try {
     const mealTypes = await db.any(
@@ -37,9 +36,7 @@ const getMealTypes = async (req, res) => {
 
 const getItems = async (req, res) => {
   try {
-    const mealTypes = await db.any(
-      "SELECT * FROM menu_item"
-    );
+    const mealTypes = await db.any("SELECT * FROM menu_item");
 
     res.json(mealTypes);
   } catch (err) {
@@ -115,52 +112,72 @@ const getDrinks = async (req, res) => {
 
 const postOrder = async (req, res) => {
   const { totalCost, transactionType, orderList } = req.body;
-    const transactionDate = new Date();
-    const transactionTime = transactionDate.toTimeString().split(' ')[0]; // Time in HH:MM:SS format
-    const weekNumber = 1;
-    const customerId = 1;
-    const employeeId = 1;
+  const transactionDate = new Date();
+  const transactionTime = transactionDate.toTimeString().split(" ")[0]; // Time in HH:MM:SS format
+  const weekNumber = 1;
+  const customerId = 1;
+  const employeeId = 1;
 
-    try {
-        // Insert into the transaction table and get the transaction_id
-        const transaction = await db.one(
-            `INSERT INTO transaction (total_cost, transaction_time, transaction_date, transaction_type, customer_id, employee_id, week_number)
+  try {
+    // Insert into the transaction table and get the transaction_id
+    const transaction = await db.one(
+      `INSERT INTO transaction (total_cost, transaction_time, transaction_date, transaction_type, customer_id, employee_id, week_number)
             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING transaction_id`,
-            [totalCost, transactionTime, transactionDate, transactionType, customerId, employeeId, weekNumber]
-        );
+      [
+        totalCost,
+        transactionTime,
+        transactionDate,
+        transactionType,
+        customerId,
+        employeeId,
+        weekNumber,
+      ]
+    );
 
-        const transactionId = transaction.transaction_id;
+    const transactionId = transaction.transaction_id;
 
-        // For each item, get menu_item_id based on name, then insert into Menu_item_transaction
-        const itemPromises = orderList.map(async (item) => {
-            const { name, quantity } = item;
+    // For each item, get menu_item_id based on name, then insert into Menu_item_transaction
+    const itemPromises = orderList.map(async (item) => {
+      const { name, quantity } = item;
 
-            // Look up the menu_item_id based on the name
-            const menuItem = await db.oneOrNone(
-                `SELECT menu_item_id FROM menu_item WHERE item_name = $1`,
-                [name]
-            );
+      // Look up the menu_item_id based on the name
+      const menuItem = await db.oneOrNone(
+        `SELECT menu_item_id FROM menu_item WHERE item_name = $1`,
+        [name]
+      );
 
-            if (menuItem) {
-                const menuItemId = menuItem.menu_item_id;
+      if (menuItem) {
+        const menuItemId = menuItem.menu_item_id;
 
-                // Insert into Menu_item_transaction
-                return db.none(
-                    `INSERT INTO Menu_item_transaction (menu_item_id, transaction_id, item_quantity)
+        // Insert into Menu_item_transaction
+        return db.none(
+          `INSERT INTO Menu_item_transaction (menu_item_id, transaction_id, item_quantity)
                     VALUES ($1, $2, $3)`,
-                    [menuItemId, transactionId, quantity]
-                );
-            } else {
-                console.warn(`Item with name "${name}" not found in menu_item table.`);
-            }
-        });
+          [menuItemId, transactionId, quantity]
+        );
+      } else {
+        console.warn(`Item with name "${name}" not found in menu_item table.`);
+      }
+    });
 
-        await Promise.all(itemPromises);
-        res.status(200).json({ message: "Order successfully added to the database" });
-    } catch (error) {
-        console.error("Error submitting order:", error);
-        res.status(500).json({ message: "Error submitting order" });
-    }
+    await Promise.all(itemPromises);
+    res
+      .status(200)
+      .json({ message: "Order successfully added to the database" });
+  } catch (error) {
+    console.error("Error submitting order:", error);
+    res.status(500).json({ message: "Error submitting order" });
+  }
 };
 
-export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks,getItemPrice,postOrder,getSauces,getItems };
+export {
+  getMealTypes,
+  getEntrees,
+  getSides,
+  getAppetizers,
+  getDrinks,
+  getItemPrice,
+  postOrder,
+  getSauces,
+  getItems,
+};
