@@ -16,6 +16,8 @@ const ReportsPage = () => {
   const [endHour, setEndHour] = useState(21);
   const [loading, setLoading] = useState(false);
 
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const fetchReportData = async () => {
     if (!graphType) {
       alert("Please select a report type.");
@@ -47,7 +49,7 @@ const ReportsPage = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`/reports/${graphType}`, {
+      const response = await axios.get(`${backendURL}/reports/${graphType}`, {
         params: {
           startDate,
           endDate: graphType === "z-report" ? undefined : endDate,
@@ -271,10 +273,7 @@ const ReportsPage = () => {
           >
             Save Graphs as Image
           </button>
-          <button
-            onClick={saveAllGraphsAsCSV}
-            style={{ marginLeft: "10px" }}
-          >
+          <button onClick={saveAllGraphsAsCSV} style={{ marginLeft: "10px" }}>
             Export All Data to CSV
           </button>
         </>
