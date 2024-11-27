@@ -84,7 +84,7 @@ const Inventory = () => {
       setInventory([...inventory, res.data.inventoryItem]);
       closeAddModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -116,7 +116,7 @@ const Inventory = () => {
       setSelectedInventoryItem(null);
       closeEditModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -138,7 +138,7 @@ const Inventory = () => {
       setSelectedInventoryItem(null);
       closeDeleteModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -159,7 +159,7 @@ const Inventory = () => {
                 <th>Price</th>
                 <th>Unit</th>
                 <th>Minimum Stock</th>
-                <th>Options</th>
+                <th>Actions</th>
               </tr>
             </thead>
 

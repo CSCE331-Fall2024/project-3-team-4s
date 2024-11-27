@@ -81,7 +81,7 @@ const Employees = () => {
       setEmployees([...employees, res.data.employee]);
       closeAddModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -112,7 +112,7 @@ const Employees = () => {
       setSelectedEmployee(null);
       closeEditModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -134,7 +134,7 @@ const Employees = () => {
       setSelectedEmployee(null);
       closeDeleteModal();
 
-      console.log(res.data);
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -152,7 +152,7 @@ const Employees = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Role</th>
-                <th>Options</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
