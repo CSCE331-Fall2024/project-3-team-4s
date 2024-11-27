@@ -35,7 +35,10 @@ const addEmployee = async (req, res) => {
         [role, existingEmployee.employee_id]
       );
 
-      return res.json({ employee: updatedEmployee });
+      return res.json({
+        employee: updatedEmployee,
+        message: `${first_name} ${last_name} hired.`,
+      });
     }
 
     const newEmployee = await db.one(
@@ -43,7 +46,10 @@ const addEmployee = async (req, res) => {
       [first_name, last_name, role]
     );
 
-    res.json({ employee: newEmployee });
+    res.json({
+      employee: newEmployee,
+      message: `${first_name} ${last_name} hired.`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -62,7 +68,10 @@ const updateEmployee = async (req, res) => {
       [first_name, last_name, role, id]
     );
 
-    res.json({ employee: updatedEmployee });
+    res.json({
+      employee: updatedEmployee,
+      message: `${first_name} ${last_name} employee information updated.`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -74,11 +83,16 @@ const deleteEmployee = async (req, res) => {
     // Extract the id from the request parameters
     const { id } = req.params;
 
+    const { first_name, last_name } = await db.one(
+      "SELECT first_name, last_name FROM employee WHERE employee_id = $1",
+      [id]
+    );
+
     await db.none("UPDATE employee SET fired = true WHERE employee_id = $1", [
       id,
     ]);
 
-    res.json({ message: `Employee ${id} set to fired` });
+    res.json({ message: `${first_name} ${last_name} fired.` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });

@@ -61,7 +61,10 @@ const addInventoryItem = async (req, res) => {
         [price, unit, min_stock, existingInventoryItem.ingredient_id]
       );
 
-      return res.json({ inventoryItem: updatedInventoryItem });
+      return res.json({
+        inventoryItem: updatedInventoryItem,
+        message: `${ingredient_name} added.`,
+      });
     }
 
     const newInventoryItem = await db.one(
@@ -69,7 +72,10 @@ const addInventoryItem = async (req, res) => {
       [ingredient_name, 0, price, unit, min_stock]
     );
 
-    res.json({ inventoryItem: newInventoryItem });
+    res.json({
+      inventoryItem: newInventoryItem,
+      message: `${ingredient_name} added.`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -88,7 +94,10 @@ const updateInventoryItem = async (req, res) => {
       [ingredient_name, price, unit, min_stock, id]
     );
 
-    res.json({ inventoryItem: updatedInventoryItem });
+    res.json({
+      inventoryItem: updatedInventoryItem,
+      message: `${ingredient_name} updated.`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -124,12 +133,17 @@ const deleteInventoryItem = async (req, res) => {
     // Extract the id from the request parameters
     const { id } = req.params;
 
+    const { ingredient_name } = await db.one(
+      "SELECT ingredient_name FROM inventory WHERE ingredient_id = $1",
+      [id]
+    );
+
     await db.none(
       "UPDATE inventory SET in_stock = false WHERE ingredient_id = $1",
       [id]
     );
 
-    res.json({ message: `Inventory item ${id} set to out of stock.` });
+    res.json({ message: `${ingredient_name} deleted.` });
   } catch (err) {
     console.error(err);
     res.res.status(500).json({ message: "Internal server error" });
