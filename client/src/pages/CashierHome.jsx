@@ -25,11 +25,13 @@ const CashierHome = () => {
   const [entrees, setEntrees] = useState([]);
   const [sides, setSides] = useState([]);
   const [appetizers, setAppetizers] = useState([]);
+  const [sauces, setSauces] = useState([]);
   const [drinks, setDrinks] = useState([]);
   const [numEntrees, setNumEntrees] = useState(0);
   const [numSides, setNumSides] = useState(0);
   const [numAppetizers, setNumAppetizers] = useState(0);
   const [numDrinks, setNumDrinks] = useState(0);
+  const [numSauces, setNumSauces] = useState(0);
   const [currentOrders, setCurrentOrders] = useState([]);
   const [cost, setCost] = useState("");
   const [currentOrderCost, setCurrentOrderCost] = useState([]);
@@ -45,6 +47,7 @@ const CashierHome = () => {
   const [originalAppetizers, setOriginalAppetizers] = useState([]);
   const [originalDrinks, setOriginalDrinks] = useState([]);
   const [originalMealTypes, setOriginalMealTypes] = useState([]);
+  const [originalSauces, setOriginalSauces] = useState([]);
 
 
   // State to track data fetching completion
@@ -67,6 +70,7 @@ const [bottleCost, setBottleCost] = useState(0);
     sidesTitle: "Sides",
     appetizersTitle: "Appetizer",
     drinksTitle: "Drinks",
+    saucesTitle: "Sauces",
     enterItemDetails: "Enter item details",
     correctNumberItems: "Please select the correct number of items",
   };
@@ -105,6 +109,7 @@ const [bottleCost, setBottleCost] = useState(0);
         setAppetizers(originalAppetizers);
         setDrinks(originalDrinks);
         setMealTypes(originalMealTypes); // Revert meal types to original
+        setSauces(originalSauces);
         return;
       }
 
@@ -130,12 +135,19 @@ const [bottleCost, setBottleCost] = useState(0);
       // Update each category with translated names
       const translatedEntrees = await translateMenuItems(originalEntrees);
       setEntrees(translatedEntrees);
+
       const translatedSides = await translateMenuItems(originalSides);
       setSides(translatedSides);
+
       const translatedAppetizers = await translateMenuItems(originalAppetizers);
       setAppetizers(translatedAppetizers);
+
       const translatedDrinks = await translateMenuItems(originalDrinks);
       setDrinks(translatedDrinks);
+
+      // **Include Sauces**
+      const translatedSauces = await translateMenuItems(originalSauces);
+      setSauces(translatedSauces);
 
       // Translate meal types
       const translatedMealTypes = await translateMenuItems(originalMealTypes);
@@ -177,7 +189,11 @@ const [bottleCost, setBottleCost] = useState(0);
         const res4 = await axios.get(`${backendURL}/kiosk/drinks`);
         setDrinks(res4.data);
         setOriginalDrinks(res4.data);
-        console.log("Drinks" ,res4.data);
+        //console.log("Drinks" ,res4.data);
+        const res6 = await axios.get(`${backendURL}/kiosk/sauces`);
+        setSauces(res6.data);
+        setOriginalSauces(res6.data);
+        //console.log("Sauces" ,res6.data);
 
         const res5 = await axios.get(`${backendURL}/kiosk/meal-types`);
 
@@ -254,6 +270,7 @@ const [bottleCost, setBottleCost] = useState(0);
       setNumAppetizers(1);
       setNumDrinks(1);
       setNumEntrees(1);
+      setNumSauces(6);
       setNumSides(2);
     }
   };
@@ -290,6 +307,7 @@ const [bottleCost, setBottleCost] = useState(0);
           numAppetizers > 0 &&
           numDrinks > 0 &&
           numEntrees > 0 &&
+          numSauces > 0 &&
           numSides > 1
         ) {
           currentOrdersIDs.push([999]);
@@ -321,6 +339,7 @@ const [bottleCost, setBottleCost] = useState(0);
     setNumAppetizers(0);
     setNumDrinks(0);
     setHalfSides(0);
+    setNumSauces(0);
     setCurrentOrderCost([]);
     
   };
@@ -376,6 +395,11 @@ const [bottleCost, setBottleCost] = useState(0);
       reset();
       setNumDrinks(1);
     }
+    else if (tabName.item_name.includes("Sauces")) {
+      reset();
+      setNumSauces(6);
+    }
+
 
     handleOrderTypeClick(tabName);
   };
@@ -385,6 +409,7 @@ const [bottleCost, setBottleCost] = useState(0);
   // HANDLES CURRENT ORDERS AND NUMBER OF ITEMS -------------------------------------------------------------------------------------------
 
   const handleFoodClick = (item) => {
+    console.log("handle food click", item.item_category, numSauces);
     // Decrement counts and add items to the current order
     if (item.item_category === "Entree" && numEntrees > 0) {
       setNumEntrees(numEntrees - 1);
@@ -421,9 +446,15 @@ const [bottleCost, setBottleCost] = useState(0);
       else if (item.item_category === "Bottle") {
         currentOrderCost.push(bottleCost + item.item_price);
         currentOrderCost[0] = 0;
-        current
       }
-      }
+    }
+    else if (item.item_category === "Sauces" && numSauces > 0) {
+      console.log("Sauces", item.item_name);
+      setNumSauces(numSauces - 1);
+      currentOrder.push(item.item_name);
+      currentOrderIDs.push(item.menu_item_id);
+      currentOrderCost.push(item.item_price);
+    }
   };
   const home_screen = () => {
     navigate("/");
@@ -468,7 +499,7 @@ const [bottleCost, setBottleCost] = useState(0);
       numAppetizers === 0 &&
       numDrinks === 0 &&
       numEntrees === 0 &&
-      
+      numSauces === 0 &&
       (numSides === 0 || numSides === 1) &&
       currentOrder.length > 0
     ) {
@@ -637,6 +668,7 @@ const [bottleCost, setBottleCost] = useState(0);
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
                               numEntrees > 0 &&
+                              numSauces > 0 &&
                               numSides > 1
                             ))
                         }
@@ -666,6 +698,7 @@ const [bottleCost, setBottleCost] = useState(0);
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
                               numEntrees > 0 &&
+                              numSauces > 0 &&
                               numSides > 1
                             ))
                         }
@@ -696,6 +729,7 @@ const [bottleCost, setBottleCost] = useState(0);
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
                               numEntrees > 0 &&
+                              numSauces > 0 &&
                               numSides > 1
                             ))
                         }
@@ -725,6 +759,7 @@ const [bottleCost, setBottleCost] = useState(0);
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
                               numEntrees > 0 &&
+                              numSauces > 0 &&
                               numSides > 1
                             ))
                         }
@@ -734,6 +769,35 @@ const [bottleCost, setBottleCost] = useState(0);
                     ))
                   ) : (
                     <p>Loading drinks...</p>
+                  )}
+                </div>
+              </div>
+              <div className="menu-section">
+                {translatedTexts.saucesTitle || defaultTexts.saucesTitle}
+                <div className="menu-item-list">
+                  {sauces && sauces.length > 0 ? (
+                    sauces.map((sauce) => (
+                      <button
+                        key={sauce.menu_item_id}
+                        className="menu-item-button"
+                        onClick={() => handleFoodClick(sauce)}
+                        disabled={
+                          numSauces === 0 ||
+                          (numPadVisible === true &&
+                            !(
+                              numAppetizers > 0 &&
+                              numDrinks > 0 &&
+                              numEntrees > 0 &&
+                              numSauces > 0 &&
+                              numSides > 1
+                            ))
+                        }
+                      >
+                        {sauce.item_name}
+                      </button>
+                    ))
+                  ) : (
+                    <p>Loading sauces...</p>
                   )}
                 </div>
               </div>
