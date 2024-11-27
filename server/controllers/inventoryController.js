@@ -45,7 +45,7 @@ const addInventoryItem = async (req, res) => {
     const { ingredient_name, price, unit, min_stock } = req.body;
 
     if (!ingredient_name || !price || !unit || !min_stock) {
-      return res.status(400).json({ message: "Please fill out all fields" });
+      return res.status(400).json({ message: "Please fill out all fields." });
     }
 
     // Check if the inventory item already exists
@@ -95,14 +95,16 @@ const updateInventoryItem = async (req, res) => {
   }
 };
 
-const restockInventoryItem = async (req, res) => {
+const restockInventoryItems = async (req, res) => {
   try {
     // Extract order from the request body
-    const { order } = req.body;
+    const order = req.body;
+    console.log(order);
 
     // Iterate through the order and update inventory
     for (const item of order) {
       const { ingredient_id, ingredient_name, quantity, total_price } = item;
+      console.log(ingredient_id, ingredient_name, quantity, total_price);
 
       await db.none(
         "UPDATE inventory SET current_stock = current_stock + $1 WHERE ingredient_id = $2",
@@ -110,7 +112,7 @@ const restockInventoryItem = async (req, res) => {
       );
     }
 
-    res.json({ message: "Inventory restocked" });
+    res.json({ message: "Inventory restocked." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -127,10 +129,10 @@ const deleteInventoryItem = async (req, res) => {
       [id]
     );
 
-    res.json({ message: `Inventory item ${id} set to out of stock` });
+    res.json({ message: `Inventory item ${id} set to out of stock.` });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -140,6 +142,6 @@ export {
   getNonMinStockInventoryItems,
   addInventoryItem,
   updateInventoryItem,
-  restockInventoryItem,
+  restockInventoryItems,
   deleteInventoryItem,
 };

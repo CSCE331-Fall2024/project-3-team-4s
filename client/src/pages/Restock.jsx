@@ -45,6 +45,11 @@ const Restock = () => {
 
   // Add item to order cart
   const addToOrder = (id, name, price) => {
+    if (!id || !name || !price) {
+      alert("Please select an item to add to your order.");
+      return;
+    }
+
     const quantity = quantities[id];
 
     // Validate quantity
@@ -77,6 +82,34 @@ const Restock = () => {
     setOrder([]);
     setOrderTotal(0);
     setQuantities({});
+  };
+
+  const submitOrder = async () => {
+    if (order.length === 0) {
+      alert("Please add items to your order.");
+      return;
+    }
+
+    try {
+      const res = await axios.put(
+        `${backendURL}/inventory/restock-inventory`,
+        order
+      );
+
+      // Display response message
+      alert(res.data.message);
+
+      clearOrder();
+
+      // Refetch inventory
+      const res2 = await axios.get(`${backendURL}/inventory/get-min-stock`);
+      const res3 = await axios.get(`${backendURL}/inventory/get-non-min-stock`);
+
+      setMinStockInventory(res2.data);
+      setNonMinStockInventory(res3.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -246,8 +279,11 @@ const Restock = () => {
                 <td colSpan="5">
                   <div className="order-details">
                     Order Total: ${orderTotal.toFixed(2)}
-                    <div class="restock-buttons">
-                      <Button text="Submit Order"></Button>
+                    <div className="restock-buttons">
+                      <Button
+                        text="Submit Order"
+                        onClick={submitOrder}
+                      ></Button>
                       <Button text="Clear Order" onClick={clearOrder}></Button>
                     </div>
                   </div>
