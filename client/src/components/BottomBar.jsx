@@ -33,7 +33,7 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
     if (!validateSelections()) return; // Stop if validation fails
 
     // Add main item (Bowl, Plate, or Bigger Plate) to the order
-    addToOrder(selectedItem.item_name, 1);
+    addToOrder(selectedItem.item_name, 1,);
 
     // Add selected sides and entrees to the order
     const items = [

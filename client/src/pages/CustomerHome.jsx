@@ -362,29 +362,32 @@ const CustomerHome = () => {
     setSelectedSide(null);
   };
 
-  const handleDrinkClick = async (drink) => {
+  const handleDrinkClick = (drink, event) => {
+    const cursorX = event.clientX;
+    const cursorY = event.clientY;
+  
     let price;
-
+  
     if (drink.item_category === "Bottle") {
-      // Use the price of the selected drink
       price = drink.item_price;
     } else if (drink.item_category === "Drink") {
-      // Use a fixed price for drinks
       price = 2.3;
     } else if (drink.item_category === "Refresher") {
-      // Use a fixed price for refreshers
       price = 3.2;
     } else {
       price = 0;
     }
-
+  
     setSelectedDrink({
       name: drink.item_name,
       image: imageMap[drink.item_name]?.image,
-      price: price, // Set the determined price
+      price: price,
+      position: { x: cursorX, y: cursorY }, // Pass the cursor position
     });
+  
     setIsDrinkModalOpen(true);
   };
+  
 
   const closeDrinkModal = () => {
     setSelectedDrink(null);
@@ -483,14 +486,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            {isSauceModalOpen && selectedSauce && (
-            <SauceModal
-              sauce={selectedSauce}
-              onClose={closeSauceModal}
-              addToOrder={addToOrder}
-              resetSelections = {resetSelections}
-            />
-          )}
+            
           </div>
         ) : selectedItem.item_name === "Appetizer" ? (
           <div className="steps-container">
@@ -586,14 +582,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            {isEntreeModalOpen && selectedEntree && (
-              <EntreeModal
-                entree={selectedEntree}
-                onClose={closeEntreeModal}
-                addToOrder={addToOrder}
-                resetSelections = {resetSelections}
-              />
-            )}
+            
           </div>
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
@@ -608,7 +597,7 @@ const CustomerHome = () => {
                 <div
                   key={drink.menu_item_id}
                   className="menu-item"
-                  onClick={() => handleDrinkClick(drink)}
+                  onClick={(eve) => handleDrinkClick(drink,event)}
                 >
                   <img
                     src={imageMap[drink.item_name]?.image || logo}
@@ -622,14 +611,7 @@ const CustomerHome = () => {
                 </div>
               ))}
             </div>
-            {isDrinkModalOpen && selectedDrink && (
-              <DrinkModal
-                drink={selectedDrink}
-                onClose={closeDrinkModal}
-                addToOrder={addToOrder}
-                resetSelections = {resetSelections}
-              />
-            )}
+            
           </div>
         ) : (
           <div className="steps-container">
@@ -716,6 +698,32 @@ const CustomerHome = () => {
             resetSelections={resetSelections}
           />
         )}
+
+{isDrinkModalOpen && selectedDrink && (
+              <DrinkModal
+                drink={selectedDrink}
+                onClose={closeDrinkModal}
+                addToOrder={addToOrder}
+                resetSelections = {resetSelections}
+              />
+            )}
+
+{isEntreeModalOpen && selectedEntree && (
+              <EntreeModal
+                entree={selectedEntree}
+                onClose={closeEntreeModal}
+                addToOrder={addToOrder}
+                resetSelections = {resetSelections}
+              />
+            )}
+            {isSauceModalOpen && selectedSauce && (
+            <SauceModal
+              sauce={selectedSauce}
+              onClose={closeSauceModal}
+              addToOrder={addToOrder}
+              resetSelections = {resetSelections}
+            />
+          )}
     </div>
   );
 };

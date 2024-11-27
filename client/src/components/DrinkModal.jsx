@@ -15,7 +15,7 @@ const DrinkModal = ({ drink, onClose, resetSelections }) => {
   const handleAddToOrder = () => {
     addToOrder(drink.name, quantity);
     onClose(); // Close the modal after adding to the order
-    resetSelections(); // Reset the selections in the parent component
+    resetSelections()
   };
 
   return (
