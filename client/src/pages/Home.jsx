@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import TranslateModal from "../components/TranslateModal";
 import { translate } from "../utils/translateUtil";
 import { useTranslate } from "../contexts/TranslateContext";
+import he from "he";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -22,12 +23,14 @@ const Home = () => {
     const fetchTranslations = async () => {
       try {
         const translatedText = {
-          translate: await translate("Translate", language),
-          accessiblity: await translate("Accessibility Options", language),
-          order: await translate("Place Order", language),
-          manager: await translate("Manager", language),
-          cashier: await translate("Cashier", language),
-          heading: await translate("Panda Express", language),
+          translate: he.decode(await translate("Translate", language)),
+          accessiblity: he.decode(
+            await translate("Accessibility Options", language)
+          ),
+          order: he.decode(await translate("Place Order", language)),
+          manager: he.decode(await translate("Manager", language)),
+          cashier: he.decode(await translate("Cashier", language)),
+          heading: he.decode(await translate("Panda Express", language)),
         };
 
         setText(translatedText);
