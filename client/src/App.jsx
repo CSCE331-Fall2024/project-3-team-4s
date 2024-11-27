@@ -11,31 +11,34 @@ import Employees from "./pages/Employees";
 import OrderPage from "./pages/OrderPageWrapper";
 import CategoryPage from "./pages/CategoryPage";
 import { OrderProvider } from "./pages/OrderContext";
+import { TranslateProvider } from "./contexts/TranslateContext";
 
 const App = () => {
   return (
-    <div className="global">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/customer" element={<CustomerHome />} />
-        <Route path="/manager" element={<ManagerHome />} />
-        <Route path="/cashier" element={<CashierHome />} />
-        <Route path="/menu" element={<EditMenu />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/restock" element={<Restock />} />
-        <Route path="/employees" element={<Employees />} />
-        <Route path="/order" element={<OrderPage />} />
-        <Route
-          path="/category/:categoryName"
-          element={
-            <OrderProvider>
-              <CategoryPage />
-            </OrderProvider>
-          }
-        />
-      </Routes>
-    </div>
+    <TranslateProvider>
+      <div className="global">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/customer" element={<CustomerHome />} />
+          <Route path="/manager" element={<ManagerHome />} />
+          <Route path="/cashier" element={<CashierHome />} />
+          <Route path="/menu" element={<EditMenu />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/restock" element={<Restock />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/order" element={<OrderPage />} />
+          <Route
+            path="/category/:categoryName"
+            element={
+              <OrderProvider>
+                <CategoryPage />
+              </OrderProvider>
+            }
+          />
+        </Routes>
+      </div>
+    </TranslateProvider>
   );
 };
 
