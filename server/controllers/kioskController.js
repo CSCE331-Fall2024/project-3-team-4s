@@ -73,4 +73,17 @@ const postOrder = async (req, res) => {
   }
 };
 
-export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks, postOrder };
+const getSauces = async (req, res) => {
+  try {
+    const sauces = await db.any(
+      "SELECT * FROM menu_item WHERE item_category = 'Sauces'"
+    );
+
+    res.json(sauces);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { getMealTypes, getEntrees, getSides, getAppetizers,getDrinks, postOrder,getSauces };
