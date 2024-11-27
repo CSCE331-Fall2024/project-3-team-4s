@@ -9,9 +9,9 @@ import { LanguageContext } from "./LanguageContext";
 import { Route, Routes, useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
-  //const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate(); //back to homepage
-  const backendURL = "http://localhost:3000";
+  // const backendURL = "http://localhost:3000";
 
   const { language, setLanguage } = useContext(LanguageContext);
   const [translatedTexts, setTranslatedTexts] = useState({});
