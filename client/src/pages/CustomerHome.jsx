@@ -81,7 +81,8 @@ const displayOrder = [
 ];
 
 const CustomerHome = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000"; // URL for the backend
+  const URL = import.meta.env.VITE_BACKEND_URL
   const logo = "/logo.png";
   const { popupDetails } = useOrder();
 
@@ -108,7 +109,7 @@ const CustomerHome = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/kiosk/meal-types`);
+        const response = await fetch(`${backendURL}/kiosk/meal-types`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -149,7 +150,7 @@ const CustomerHome = () => {
   // Fetch sauces from backend
   const fetchSauces = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/kiosk/sauces`);
+      const response = await fetch(`${backendURL}/kiosk/sauces`);
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
       setSauces(data);
@@ -161,7 +162,7 @@ const CustomerHome = () => {
   // Fetch sides when an item is selected
   const fetchSides = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/kiosk/sides`);
+      const response = await fetch(`${backendURL}/kiosk/sides`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -175,7 +176,7 @@ const CustomerHome = () => {
   // Fetch entrees when an item is selected
   const fetchEntrees = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/kiosk/entrees`);
+      const response = await fetch(`${backendURL}/kiosk/entrees`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -192,7 +193,7 @@ const CustomerHome = () => {
 
   const fetchAppetizers = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/kiosk/appetizers`);
+      const response = await fetch(`${backendURL}/kiosk/appetizers`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -205,7 +206,7 @@ const CustomerHome = () => {
 
   const fetchDrinks = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/kiosk/drinks`);
+      const response = await fetch(`${backendURL}/kiosk/drinks`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
