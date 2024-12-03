@@ -1,26 +1,20 @@
 // CashierHome.js
-import React, { useEffect, useState, useContext } from "react";
-import Keyboard from "react-simple-keyboard";
-import "react-simple-keyboard/build/css/index.css";
+import React, { useEffect, useState } from "react";
+// Removed react-simple-keyboard imports
 import "./styles/CashierHome.css";
 import axios from "axios";
 import "./Employees.css";
-import { LanguageContext } from "./LanguageContext";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
-  //const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const navigate = useNavigate(); //back to homepage
+  const navigate = useNavigate(); // Navigate to homepage
   const backendURL = "http://localhost:3000";
 
-  const { language, setLanguage } = useContext(LanguageContext);
-  const [translatedTexts, setTranslatedTexts] = useState({});
-
+  // State Variables
   const [activeTab, setActiveTab] = useState("Orders");
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const [numPadVisible, setNumPadVisible] = useState(false);
+  // Removed keyboardVisible and numPadVisible
   const [currentOrder, setCurrentOrder] = useState([]);
   const [entrees, setEntrees] = useState([]);
   const [sides, setSides] = useState([]);
@@ -41,23 +35,22 @@ const CashierHome = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [halfSides, setHalfSides] = useState(0);
 
-  // Added state for original items to preserve English data
-  const [originalEntrees, setOriginalEntrees] = useState([]);
-  const [originalSides, setOriginalSides] = useState([]);
-  const [originalAppetizers, setOriginalAppetizers] = useState([]);
-  const [originalDrinks, setOriginalDrinks] = useState([]);
-  const [originalMealTypes, setOriginalMealTypes] = useState([]);
-  const [originalSauces, setOriginalSauces] = useState([]);
-
-
-  // State to track data fetching completion
-  const [dataFetched, setDataFetched] = useState(false);
-  //edge case with bottle and refresher
+  // State for special items
   const [refresherCost, setRefresherCost] = useState(0);
-const [bottleCost, setBottleCost] = useState(0);
+  const [bottleCost, setBottleCost] = useState(0);
 
+  //customer addition
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [customerFirstName, setCustomerFirstName] = useState("");
+  const [customerLastName, setCustomerLastName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  //customer sign in
+  const [customerID, setCustomerID] = useState("");
+  const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
+  const [searchPhone, setSearchPhone] = useState("");
 
-  // Default text to translate
+  // Default Texts
   const defaultTexts = {
     currentOrderTitle: "Current Order",
     checkout: "Checkout",
@@ -75,89 +68,7 @@ const [bottleCost, setBottleCost] = useState(0);
     correctNumberItems: "Please select the correct number of items",
   };
 
-  // Translate text using the provided function
-  const translateText = async (text, targetLanguage) => {
-    try {
-      if (targetLanguage === "en") {
-        // If language is English, no translation needed
-        return text;
-      }
-      const response = await axios.post(`${backendURL}/translate/translate`, {
-        text,
-        targetLanguage,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error translating text:", error);
-      return text; // Return original text if translation fails
-    }
-  };
-
-  // Translate UI text and menu items when language changes
-  useEffect(() => {
-    const translateUI = async () => {
-      if (!dataFetched) {
-        // Data hasn't been fetched yet; wait before translating, this is so it finds the correct names
-        return;
-      }
-
-      if (language === "en") {
-        // If language is English, revert to default texts and original item names
-        setTranslatedTexts(defaultTexts);
-        setEntrees(originalEntrees);
-        setSides(originalSides);
-        setAppetizers(originalAppetizers);
-        setDrinks(originalDrinks);
-        setMealTypes(originalMealTypes); // Revert meal types to original
-        setSauces(originalSauces);
-        return;
-      }
-
-      // Translate static UI texts
-      const translations = {};
-      for (const [key, value] of Object.entries(defaultTexts)) {
-        const translated = await translateText(value, language);
-        translations[key] = translated;
-      }
-      setTranslatedTexts(translations);
-
-      // Translate menu item names
-      const translateMenuItems = async (items) => {
-        if (!items || !Array.isArray(items) || items.length === 0) return [];
-        const translatedItems = [];
-        for (const item of items) {
-          const translatedName = await translateText(item.item_name, language);
-          translatedItems.push({ ...item, item_name: translatedName });
-        }
-        return translatedItems;
-      };
-
-      // Update each category with translated names
-      const translatedEntrees = await translateMenuItems(originalEntrees);
-      setEntrees(translatedEntrees);
-
-      const translatedSides = await translateMenuItems(originalSides);
-      setSides(translatedSides);
-
-      const translatedAppetizers = await translateMenuItems(originalAppetizers);
-      setAppetizers(translatedAppetizers);
-
-      const translatedDrinks = await translateMenuItems(originalDrinks);
-      setDrinks(translatedDrinks);
-
-      // **Include Sauces**
-      const translatedSauces = await translateMenuItems(originalSauces);
-      setSauces(translatedSauces);
-
-      // Translate meal types
-      const translatedMealTypes = await translateMenuItems(originalMealTypes);
-      setMealTypes(translatedMealTypes);
-    };
-
-    translateUI();
-  }, [language, dataFetched]); // Added dataFetched to dependency array
-
-  // Fetch weather data
+  // Fetch Weather Data
   const fetchWeather = async () => {
     try {
       const response = await axios.get(`${backendURL}/weather/weather`, {
@@ -169,65 +80,55 @@ const [bottleCost, setBottleCost] = useState(0);
     }
   };
 
-  // Preloading all data
+  // Preload All Food Data
   useEffect(() => {
     const fetchFood = async () => {
       try {
-        // Preload all data so requests are not needed repeatedly
-        const res = await axios.get(`${backendURL}/kiosk/entrees`);
-        setEntrees(res.data);
-        setOriginalEntrees(res.data);
+        const [
+          entreesRes,
+          sidesRes,
+          appetizersRes,
+          drinksRes,
+          saucesRes,
+          mealTypesRes,
+        ] = await Promise.all([
+          axios.get(`${backendURL}/kiosk/entrees`),
+          axios.get(`${backendURL}/kiosk/sides`),
+          axios.get(`${backendURL}/kiosk/appetizers`),
+          axios.get(`${backendURL}/kiosk/drinks`),
+          axios.get(`${backendURL}/kiosk/sauces`),
+          axios.get(`${backendURL}/kiosk/meal-types`),
+        ]);
 
-        const res2 = await axios.get(`${backendURL}/kiosk/sides`);
-        setSides(res2.data);
-        setOriginalSides(res2.data);
-
-        const res3 = await axios.get(`${backendURL}/kiosk/appetizers`);
-        setAppetizers(res3.data);
-        setOriginalAppetizers(res3.data);
-
-        const res4 = await axios.get(`${backendURL}/kiosk/drinks`);
-        setDrinks(res4.data);
-        setOriginalDrinks(res4.data);
-        //console.log("Drinks" ,res4.data);
-        const res6 = await axios.get(`${backendURL}/kiosk/sauces`);
-        setSauces(res6.data);
-        setOriginalSauces(res6.data);
-        //console.log("Sauces" ,res6.data);
-
-        const res5 = await axios.get(`${backendURL}/kiosk/meal-types`);
+        setEntrees(entreesRes.data);
+        setSides(sidesRes.data);
+        setAppetizers(appetizersRes.data);
+        setDrinks(drinksRes.data);
+        setSauces(saucesRes.data);
 
         // Extract "refresher" and "bottle" items
-        const refresherItem = res5.data.find(
+        const refresherItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "refresher"
         );
-        const bottleItem = res5.data.find(
+        const bottleItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "bottle"
         );
-        
-        // Save their costs to state variables
+
         if (refresherItem) {
           setRefresherCost(refresherItem.item_price);
         }
         if (bottleItem) {
           setBottleCost(bottleItem.item_price);
         }
-        
+
         // Filter out "refresher" and "bottle" from meal types
-        const filteredMealTypes = res5.data.filter(
+        const filteredMealTypes = mealTypesRes.data.filter(
           (item) =>
             item.item_name.toLowerCase() !== "refresher" &&
             item.item_name.toLowerCase() !== "bottle"
         );
-        
-        // Update the state with the filtered meal types
+
         setMealTypes(filteredMealTypes);
-        setOriginalMealTypes(filteredMealTypes); // Store original meal types
-           
-
-        // Set dataFetched to true after all data is fetched
-        setDataFetched(true);
-
       } catch (err) {
         console.error("Error fetching food data:", err);
       }
@@ -235,104 +136,20 @@ const [bottleCost, setBottleCost] = useState(0);
 
     fetchFood();
     fetchWeather();
-  }, []);
+  }, [backendURL]);
 
-  // ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
-
-  const toggleKeyboard = () => {
-    reset();
-    if (numPadVisible === true) {
-      setNumPadVisible(false);
-    }
-    setCost("");
-    setCurrentOrder([]);
-    setCurrentOrderIDs([]);
-    setCurrentOrderCost([]);
-    setShowInput(!showInput);
-    setKeyboardVisible(!keyboardVisible);
+  // Handle Number Pad Change
+  const handleNumPadChange = (event) => {
+    setCost(event.target.value);
+    console.log("Cost input changed:", event.target.value);
   };
 
-  const handleKeyPress = (button) => {
-    // For item name
-    if (button === "{enter}") {
-      console.log("Input value:", inputValue);
-      if (inputValue === "") {
-        console.log("Input value is empty");
-      } else {
-        currentOrder.push(inputValue);
-      }
-      setNumPadVisible(true); // Show the numpad after entering the item name
-      setInputValue(""); // Clear the input field after adding the item to the order
-      setShowInput(false); // Hide the input field after adding the item to the order
-      setKeyboardVisible(false);
-
-      setActiveTab("Orders");
-      setNumAppetizers(1);
-      setNumDrinks(1);
-      setNumEntrees(1);
-      setNumSauces(6);
-      setNumSides(2);
-    }
-  };
-
-  const handleNumPadChange = (input) => {
-    setCost(input);
-    console.log("Cost input changed:", input);
-  };
-
-  const handleNumPadKeyPress = (button) => {
-    if (button === "{enter}") {
-      try {
-        if (cost === "") {
-          console.log("Cost is empty");
-          return;
-        }
-
-        Number(cost);
-        console.log("Cost entered:", cost);
-        setNumPadVisible(false); // Hide the numpad after entering the cost
-        currentOrder.push(Number(cost).toFixed(2));
-        currentOrderCost.push(Number(cost).toFixed(2));
-        currentOrders.push(currentOrder);
-        setCurrentOrders([...currentOrders]);
-        console.log("Current Orders: ");
-        console.log(currentOrders);
-        setInputValue(""); // Clear the input field after adding the item to the order
-        setCurrentOrder([]); // Clear the current order
-        setCurrentOrderIDs([]);
-        setCost("");
-
-        // If an item is not selected, default to 999
-        if (
-          numAppetizers > 0 &&
-          numDrinks > 0 &&
-          numEntrees > 0 &&
-          numSauces > 0 &&
-          numSides > 1
-        ) {
-          currentOrdersIDs.push([999]);
-        } else {
-          currentOrdersIDs.push(currentOrderIDs);
-        }
-        reset();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
-
+  // Handle Custom Item Input Change
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
-  const onChange = (input) => {
-    setInputValue(input);
-  };
-
-  // END OF ADD CUSTOM ITEM FUNCTIONALITIES -------------------------------------------------------------------------------------------
-
-  // GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
-
+  // Reset Item Counts
   const reset = () => {
     setNumEntrees(0);
     setNumSides(0);
@@ -341,9 +158,9 @@ const [bottleCost, setBottleCost] = useState(0);
     setHalfSides(0);
     setNumSauces(0);
     setCurrentOrderCost([]);
-    
   };
 
+  // Reset All Orders
   const resetAll = () => {
     reset();
     console.log("Resetting all orders");
@@ -351,150 +168,164 @@ const [bottleCost, setBottleCost] = useState(0);
     setCurrentOrder([]);
     setCurrentOrderIDs([]);
     setCurrentOrderCost([]);
+    setCurrentOrders([]);
+    setCurrentOrdersIDs([]);
   };
 
   useEffect(() => {
     console.log("Current Order after reset:", currentOrder);
   }, [currentOrder]);
 
-  // END OF GLOBALLY USED FUNCTIONS -------------------------------------------------------------------------------------------
-
-  // TAB FUNCTIONALITIES --------------------------------------------------------------------------------------------
-
+  // Open and Handle Tab Clicks
   const openTab = (e, tabName) => {
-    // Handles tab clicks and sets the number of items
     console.log("Tab name:", tabName);
-    // Reset the current order and cost then assign
     setCurrentOrder([]);
     setCurrentOrderIDs([]);
     setActiveTab(tabName.item_name);
     reset();
 
-    if (tabName.item_name === "Bowl") {
-      reset();
-      setNumEntrees(1);
-      setNumSides(2);
-    } else if (tabName.item_name === "Plate") {
-      reset();
-      setNumEntrees(2);
-      setNumSides(2);
-    } else if (tabName.item_name === "Bigger Plate") {
-      reset();
-      setNumEntrees(3);
-      setNumSides(2);
-    } else if (tabName.item_name.includes("Entree")) {
-      reset();
-      setNumEntrees(1);
-    } else if (tabName.item_name.includes("Side")) {
-      reset();
-      setNumSides(2);
-    } else if (tabName.item_name === "Appetizer") {
-      reset();
-      setNumAppetizers(1);
-    } else if (tabName.item_name.includes("Drink")) {
-      reset();
-      setNumDrinks(1);
+    switch (tabName.item_name) {
+      case "Bowl":
+        setNumEntrees(1);
+        setNumSides(2);
+        break;
+      case "Plate":
+        setNumEntrees(2);
+        setNumSides(2);
+        break;
+      case "Bigger Plate":
+        setNumEntrees(3);
+        setNumSides(2);
+        break;
+      default:
+        if (tabName.item_name.includes("Entree")) {
+          setNumEntrees(1);
+        } else if (tabName.item_name.includes("Side")) {
+          setNumSides(2);
+        } else if (tabName.item_name === "Appetizer") {
+          setNumAppetizers(1);
+        } else if (tabName.item_name.includes("Drink")) {
+          setNumDrinks(1);
+        } else if (tabName.item_name.includes("Sauces")) {
+          setNumSauces(6);
+        }
+        break;
     }
-    else if (tabName.item_name.includes("Sauces")) {
-      reset();
-      setNumSauces(6);
-    }
-
 
     handleOrderTypeClick(tabName);
   };
 
-  // END OF TAB FUNCTIONALITIES --------------------------------------------------------------------------------------------
+  // Handle Order Type Click
+  const handleOrderTypeClick = (item) => {
+    setCurrentOrder([...currentOrder, item.item_name]);
+    setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+    setCurrentOrderCost([...currentOrderCost, item.item_price]);
+  };
 
-  // HANDLES CURRENT ORDERS AND NUMBER OF ITEMS -------------------------------------------------------------------------------------------
-
+  // Handle Food Item Click
   const handleFoodClick = (item) => {
     console.log("handle food click", item.item_category, numSauces);
-    // Decrement counts and add items to the current order
     if (item.item_category === "Entree" && numEntrees > 0) {
       setNumEntrees(numEntrees - 1);
-      currentOrder.push(item.item_name);
-      currentOrderIDs.push(item.menu_item_id);
-      currentOrderCost.push(item.item_price);
-      } else if (item.item_category === "Side" && numSides > 0) {
-        setNumSides(numSides - 1);
-        if (numSides === 0) {
-          setHalfSides(1);
-        }
-        currentOrder.push(item.item_name);
-        currentOrderIDs.push(item.menu_item_id);
-        currentOrderCost.push(item.item_price);
-      } else if (item.item_category === "Appetizer" && numAppetizers > 0) {
-        setNumAppetizers(numAppetizers - 1);
-        currentOrder.push(item.item_name);
-        currentOrderIDs.push(item.menu_item_id);
-        currentOrderCost.push(item.item_price);
-      } else if ((item.item_category === "Drink" || item.item_category === "Refresher" || item.item_category === "Bottle" )&& numDrinks > 0) {
-        setNumDrinks(numDrinks - 1);
-        currentOrder.push(item.item_name);
-        currentOrderIDs.push(item.menu_item_id);
-        if (item.item_category === "Drink") {
-          currentOrderCost.push(item.item_price);
-
-        }
-        else if (item.item_category === "Refresher") {
-          currentOrderCost.push(refresherCost + item.item_price);
-          currentOrderCost[0] = 0;
-          console.log("dsafsdafsadfs",refresherCost + item.item_price);
-
+      setCurrentOrder([...currentOrder, item.item_name]);
+      setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+      setCurrentOrderCost([...currentOrderCost, item.item_price]);
+    } else if (item.item_category === "Side" && numSides > 0) {
+      setNumSides(numSides - 1);
+      if (numSides === 0) {
+        setHalfSides(1);
       }
-      else if (item.item_category === "Bottle") {
-        currentOrderCost.push(bottleCost + item.item_price);
-        currentOrderCost[0] = 0;
+      setCurrentOrder([...currentOrder, item.item_name]);
+      setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+      setCurrentOrderCost([...currentOrderCost, item.item_price]);
+    } else if (item.item_category === "Appetizer" && numAppetizers > 0) {
+      setNumAppetizers(numAppetizers - 1);
+      setCurrentOrder([...currentOrder, item.item_name]);
+      setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+      setCurrentOrderCost([...currentOrderCost, item.item_price]);
+    } else if (
+      (item.item_category === "Drink" ||
+        item.item_category === "Refresher" ||
+        item.item_category === "Bottle") &&
+      numDrinks > 0
+    ) {
+      setNumDrinks(numDrinks - 1);
+      setCurrentOrder([...currentOrder, item.item_name]);
+      setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+
+      if (item.item_category === "Drink") {
+        setCurrentOrderCost([...currentOrderCost, item.item_price]);
+      } else if (item.item_category === "Refresher") {
+        const totalRefresherCost = refresherCost + item.item_price;
+        setCurrentOrderCost([
+          ...currentOrderCost,
+          totalRefresherCost.toFixed(2),
+        ]);
+        console.log("Refresher cost:", totalRefresherCost);
+      } else if (item.item_category === "Bottle") {
+        const totalBottleCost = bottleCost + item.item_price;
+        setCurrentOrderCost([
+          ...currentOrderCost,
+          totalBottleCost.toFixed(2),
+        ]);
       }
-    }
-    else if (item.item_category === "Sauces" && numSauces > 0) {
+    } else if (item.item_category === "Sauces" && numSauces > 0) {
       console.log("Sauces", item.item_name);
       setNumSauces(numSauces - 1);
-      currentOrder.push(item.item_name);
-      currentOrderIDs.push(item.menu_item_id);
-      currentOrderCost.push(item.item_price);
+      setCurrentOrder([...currentOrder, item.item_name]);
+      setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
+      setCurrentOrderCost([...currentOrderCost, item.item_price]);
     }
   };
+
+  // Navigate to Home Screen
   const home_screen = () => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to log out?"
+    );
+    if (!userConfirmed) {
+      console.log("User canceled");
+      return; // Exit if user cancels
+    }
     navigate("/");
   };
 
-  const debug = async () => {
-    console.log("Current Order", currentOrder);
-    console.log("Translation:" + (await translateText("Hello", "es")));
-    console.log("Weather:" + weatherData?.main?.temp);
-    console.log("Weather:", JSON.stringify(weatherData, null, 2));
-    console.log("Weather: ", weatherData?.weather[0]?.description);
-    console.log(numAppetizers, numDrinks, numEntrees, numSides);
+  // Debug Function
+  const debug = () => {
+    console.log("Current Order:", currentOrder);
+    console.log("Weather Data:", weatherData);
     console.log(
-      numPadVisible === true &&
+      "Number of Items - Appetizers:",
+      numAppetizers,
+      "Drinks:",
+      numDrinks,
+      "Entrees:",
+      numEntrees,
+      "Sides:",
+      numSides
+    );
+    console.log(
+      "NumPad Visible & Required Items Selected:",
+      false && // numPadVisible is removed
         numAppetizers > 0 &&
         numDrinks > 0 &&
         numEntrees > 0 &&
+        numSauces > 0 &&
         numSides > 1
     );
-    console.log("Current Order Cost:", currentOrders);
-    console.log("Current Orders IDS:", currentOrdersIDs);
-
-    console.log("Current Order Cost: ", currentOrderCost);
+    console.log("Current Orders:", currentOrders);
+    console.log("Current Orders IDs:", currentOrdersIDs);
+    console.log("Current Order Cost:", currentOrderCost);
   };
 
-  const handleOrderTypeClick = (id) => {
-    // Adds the first item to the order (bowls, plates, etc.)
-    setCurrentOrder((prevOrder) => [...prevOrder, id.item_name]);
-    setCurrentOrderIDs((prevOrderIDs) => [...prevOrderIDs, id.menu_item_id]);
-    setCurrentOrderCost((prevOrderCost) => [...prevOrderCost, id.item_price]);
-  };
-
+  // Remove Item from Orders
   const removeItem = (index) => {
-    // Removes an item from the current orders
     setCurrentOrders(currentOrders.filter((_, i) => i !== index));
     setCurrentOrdersIDs(currentOrdersIDs.filter((_, i) => i !== index));
   };
 
+  // Confirm Order Entry
   const orderEntered = () => {
-    // Adds items to the list of orders
     if (
       numAppetizers === 0 &&
       numDrinks === 0 &&
@@ -503,110 +334,257 @@ const [bottleCost, setBottleCost] = useState(0);
       (numSides === 0 || numSides === 1) &&
       currentOrder.length > 0
     ) {
-      currentOrder.push(
-        currentOrderCost.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2)
-      );
-      console.log("testing CurrentOrderCost", currentOrderCost);
-      currentOrdersIDs.push(currentOrderIDs);
-      currentOrders.push(currentOrder);
-      setCurrentOrders([...currentOrders]);
-      console.log("Current Orders: ");
-      console.log(currentOrders);
-      setInputValue(""); // Clear the input field after adding the item to the order
-      setCurrentOrder([]); // Clear the current order
+      // Calculate the total cost
+      const totalCost = currentOrderCost
+        .reduce((a, b) => Number(a) + Number(b), 0)
+        .toFixed(2);
+
+      // Create a new order array that includes the total cost
+      const newOrder = [...currentOrder, totalCost];
+
+      // Update the current orders with the new order
+      setCurrentOrders([...currentOrders, newOrder]);
+
+      // Update the current order IDs
+      setCurrentOrdersIDs([...currentOrdersIDs, currentOrderIDs]);
+
+      // Log for debugging
+      console.log("Current Order Cost:", currentOrderCost);
+      console.log("Current Orders:", [...currentOrders, newOrder]);
+
+      // Clear the input fields and current order states
+      setInputValue(""); // Clear input field
+      setCurrentOrder([]); // Clear current order
       setCurrentOrderIDs([]);
       setCurrentOrderCost([]);
       reset();
-    } 
-    
-    else {
-      console.log(
-        translatedTexts.correctNumberItems || defaultTexts.correctNumberItems
+    } else {
+      console.log(defaultTexts.correctNumberItems);
+      alert(defaultTexts.correctNumberItems); // Optionally alert the user
+    }
+  };
+  //customer functionality
+  const handleAddCustomer = async () => {
+    // Basic validation to ensure all fields are filled
+    if (!customerFirstName || !customerLastName || !customerEmail || !customerPhone) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+
+    // Optional: Validate phone number format (e.g., 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(customerPhone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    try {
+      console.log("getting here");
+      console.log(customerFirstName, customerLastName, customerEmail, customerPhone);
+      const response = await axios.post(`${backendURL}/cashier/add-customer`, {
+        first_name: customerFirstName,
+        last_name: customerLastName,
+        email: customerEmail,
+        phone: customerPhone, 
+      });
+
+      if (response.data.success) {
+        alert("Customer added successfully!");
+        // Reset the form fields
+        setCustomerFirstName("");
+        setCustomerLastName("");
+        setCustomerEmail("");
+        setCustomerPhone("");
+        setShowCustomerModal(false);
+      } else {
+        alert("Failed to add customer.");
+      }
+    } catch (error) {
+      console.error("Error adding customer:", error);
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while adding the customer."
       );
     }
   };
 
+  const handleSelectCustomer = async () => {
+    // Basic validation to ensure the phone number is entered
+    if (!searchPhone) {
+      alert("Please enter a phone number.");
+      return;
+    }
+  
+    // Validate phone number format (exactly 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(searchPhone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+  
+    try {
+      console.log("Searching for customer with phone:", searchPhone);
+  
+      // Send a GET request to the backend to find the customer by phone
+      const response = await axios.get(`${backendURL}/cashier/get-customer-by-phone`, {
+        params: { phone: searchPhone },
+      });
+  
+      if (response.data.success && response.data.customer) {
+        const { customer_id, first_name, last_name, email, phone } = response.data.customer;
+        setCustomerID(customer_id);
+        alert(`Customer Selected: ${first_name} ${last_name} (ID: ${customer_id})`);
+        console.log("Customer selected:", response.data.customer);
+  
+        // Close the modal and reset the search input
+        setShowSelectCustomerModal(false);
+        setSearchPhone("");
+      } else {
+        alert("No customer found with the provided phone number.");
+      }
+    } catch (error) {
+      console.error("Error selecting customer:", error);
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while selecting the customer."
+      );
+    }
+  };
+
+  // Checkout Functionality
   const checkout = async () => {
     console.log("Checkout clicked");
+    console.log("Current Orders:", currentOrders);
+
     if (currentOrders.length > 0) {
       console.log("Processing checkout...");
-      const userConfirmed = window.confirm("Are you sure you want to checkout?");
-      if (userConfirmed) {
-        // Proceed with the checkout
-        console.log("User confirmed. Proceeding with checkout...");
-      } else {
-        // User canceled the action
+
+      const userConfirmed = window.confirm(
+        "Are you sure you want to checkout?"
+      );
+      if (!userConfirmed) {
         console.log("User canceled checkout.");
+        return; // Exit if user cancels
       }
+
       try {
         // Step 1: Calculate Total Cost
-        let totalCost = 0;
-        currentOrders.forEach((order) => {
-          // Assuming the cost is the last element in each order array
+        let totalCost = currentOrders.reduce((sum, order) => {
           const cost = parseFloat(order[order.length - 1]);
-          totalCost += cost;
-        });
-  
+          return sum + (isNaN(cost) ? 0 : cost);
+        }, 0);
+
+        console.log("Total Cost Calculated:", totalCost);
+
         // Step 2: Create a New Transaction
         const transactionData = {
-          total_cost: parseFloat(totalCost.toFixed(2)), // Ensure it's a number
-          transaction_time: new Date().toISOString().split('T')[1].split('.')[0], // "HH:MM:SS"
-          transaction_date: new Date().toISOString().split('T')[0], // "YYYY-MM-DD"
+          total_cost: parseFloat(totalCost.toFixed(2)),
+          transaction_time: new Date()
+            .toISOString()
+            .split("T")[1]
+            .split(".")[0],
+          transaction_date: new Date().toISOString().split("T")[0],
           transaction_type: "Credit/Debit",
-          customer_id: 1,
-          employee_id: 1,
-          week_number: 1
+          customer_id: customerID || null,
+          employee_id: 1, // Hardcoded for now
+          week_number: null,
         };
-  
-        console.log('Transaction Data:', transactionData);
-  
+
+        console.log("Transaction Data:", transactionData);
+
         const transactionResponse = await axios.post(
           `${backendURL}/cashier/post-transaction`,
           transactionData
         );
-  
+
         // Extract the generated transaction_id
-        const transactionId = transactionResponse.data.transaction.transaction_id;
+        const transactionId =
+          transactionResponse.data.transaction.transaction_id;
         console.log("Transaction created with ID:", transactionId);
-  
-        // Step 3: Process Each Order
-        for (let i = 0; i < currentOrders.length; i++) {
-          const order = currentOrders[i];
+
+        // Step 3: Aggregate Items Across Orders
+        const itemQuantityMap = new Map();
+
+        currentOrders.forEach((order, i) => {
           const orderItemIDs = currentOrdersIDs[i];
-  
-          // Skip the last element if it's the total cost
-          const itemsInOrder = order.slice(0, -1);
-          const itemIDsInOrder = orderItemIDs;
-  
-          // Step 3a: Insert Items into menu_item_transaction
-          for (let j = 0; j < itemIDsInOrder.length; j++) {
+          const itemsInOrder = order.slice(0, -1); // Exclude cost
+          const itemIDsInOrder = orderItemIDs.slice(0); // Assuming all IDs correspond to items
+
+          if (itemsInOrder.length !== itemIDsInOrder.length) {
+            console.error(
+              `Mismatch in items and IDs for order ${i + 1}:`,
+              itemsInOrder,
+              itemIDsInOrder
+            );
+            throw new Error(
+              `Mismatch in items and IDs for order ${i + 1}`
+            );
+          }
+
+          itemsInOrder.forEach((itemName, j) => {
             const menuItemId = itemIDsInOrder[j];
-            const itemQuantity = 1; // Assuming quantity is 1 for each item
-  
-            // Send a POST request to insert into menu_item_transaction
+            if (!menuItemId) {
+              console.error(
+                `menuItemId is undefined for item "${itemName}"`
+              );
+              alert(
+                `Error processing item "${itemName}": Menu item ID is undefined.`
+              );
+              throw new Error(
+                `Checkout aborted due to error with item "${itemName}"`
+              );
+            }
+
+            itemQuantityMap.set(
+              menuItemId,
+              (itemQuantityMap.get(menuItemId) || 0) + 1
+            );
+          });
+        });
+
+        // Step 4: Insert Aggregated Items into Database
+        for (const [menuItemId, itemQuantity] of itemQuantityMap.entries()) {
+          try {
+            // Step 4a: Insert into menu_item_transaction
             await axios.post(`${backendURL}/cashier/post-transaction-menu`, {
               menu_item_id: menuItemId,
               transaction_id: transactionId,
               item_quantity: itemQuantity,
             });
-  
+
             console.log(
               `Inserted into menu_item_transaction: menu_item_id=${menuItemId}, transaction_id=${transactionId}, item_quantity=${itemQuantity}`
             );
-  
-            // Step 3b: Update menu_item Table
+
+            // Step 4b: Update menu_item Table
             await axios.put(`${backendURL}/cashier/put-menu`, {
               menu_item_id: menuItemId,
+              item_quantity: itemQuantity, // Ensure backend handles this correctly
             });
-  
+
             console.log(`Updated menu_item: menu_item_id=${menuItemId}`);
+          } catch (error) {
+            console.error(
+              `Error processing item with menu_item_id ${menuItemId}:`,
+              error.response?.data?.message || error.message
+            );
+            alert(
+              `Error processing item with menu_item_id "${menuItemId}": ${
+                error.response?.data?.message || error.message
+              }`
+            );
+            throw new Error(
+              `Checkout aborted due to error with menu_item_id "${menuItemId}"`
+            );
           }
         }
-  
-        // Step 4: Clear Current Orders
+
+        // Step 5: Clear Current Orders
         setCurrentOrders([]);
         setCurrentOrdersIDs([]);
         alert("Checkout successful!");
+
       } catch (error) {
         console.error("Error during checkout:", error);
         alert("Checkout failed. Please try again.");
@@ -615,28 +593,12 @@ const [bottleCost, setBottleCost] = useState(0);
       alert("No items in the current order.");
     }
   };
-  
 
+  // Define Tabs
   const tabs = mealTypes;
 
   return (
     <div className="overall">
-
-      {/* Language selection dropdown */}
-      <div className="language-selector">
-        <label htmlFor="language">Language:</label>
-        <select
-          id="language"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        >
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          {/* Add more language options here */}
-        </select>
-      </div>
-
       <div className="cashierbackground">
         <div className="menu">
           <div className="tabs">
@@ -652,10 +614,11 @@ const [bottleCost, setBottleCost] = useState(0);
               ))}
             </div>
             <div className="menuItems">
+              {/* Entrees Section */}
               <div className="menu-section">
-                {translatedTexts.entreesTitle || defaultTexts.entreesTitle}
+                <h3>{defaultTexts.entreesTitle}</h3>
                 <div className="menu-item-list">
-                  {entrees && entrees.length > 0 ? (
+                  {entrees.length > 0 ? (
                     entrees.map((entree) => (
                       <button
                         key={entree.menu_item_id}
@@ -663,7 +626,7 @@ const [bottleCost, setBottleCost] = useState(0);
                         onClick={() => handleFoodClick(entree)}
                         disabled={
                           numEntrees === 0 ||
-                          (numPadVisible === true &&
+                          (false && // numPadVisible is removed
                             !(
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
@@ -682,10 +645,11 @@ const [bottleCost, setBottleCost] = useState(0);
                 </div>
               </div>
 
+              {/* Sides Section */}
               <div className="menu-section">
-                {translatedTexts.sidesTitle || defaultTexts.sidesTitle}
+                <h3>{defaultTexts.sidesTitle}</h3>
                 <div className="menu-item-list">
-                  {sides && sides.length > 0 ? (
+                  {sides.length > 0 ? (
                     sides.map((side) => (
                       <button
                         key={side.menu_item_id}
@@ -693,7 +657,7 @@ const [bottleCost, setBottleCost] = useState(0);
                         onClick={() => handleFoodClick(side)}
                         disabled={
                           numSides === 0 ||
-                          (numPadVisible === true &&
+                          (false && // numPadVisible is removed
                             !(
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
@@ -712,11 +676,11 @@ const [bottleCost, setBottleCost] = useState(0);
                 </div>
               </div>
 
+              {/* Appetizers Section */}
               <div className="menu-section">
-                {translatedTexts.appetizersTitle ||
-                  defaultTexts.appetizersTitle}
+                <h3>{defaultTexts.appetizersTitle}</h3>
                 <div className="menu-item-list">
-                  {appetizers && appetizers.length > 0 ? (
+                  {appetizers.length > 0 ? (
                     appetizers.map((appetizer) => (
                       <button
                         key={appetizer.menu_item_id}
@@ -724,7 +688,7 @@ const [bottleCost, setBottleCost] = useState(0);
                         onClick={() => handleFoodClick(appetizer)}
                         disabled={
                           numAppetizers === 0 ||
-                          (numPadVisible === true &&
+                          (false && // numPadVisible is removed
                             !(
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
@@ -743,10 +707,11 @@ const [bottleCost, setBottleCost] = useState(0);
                 </div>
               </div>
 
+              {/* Drinks Section */}
               <div className="menu-section">
-                {translatedTexts.drinksTitle || defaultTexts.drinksTitle}
+                <h3>{defaultTexts.drinksTitle}</h3>
                 <div className="menu-item-list">
-                  {drinks && drinks.length > 0 ? (
+                  {drinks.length > 0 ? (
                     drinks.map((drink) => (
                       <button
                         key={drink.menu_item_id}
@@ -754,7 +719,7 @@ const [bottleCost, setBottleCost] = useState(0);
                         onClick={() => handleFoodClick(drink)}
                         disabled={
                           numDrinks === 0 ||
-                          (numPadVisible === true &&
+                          (false && // numPadVisible is removed
                             !(
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
@@ -772,10 +737,12 @@ const [bottleCost, setBottleCost] = useState(0);
                   )}
                 </div>
               </div>
+
+              {/* Sauces Section */}
               <div className="menu-section">
-                {translatedTexts.saucesTitle || defaultTexts.saucesTitle}
+                <h3>{defaultTexts.saucesTitle}</h3>
                 <div className="menu-item-list">
-                  {sauces && sauces.length > 0 ? (
+                  {sauces.length > 0 ? (
                     sauces.map((sauce) => (
                       <button
                         key={sauce.menu_item_id}
@@ -783,7 +750,7 @@ const [bottleCost, setBottleCost] = useState(0);
                         onClick={() => handleFoodClick(sauce)}
                         disabled={
                           numSauces === 0 ||
-                          (numPadVisible === true &&
+                          (false && // numPadVisible is removed
                             !(
                               numAppetizers > 0 &&
                               numDrinks > 0 &&
@@ -805,13 +772,11 @@ const [bottleCost, setBottleCost] = useState(0);
           </div>
         </div>
 
+        {/* Order Summary Section */}
         <div className="order">
           <div className="orderItems">
-            <h2>
-              {translatedTexts.currentOrderTitle ||
-                defaultTexts.currentOrderTitle}
-            </h2>
-            currentOrder: {currentOrder.join(", ")}
+            <h2>{defaultTexts.currentOrderTitle}</h2>
+            <p>Current Order: {currentOrder.join(", ")}</p>
           </div>
           <ul className="current-orders-list">
             {currentOrders.map((order, index) => (
@@ -828,72 +793,149 @@ const [bottleCost, setBottleCost] = useState(0);
           </ul>
           <div className="orderButtons">
             <button className="checkoutCHECK" onClick={checkout}>
-              {translatedTexts.checkout || defaultTexts.checkout}
+              {defaultTexts.checkout}
             </button>
-            <button className="enter_item" onClick={toggleKeyboard}>
-              {translatedTexts.enterItem || defaultTexts.enterItem}
+            <button
+              className="enter_item"
+              onClick={() => setShowInput(!showInput)}
+            >
+              {defaultTexts.enterItem}
             </button>
             <button className="clear_order" onClick={resetAll}>
-              {translatedTexts.clearOrder || defaultTexts.clearOrder}
+              {defaultTexts.clearOrder}
             </button>
             <button className="Confirm" onClick={orderEntered}>
-              {translatedTexts.confirmOrder || defaultTexts.confirmOrder}
+              {defaultTexts.confirmOrder}
             </button>
             <button className="debug" onClick={debug}>
-              {translatedTexts.debug || defaultTexts.debug}
+              {defaultTexts.debug}
             </button>
+            <button
+              className="add-customer"
+              onClick={() => setShowCustomerModal(true)}
+            >
+              Add Customer
+            </button>
+            <button
+    className="select-customer"
+    onClick={() => setShowSelectCustomerModal(true)}
+  >
+    Select Customer
+  </button>
+
           </div>
           <button className="back-button" onClick={home_screen}>
-            {translatedTexts.exitPage || defaultTexts.exitPage}
+            {defaultTexts.exitPage}
           </button>
 
-          {showInput && ( // Text box for custom item name
+          {/* Custom Item Input */}
+          {showInput && (
             <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder={
-                translatedTexts.enterItemDetails ||
-                defaultTexts.enterItemDetails
-              }
+              placeholder={defaultTexts.enterItemDetails}
             />
           )}
-          {numPadVisible && ( // Text box for cost input
+
+          {/* Cost Input */}
+          {/* Removed numPadVisible and related on-screen keyboard */}
+          {false && (
             <input
               type="text"
               value={cost}
               onChange={handleNumPadChange}
-              placeholder={
-                translatedTexts.enterItemDetails ||
-                defaultTexts.enterItemDetails
-              }
+              placeholder={defaultTexts.enterItemDetails}
             />
           )}
         </div>
       </div>
+            {/* Customer Modal */}
+            {showCustomerModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span
+              className="close"
+              onClick={() => setShowCustomerModal(false)}
+            >
+              &times;
+            </span>
+            <h2>Add New Customer</h2>
+            <div className="form-group">
+              <label>First Name:</label>
+              <input
+                type="text"
+                value={customerFirstName}
+                onChange={(e) => setCustomerFirstName(e.target.value)}
+                placeholder="Enter first name"
+              />
+            </div>
+            <div className="form-group">
+              <label>Last Name:</label>
+              <input
+                type="text"
+                value={customerLastName}
+                onChange={(e) => setCustomerLastName(e.target.value)}
+                placeholder="Enter last name"
+              />
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+                placeholder="Enter email"
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone Number:</label>
+              <input
+                type="tel"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="Enter 10-digit phone number"
+              />
+            </div>
+            <button className="confirm-button" onClick={handleAddCustomer}>
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Select Customer Modal */}
+{showSelectCustomerModal && (
+  <div className="modal">
+    <div className="modal-content">
+      <span
+        className="close"
+        onClick={() => {
+          setShowSelectCustomerModal(false);
+          setSearchPhone("");
+        }}
+      >
+        &times;
+      </span>
+      <h2>Select Customer by Phone Number</h2>
+      <div className="form-group">
+        <label>Phone Number:</label>
+        <input
+          type="tel"
+          value={searchPhone}
+          onChange={(e) => setSearchPhone(e.target.value)}
+          placeholder="Enter 10-digit phone number"
+          maxLength="10"
+        />
+      </div>
+      <button className="confirm-button" onClick={handleSelectCustomer}>
+        Select
+      </button>
+    </div>
+  </div>
+)}
 
-      {keyboardVisible && (
-        <div className="keyboard-container">
-          <Keyboard
-            onChange={onChange}
-            onKeyPress={handleKeyPress} // Handles the Enter key press event
-            inputName="inputValue"
-            layoutName="default"
-          />
-        </div>
-      )}
-      {numPadVisible && (
-        <div className="keyboard-container">
-          <Keyboard
-            onChange={handleNumPadChange}
-            onKeyPress={handleNumPadKeyPress}
-            inputName="cost"
-            layout={{
-              default: ["1 2 3", "4 5 6", "7 8 9", "{bksp} 0 . {enter}"],
-            }}
-          />
-        </div>
-      )}
+      {/* Removed On-Screen Keyboard JSX Elements */}
+      {/* If you want to keep standard input fields, they are already included above */}
     </div>
   );
 };
