@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, act } from "react";
+import { useState, useEffect } from "react";
 import "./Home.css";
 import Button from "../components/Button";
 import TranslateModal from "../components/TranslateModal";
 import { translate } from "../utils/translateUtil";
+import { currentWeather } from "../utils/weatherUtil";
 import { useTranslate } from "../contexts/TranslateContext";
 import he from "he";
 
@@ -34,6 +35,8 @@ const Home = () => {
         };
 
         setText(translatedText);
+
+        console.log("Current Weather in CSTAT:", `${await currentWeather()}°F`);
       } catch (error) {
         console.error("Error fetching translations:", error);
       }
