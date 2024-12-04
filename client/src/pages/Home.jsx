@@ -81,7 +81,9 @@ const Home = () => {
       <div className="home-right">
         <Button
           text={text.manager}
-          onClick={() => navigate("/manager")}
+          onClick={() =>
+            (window.location.href = "http://localhost:3000/auth/google")
+          }
           className="med-custom-button"
         />
         <Button
