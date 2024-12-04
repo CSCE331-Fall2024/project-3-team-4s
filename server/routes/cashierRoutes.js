@@ -5,6 +5,8 @@ import {
     pushToMenuItemTable, 
     addCustomer,
     getCustomerByPhone,
+    updateCustomerPoints,
+
 
 
 
@@ -18,5 +20,7 @@ router.post("/post-transaction", pushToTransactionTable);
 router.post("/post-transaction-menu", pushToTransactionsMenuTable);
 router.post("/add-customer", addCustomer);
 router.get("/get-customer-by-phone", getCustomerByPhone);
+router.put("/update-customer-points", updateCustomerPoints);
+
 
 export default router;

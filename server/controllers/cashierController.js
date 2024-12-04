@@ -189,6 +189,36 @@ const getCustomerByPhone = async (req, res) => {
   }
 };
 
+const updateCustomerPoints = async (req, res) => {
+  try {
+    const { customer_id, reward_points } = req.body;
+
+    if (!customer_id || reward_points === undefined) {
+      return res.status(400).json({ message: "Please provide customer ID and reward points." });
+    }
+    
+    console.log("Received data:", { customer_id, reward_points });
+
+    const updatedCustomer = await db.oneOrNone(
+      `UPDATE customer
+       SET reward_points = reward_points + $2
+       WHERE customer_id = $1
+       RETURNING *`,
+      [customer_id, reward_points]
+    );
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ message: "Customer not found." });
+    }
+
+    res.json({ customer: updatedCustomer });
+  } catch (err) {
+    console.error("Error updating customer points:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
 
   
-  export { pushToTransactionsMenuTable, pushToTransactionTable, pushToMenuItemTable, addCustomer, getCustomerByPhone };
+  export { pushToTransactionsMenuTable, pushToTransactionTable, pushToMenuItemTable, addCustomer, getCustomerByPhone, updateCustomerPoints };

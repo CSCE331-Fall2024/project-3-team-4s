@@ -1,6 +1,5 @@
-// CashierHome.js
+// CashierHome.jsx
 import React, { useEffect, useState } from "react";
-// Removed react-simple-keyboard imports
 import "./styles/CashierHome.css";
 import axios from "axios";
 import "./Employees.css";
@@ -34,39 +33,29 @@ const CashierHome = () => {
   const [currentOrdersIDs, setCurrentOrdersIDs] = useState([]);
   const [weatherData, setWeatherData] = useState(null);
   const [halfSides, setHalfSides] = useState(0);
+  const [paymentType, setPaymentType] = useState("");
 
   // State for special items
   const [refresherCost, setRefresherCost] = useState(0);
   const [bottleCost, setBottleCost] = useState(0);
 
-  //customer addition
+  // Customer addition
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [customerFirstName, setCustomerFirstName] = useState("");
   const [customerLastName, setCustomerLastName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  //customer sign in
+  // Customer sign in
   const [customerID, setCustomerID] = useState("");
   const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
   const [searchPhone, setSearchPhone] = useState("");
+  const [signedInCustomerFirst, setSignedInCustomerFirst] = useState(null);
+  const [signedInCustomerLast, setSignedInCustomerLast] = useState(null);
 
-  // Default Texts
-  const defaultTexts = {
-    currentOrderTitle: "Current Order",
-    checkout: "Checkout",
-    enterItem: "Enter Custom Item",
-    clearOrder: "Clear Order",
-    confirmOrder: "Confirm Order",
-    exitPage: "Return to Home",
-    debug: "Debug",
-    entreesTitle: "Entrees",
-    sidesTitle: "Sides",
-    appetizersTitle: "Appetizer",
-    drinksTitle: "Drinks",
-    saucesTitle: "Sauces",
-    enterItemDetails: "Enter item details",
-    correctNumberItems: "Please select the correct number of items",
-  };
+  // New State Variables for Custom Item Modal
+  const [showCustomItemModal, setShowCustomItemModal] = useState(false);
+  const [customItemName, setCustomItemName] = useState("");
+  const [customItemPrice, setCustomItemPrice] = useState("");
 
   // Fetch Weather Data
   const fetchWeather = async () => {
@@ -84,14 +73,7 @@ const CashierHome = () => {
   useEffect(() => {
     const fetchFood = async () => {
       try {
-        const [
-          entreesRes,
-          sidesRes,
-          appetizersRes,
-          drinksRes,
-          saucesRes,
-          mealTypesRes,
-        ] = await Promise.all([
+        const [entreesRes, sidesRes, appetizersRes, drinksRes, saucesRes, mealTypesRes] = await Promise.all([
           axios.get(`${backendURL}/kiosk/entrees`),
           axios.get(`${backendURL}/kiosk/sides`),
           axios.get(`${backendURL}/kiosk/appetizers`),
@@ -322,6 +304,8 @@ const CashierHome = () => {
   const removeItem = (index) => {
     setCurrentOrders(currentOrders.filter((_, i) => i !== index));
     setCurrentOrdersIDs(currentOrdersIDs.filter((_, i) => i !== index));
+    // Removed: setCurrentOrderCost(currentOrderCost.filter((_, i) => i !== index));
+    // currentOrderCost pertains to the current order being built, not all orders
   };
 
   // Confirm Order Entry
@@ -330,7 +314,6 @@ const CashierHome = () => {
       numAppetizers === 0 &&
       numDrinks === 0 &&
       numEntrees === 0 &&
-      numSauces === 0 &&
       (numSides === 0 || numSides === 1) &&
       currentOrder.length > 0
     ) {
@@ -339,8 +322,11 @@ const CashierHome = () => {
         .reduce((a, b) => Number(a) + Number(b), 0)
         .toFixed(2);
 
-      // Create a new order array that includes the total cost
-      const newOrder = [...currentOrder, totalCost];
+      // Create a new order object
+      const newOrder = {
+        items: [...currentOrder],
+        totalCost: totalCost
+      };
 
       // Update the current orders with the new order
       setCurrentOrders([...currentOrders, newOrder]);
@@ -359,18 +345,18 @@ const CashierHome = () => {
       setCurrentOrderCost([]);
       reset();
     } else {
-      console.log(defaultTexts.correctNumberItems);
-      alert(defaultTexts.correctNumberItems); // Optionally alert the user
+      console.log("Please select the correct number of items");
+      alert("Please select the correct number of items"); // Optionally alert the user
     }
   };
-  //customer functionality
+
+  // Customer Functionality
   const handleAddCustomer = async () => {
     // Basic validation to ensure all fields are filled
     if (!customerFirstName || !customerLastName || !customerEmail || !customerPhone) {
       alert("Please fill in all fields.");
       return;
     }
-
 
     // Optional: Validate phone number format (e.g., 10 digits)
     const phoneRegex = /^\d{10}$/;
@@ -409,6 +395,7 @@ const CashierHome = () => {
     }
   };
 
+  // Handle Select Customer by Phone
   const handleSelectCustomer = async () => {
     // Basic validation to ensure the phone number is entered
     if (!searchPhone) {
@@ -434,6 +421,8 @@ const CashierHome = () => {
       if (response.data.success && response.data.customer) {
         const { customer_id, first_name, last_name, email, phone } = response.data.customer;
         setCustomerID(customer_id);
+        setSignedInCustomerFirst(first_name);
+        setSignedInCustomerLast(last_name);
         alert(`Customer Selected: ${first_name} ${last_name} (ID: ${customer_id})`);
         console.log("Customer selected:", response.data.customer);
   
@@ -452,10 +441,66 @@ const CashierHome = () => {
     }
   };
 
+  const clearCustomer = () => {
+    setCustomerID("");
+    setSignedInCustomerFirst(null);
+    setSignedInCustomerLast(null);
+    alert("Customer cleared.");
+  };
+
+  // Handle Adding Custom Item
+  const handleAddCustomItem = () => {
+    // Trim inputs to remove unnecessary whitespace
+    const trimmedName = customItemName.trim();
+    const trimmedPrice = customItemPrice.trim();
+
+    // Validate inputs
+    if (!trimmedName) {
+      alert("Please enter a valid item name.");
+      return;
+    }
+
+    if (!trimmedPrice || isNaN(trimmedPrice) || Number(trimmedPrice) < 0) {
+      alert("Please enter a valid item price.");
+      return;
+    }
+
+    // Create a unique ID for the custom item (you can adjust this as needed)
+    const customMenuItemId = 999; 
+
+    // Create the custom item object
+    const newCustomItem = {
+      item_name: trimmedName,
+      item_price: Number(trimmedPrice).toFixed(2),
+      menu_item_id: customMenuItemId,
+      item_category: "Custom",
+    };
+
+    // Add the custom item to the current order
+    setCurrentOrder([...currentOrder, newCustomItem.item_name]);
+    setCurrentOrderIDs([...currentOrderIDs, newCustomItem.menu_item_id]);
+    setCurrentOrderCost([...currentOrderCost, newCustomItem.item_price]);
+
+    // Reset and close the modal
+    setCustomItemName("");
+    setCustomItemPrice("");
+    setShowCustomItemModal(false);
+
+    // Notify the user
+    alert("Custom item added successfully!");
+    console.log("Custom item added:", newCustomItem);
+  };
+
   // Checkout Functionality
   const checkout = async () => {
     console.log("Checkout clicked");
     console.log("Current Orders:", currentOrders);
+
+    // Validate that a payment type is selected
+    if (!paymentType) {
+      alert("Please select a transaction type before checking out.");
+      return;
+    }
 
     if (currentOrders.length > 0) {
       console.log("Processing checkout...");
@@ -471,21 +516,20 @@ const CashierHome = () => {
       try {
         // Step 1: Calculate Total Cost
         let totalCost = currentOrders.reduce((sum, order) => {
-          const cost = parseFloat(order[order.length - 1]);
-          return sum + (isNaN(cost) ? 0 : cost);
-        }, 0);
+          return sum + parseFloat(order.totalCost);
+        }, 0).toFixed(2);
 
         console.log("Total Cost Calculated:", totalCost);
 
         // Step 2: Create a New Transaction
         const transactionData = {
-          total_cost: parseFloat(totalCost.toFixed(2)),
+          total_cost: parseFloat(totalCost),
           transaction_time: new Date()
             .toISOString()
             .split("T")[1]
             .split(".")[0],
           transaction_date: new Date().toISOString().split("T")[0],
-          transaction_type: "Credit/Debit",
+          transaction_type: paymentType, // Use the selected payment type
           customer_id: customerID || null,
           employee_id: 1, // Hardcoded for now
           week_number: null,
@@ -508,8 +552,8 @@ const CashierHome = () => {
 
         currentOrders.forEach((order, i) => {
           const orderItemIDs = currentOrdersIDs[i];
-          const itemsInOrder = order.slice(0, -1); // Exclude cost
-          const itemIDsInOrder = orderItemIDs.slice(0); // Assuming all IDs correspond to items
+          const itemsInOrder = order.items; // Array of item names
+          const itemIDsInOrder = orderItemIDs; // Array of item IDs
 
           if (itemsInOrder.length !== itemIDsInOrder.length) {
             console.error(
@@ -579,10 +623,25 @@ const CashierHome = () => {
             );
           }
         }
+        // Add points if customer is logged in
+        if (customerID) {
+          console.log("Adding points to customer:", customerID, totalCost * 100);
+          const pointsResponse = await axios.put(`${backendURL}/cashier/update-customer-points`, {
+            customer_id: customerID,
+            reward_points: parseFloat((totalCost * 100).toFixed(2)),
+          });
+          console.log("Points added to customer:", pointsResponse.data);
+        }
 
-        // Step 5: Clear Current Orders
+        // Step 5: Clear Current Orders and Reset Payment Type
         setCurrentOrders([]);
         setCurrentOrdersIDs([]);
+        setCurrentOrderCost([]);
+        reset();
+        setCustomerID(""); // Reset customer ID
+        clearCustomer(); // Clear signed-in customer
+        setPaymentType(""); // Reset payment type
+
         alert("Checkout successful!");
 
       } catch (error) {
@@ -616,7 +675,7 @@ const CashierHome = () => {
             <div className="menuItems">
               {/* Entrees Section */}
               <div className="menu-section">
-                <h3>{defaultTexts.entreesTitle}</h3>
+                <h3>{"Entrees"}</h3>
                 <div className="menu-item-list">
                   {entrees.length > 0 ? (
                     entrees.map((entree) => (
@@ -647,7 +706,7 @@ const CashierHome = () => {
 
               {/* Sides Section */}
               <div className="menu-section">
-                <h3>{defaultTexts.sidesTitle}</h3>
+                <h3>{"Sides"}</h3>
                 <div className="menu-item-list">
                   {sides.length > 0 ? (
                     sides.map((side) => (
@@ -678,7 +737,7 @@ const CashierHome = () => {
 
               {/* Appetizers Section */}
               <div className="menu-section">
-                <h3>{defaultTexts.appetizersTitle}</h3>
+                <h3>{"Appetizers"}</h3>
                 <div className="menu-item-list">
                   {appetizers.length > 0 ? (
                     appetizers.map((appetizer) => (
@@ -709,7 +768,7 @@ const CashierHome = () => {
 
               {/* Drinks Section */}
               <div className="menu-section">
-                <h3>{defaultTexts.drinksTitle}</h3>
+                <h3>{"Drinks"}</h3>
                 <div className="menu-item-list">
                   {drinks.length > 0 ? (
                     drinks.map((drink) => (
@@ -740,7 +799,7 @@ const CashierHome = () => {
 
               {/* Sauces Section */}
               <div className="menu-section">
-                <h3>{defaultTexts.saucesTitle}</h3>
+                <h3>{"Sauces"}</h3>
                 <div className="menu-item-list">
                   {sauces.length > 0 ? (
                     sauces.map((sauce) => (
@@ -775,13 +834,16 @@ const CashierHome = () => {
         {/* Order Summary Section */}
         <div className="order">
           <div className="orderItems">
-            <h2>{defaultTexts.currentOrderTitle}</h2>
+            <p>Current Customer: {signedInCustomerFirst} {signedInCustomerLast}</p> 
+            <h2>{"Current Order"}</h2>
             <p>Current Order: {currentOrder.join(", ")}</p>
           </div>
           <ul className="current-orders-list">
             {currentOrders.map((order, index) => (
               <li key={index} className="order-item">
-                <span className="order-text">{order.join(", ")}</span>
+                <span className="order-text">
+                  {order.items.join(", ")} - ${order.totalCost}
+                </span>
                 <button
                   className="remove-button"
                   onClick={() => removeItem(index)}
@@ -791,42 +853,65 @@ const CashierHome = () => {
               </li>
             ))}
           </ul>
+
+          {/* Payment Type Selection */}
+          <div className="paymentType">
+            <h3>Transaction Type <span style={{ color: 'red' }}>*</span></h3>
+            <div className="transaction-options">
+              <label>
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value="Credit/Debit"
+                  checked={paymentType === "Credit/Debit"}
+                  onChange={(e) => setPaymentType(e.target.value)}
+                />
+                Credit/Debit
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value="Gift Card"
+                  checked={paymentType === "Gift Card"}
+                  onChange={(e) => setPaymentType(e.target.value)}
+                />
+                Gift Card
+              </label>
+            </div>
+          </div>
+
           <div className="orderButtons">
-            <button className="checkoutCHECK" onClick={checkout}>
-              {defaultTexts.checkout}
+            <button
+              className="checkoutCHECK"
+              onClick={checkout}
+              disabled={!paymentType}
+              title={!paymentType ? "Select a transaction type to proceed" : "Checkout"}
+            >
+              {"Checkout"}
             </button>
             <button
               className="enter_item"
-              onClick={() => setShowInput(!showInput)}
+              onClick={() => setShowCustomItemModal(!showCustomItemModal)} // Toggle custom item modal
             >
-              {defaultTexts.enterItem}
+              {"Enter Custom Item"}
             </button>
             <button className="clear_order" onClick={resetAll}>
-              {defaultTexts.clearOrder}
+              {"Clear Current Order"}
             </button>
             <button className="Confirm" onClick={orderEntered}>
-              {defaultTexts.confirmOrder}
+              {"Add to Order"}
             </button>
             <button className="debug" onClick={debug}>
-              {defaultTexts.debug}
+              {"Debug"}
             </button>
-            <button
-              className="add-customer"
-              onClick={() => setShowCustomerModal(true)}
-            >
-              Add Customer
-            </button>
-            <button
-    className="select-customer"
-    onClick={() => setShowSelectCustomerModal(true)}
-  >
-    Select Customer
-  </button>
-
           </div>
-          <button className="back-button" onClick={home_screen}>
-            {defaultTexts.exitPage}
-          </button>
+
+          <div className="bottom-buttons">
+            <button className="back-button" onClick={home_screen}>Return to Home</button>
+            <button className="add-customer" onClick={() => setShowCustomerModal(!showCustomerModal)}>Add Customer</button>
+            <button className="select-customer" onClick={() => setShowSelectCustomerModal(!showSelectCustomerModal)}>Select Customer</button>
+          </div>
 
           {/* Custom Item Input */}
           {showInput && (
@@ -834,7 +919,7 @@ const CashierHome = () => {
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder={defaultTexts.enterItemDetails}
+              placeholder={"Enter Custom Item"}
             />
           )}
 
@@ -845,13 +930,14 @@ const CashierHome = () => {
               type="text"
               value={cost}
               onChange={handleNumPadChange}
-              placeholder={defaultTexts.enterItemDetails}
+              placeholder={"Enter Cost"}
             />
           )}
         </div>
       </div>
-            {/* Customer Modal */}
-            {showCustomerModal && (
+
+      {/* Customer Modal */}
+      {showCustomerModal && (
         <div className="modal">
           <div className="modal-content">
             <span
@@ -868,6 +954,7 @@ const CashierHome = () => {
                 value={customerFirstName}
                 onChange={(e) => setCustomerFirstName(e.target.value)}
                 placeholder="Enter first name"
+                maxLength="50"
               />
             </div>
             <div className="form-group">
@@ -877,6 +964,7 @@ const CashierHome = () => {
                 value={customerLastName}
                 onChange={(e) => setCustomerLastName(e.target.value)}
                 placeholder="Enter last name"
+                maxLength="50"
               />
             </div>
             <div className="form-group">
@@ -886,6 +974,7 @@ const CashierHome = () => {
                 value={customerEmail}
                 onChange={(e) => setCustomerEmail(e.target.value)}
                 placeholder="Enter email"
+                maxLength="100"
               />
             </div>
             <div className="form-group">
@@ -895,6 +984,7 @@ const CashierHome = () => {
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 placeholder="Enter 10-digit phone number"
+                maxLength="10"
               />
             </div>
             <button className="confirm-button" onClick={handleAddCustomer}>
@@ -903,36 +993,80 @@ const CashierHome = () => {
           </div>
         </div>
       )}
+
       {/* Select Customer Modal */}
-{showSelectCustomerModal && (
-  <div className="modal">
-    <div className="modal-content">
-      <span
-        className="close"
-        onClick={() => {
-          setShowSelectCustomerModal(false);
-          setSearchPhone("");
-        }}
-      >
-        &times;
-      </span>
-      <h2>Select Customer by Phone Number</h2>
-      <div className="form-group">
-        <label>Phone Number:</label>
-        <input
-          type="tel"
-          value={searchPhone}
-          onChange={(e) => setSearchPhone(e.target.value)}
-          placeholder="Enter 10-digit phone number"
-          maxLength="10"
-        />
-      </div>
-      <button className="confirm-button" onClick={handleSelectCustomer}>
-        Select
-      </button>
-    </div>
-  </div>
-)}
+      {showSelectCustomerModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span
+              className="close"
+              onClick={() => {
+                setShowSelectCustomerModal(false);
+                setSearchPhone("");
+              }}
+            >
+              &times;
+            </span>
+            <h2>Select Customer by Phone Number</h2>
+            <div className="form-group">
+              <label>Phone Number:</label>
+              <input
+                type="tel"
+                value={searchPhone}
+                onChange={(e) => setSearchPhone(e.target.value)}
+                placeholder="Enter 10-digit phone number"
+                maxLength="10"
+              />
+            </div>
+            <button className="confirm-button" onClick={handleSelectCustomer}>
+              Select
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Item Modal */}
+      {showCustomItemModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span
+              className="close"
+              onClick={() => {
+                setShowCustomItemModal(false);
+                setCustomItemName("");
+                setCustomItemPrice("");
+              }}
+            >
+              &times;
+            </span>
+            <h2>Add Custom Item</h2>
+            <div className="form-group">
+              <label>Item Name:</label>
+              <input
+                type="text"
+                value={customItemName}
+                onChange={(e) => setCustomItemName(e.target.value)}
+                placeholder="Enter item name"
+                maxLength="100"
+              />
+            </div>
+            <div className="form-group">
+              <label>Item Price ($):</label>
+              <input
+                type="number"
+                value={customItemPrice}
+                onChange={(e) => setCustomItemPrice(e.target.value)}
+                placeholder="Enter item price"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <button className="confirm-button" onClick={handleAddCustomItem}>
+              Add Item
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Removed On-Screen Keyboard JSX Elements */}
       {/* If you want to keep standard input fields, they are already included above */}
