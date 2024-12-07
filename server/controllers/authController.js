@@ -39,7 +39,7 @@ const googleCallback = async (req, res) => {
     );
 
     if (!employee) {
-      return res.redirect("http://localhost:5173");
+      return res.redirect("http://localhost:5173/?unauthorized=true");
     }
 
     const googleID = employee.google_id;

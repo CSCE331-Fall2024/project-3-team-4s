@@ -9,8 +9,10 @@ import { useTranslate } from "../contexts/TranslateContext";
 import he from "he";
 
 const Home = () => {
+  const backendURL = "http://localhost:3000";
   const navigate = useNavigate();
   const { language } = useTranslate();
+  const [isRendered, setIsRendered] = useState(false);
   const [text, setText] = useState({
     translate: "Translate",
     accessiblity: "Accessibility Options",
@@ -20,6 +22,7 @@ const Home = () => {
     heading: "Panda Express",
   });
 
+  // Fetch translations and current weather
   useEffect(() => {
     const fetchTranslations = async () => {
       try {
@@ -37,6 +40,8 @@ const Home = () => {
         setText(translatedText);
 
         console.log("Current Weather in CSTAT:", `${await currentWeather()}°F`);
+
+        setIsRendered(true);
       } catch (error) {
         console.error("Error fetching translations:", error);
       }
@@ -44,6 +49,18 @@ const Home = () => {
 
     fetchTranslations();
   }, [language]);
+
+  // Check for unauthorized access
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const unauthorized = params.get("unauthorized");
+
+    if (unauthorized && isRendered) {
+      if (window.confirm("Unauthorized access")) {
+        window.location.replace(window.location.origin); // Navigate to the home page without query params
+      }
+    }
+  }, [isRendered]);
 
   const [showTranslateModal, setShowTranslateModal] = useState(false);
 
@@ -81,14 +98,12 @@ const Home = () => {
       <div className="home-right">
         <Button
           text={text.manager}
-          onClick={() =>
-            (window.location.href = "http://localhost:3000/auth/google")
-          }
+          onClick={() => (window.location.href = `${backendURL}/auth/google`)}
           className="med-custom-button"
         />
         <Button
           text={text.cashier}
-          onClick={() => navigate("/cashier")}
+          onClick={() => (window.location.href = `${backendURL}/auth/google`)}
           className="med-custom-button"
         />
       </div>
