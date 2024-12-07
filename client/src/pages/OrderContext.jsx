@@ -8,7 +8,7 @@ export const OrderProvider = ({ children }) => {
   const [popupDetails, setPopupDetails] = useState(null); // Popup state
   const [orderList, setOrderList] = useState(() => {
     // Load order list from local storage if it exists
-    const savedOrderList = localStorage.getItem('orderList');
+    const savedOrderList = sessionStorage.getItem('orderList');
     return savedOrderList ? JSON.parse(savedOrderList) : [];
   });
 
@@ -29,7 +29,7 @@ export const OrderProvider = ({ children }) => {
 
   // Update local storage whenever orderList changes
   useEffect(() => {
-    localStorage.setItem('orderList', JSON.stringify(orderList));
+    sessionStorage.setItem('orderList', JSON.stringify(orderList));
   }, [orderList]);
 
   return (

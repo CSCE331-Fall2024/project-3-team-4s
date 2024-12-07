@@ -4,14 +4,24 @@ import { useOrder } from "./OrderContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom"; // Import Link
-
 const OrderPage = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000"; // Replace with actual backend URL
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
   const [itemData, setItemData] = useState([]); // Cache for fetched item data
+
+  const fetchWeather = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/weather/weather', {
+        params: { city: 'College Station' },
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+    }
+  };
 
   const incrementQuantity = (index) => {
     const updatedOrderList = [...orderList];
@@ -87,8 +97,13 @@ const OrderPage = () => {
     );
     if (confirmed) {
       setOrderList([]);
-      localStorage.removeItem("orderList");
+      sessionStorage.removeItem("orderList");
     }
+  };
+
+  const clearOrderCheckout = () => {
+      setOrderList([]);
+      sessionStorage.removeItem("orderList");
   };
 
   // Fetch all prices initially for items in the order list
@@ -219,11 +234,11 @@ const OrderPage = () => {
     "Coke Mexico": "/Coke_Mexico.avif",
     "Coke Zero": "/Coke_Zero.avif",
     Smartwater: "/Smartwater.avif",
-    Sauces: "/Sauces.png",
+    Sauces: "/Sauce.png",
     "Soy Sauce": "/Soy_Sauce.png",
     "Sweet & Sour Sauce": "/Sweet_&_Sour_Sauce.png",
     "Teriyaki Sauce": "/Teriyaki_Sauce.png",
-    "Chili Sauce": "/Chilli_Sauce.png",
+    "Chili Sauce": "/Chili_Sauce.png",
     "Hot Mustard": "/Hot_Mustard.png",
     default: "/logo.png", // Default image if no match is found
   };
@@ -293,34 +308,66 @@ const OrderPage = () => {
     setOrderList(updatedOrderList);
   };
 
+  const [transactionType, setTransactionType] = useState(""); // Track selected payment method
+  const handleTransactionTypeChange = (event) => {
+    setTransactionType(event.target.value); // Update the selected payment method
+  };
+
+  const consolidateOrderList = (orderList) => {
+    const consolidated = {};
+  
+    orderList.forEach((item) => {
+      if (consolidated[item.name]) {
+        // If the item already exists, add its quantity
+        consolidated[item.name].quantity += item.quantity;
+      } else {
+        // Otherwise, add it as a new entry
+        consolidated[item.name] = { ...item };
+      }
+    });
+  
+    // Convert the object back to an array
+    return Object.values(consolidated);
+  };
+
   const handleCheckout = async () => {
+
+    if (orderList.length === 0) {
+      alert("Please add items to your order before checking out.");
+      return;
+    }
+
+    if (!transactionType) {
+      alert("Please select a payment method.");
+      return;
+    }
+
     const confirmed = window.confirm(
       "Are you sure you want to proceed to checkout?"
     );
     if (confirmed) {
-      const totalCost = orderList
-        .reduce((sum, item) => sum + prices[item.name] * item.quantity, 0)
-        .toFixed(2);
-      const transactionType = "card"; // Or set dynamically based on user input
-
+      const consolidatedOrderList = consolidateOrderList(orderList); // Consolidate duplicates
+      const totalCost = calculateTotalPrice() * 1.06;
+  
       try {
         const response = await axios.post(`${backendURL}/kiosk/order`, {
           totalCost,
           transactionType,
-          orderList, // Pass orderList directly if each item has menu_item_id and quantity
+          orderList: consolidatedOrderList, // Use the consolidated list
         });
-
+  
         if (response.status === 200) {
           alert("Order has been successfully checked out!");
-          clearOrder(); // Clears the local order list
+          clearOrderCheckout(); // Clears the local order list
         }
       } catch (error) {
         console.error("Error during checkout:", error);
         alert("There was an error processing your order. Please try again.");
       }
+      navigate("/");
     }
-    navigate("/");
   };
+  
 
   const navigate = useNavigate(); // Initialize the navigate function
   const goToCustomerPage = () => {
@@ -364,7 +411,9 @@ const OrderPage = () => {
           <button className="add-more-2" onClick={clearOrder}>
             Remove All Items
           </button>
+          <br></br><br></br>
           <h2>Your Order</h2>
+
 
           {orderList.length > 0 ? (
             (() => {
@@ -505,40 +554,45 @@ const OrderPage = () => {
             </label>
           </div>
           <br />
-          <h3>Special Requests</h3>
-          <input
-            type="text"
-            className="special-request-input"
-            placeholder="Add Note"
-          />
-          <br />
-          <br />
-          <h3>Coupon Code</h3>
-          <div className="coupon-code">
-            <input type="text" placeholder="Enter Code" />
-            <button>Add</button>
-          </div>
           <br />
           <h3>Payment Method</h3>
+          <br />
           <div className="payment-method">
-            <label>
-              <input type="radio" name="payment" /> Credit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" /> Debit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" /> Cash
-            </label>
+          <label>
+            <input
+              type="radio"
+              name="payment"
+              value="Credit/Debit"
+              onChange={handleTransactionTypeChange}
+              checked={transactionType === "Credit/Debit"}
+            />
+            Credit Card/Debit Card
+          </label>
+          <br />
+          <br />
+          <label>
+            <input
+              type="radio"
+              name="payment"
+              value="Gift Card"
+              onChange={handleTransactionTypeChange}
+              checked={transactionType === "Gift Card"}
+            />
+            Gift Card
+          </label>
           </div>
+          <br />
           <br />
           <div className="total-price">
             <h3>Subtotal: ${calculateTotalPrice().toFixed(2)}</h3>
+            <br />
             <h3>Tax (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
+            <br />
             <h3>Total: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+            <br />
           </div>
 
-          <button className="checkout" onClick={handleCheckout}>
+          <button className="checkout-order" onClick={handleCheckout}>
             Checkout
           </button>
         </div>
