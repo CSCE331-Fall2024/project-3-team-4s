@@ -79,7 +79,7 @@ const verifyManager = async (req, res) => {
   const role = employee.role;
 
   if (role !== "Manager") {
-    return res.status(404).json({ message: "Manager not found" });
+    return res.status(401).json({ message: "Unauthorized access" });
   }
 
   res.status(200).json({ message: "Manager verified" });

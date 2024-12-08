@@ -8,7 +8,6 @@ const getEmployees = async (req, res) => {
 
     res.json(employees);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -51,7 +50,6 @@ const addEmployee = async (req, res) => {
       message: `${first_name} ${last_name} hired.`,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -73,7 +71,6 @@ const updateEmployee = async (req, res) => {
       message: `${first_name} ${last_name} employee information updated.`,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -94,7 +91,6 @@ const deleteEmployee = async (req, res) => {
 
     res.json({ message: `${first_name} ${last_name} fired.` });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

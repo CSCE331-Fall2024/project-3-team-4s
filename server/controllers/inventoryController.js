@@ -45,7 +45,7 @@ const addInventoryItem = async (req, res) => {
     const { ingredient_name, price, unit, min_stock } = req.body;
 
     if (!ingredient_name || !price || !unit || !min_stock) {
-      return res.status(400).json({ message: "Please fill out all fields." });
+      return res.status(400).json({ message: "Please fill out all fields" });
     }
 
     // Check if the inventory item already exists
@@ -63,7 +63,7 @@ const addInventoryItem = async (req, res) => {
 
       return res.json({
         inventoryItem: updatedInventoryItem,
-        message: `${ingredient_name} added.`,
+        message: `${ingredient_name} added`,
       });
     }
 
@@ -74,7 +74,7 @@ const addInventoryItem = async (req, res) => {
 
     res.json({
       inventoryItem: newInventoryItem,
-      message: `${ingredient_name} added.`,
+      message: `${ingredient_name} added`,
     });
   } catch (err) {
     console.error(err);
@@ -96,7 +96,7 @@ const updateInventoryItem = async (req, res) => {
 
     res.json({
       inventoryItem: updatedInventoryItem,
-      message: `${ingredient_name} updated.`,
+      message: `${ingredient_name} updated`,
     });
   } catch (err) {
     console.error(err);
@@ -121,7 +121,7 @@ const restockInventoryItems = async (req, res) => {
       );
     }
 
-    res.json({ message: "Inventory restocked." });
+    res.json({ message: "Inventory restocked" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -143,7 +143,7 @@ const deleteInventoryItem = async (req, res) => {
       [id]
     );
 
-    res.json({ message: `${ingredient_name} deleted.` });
+    res.json({ message: `${ingredient_name} deleted` });
   } catch (err) {
     console.error(err);
     res.res.status(500).json({ message: "Internal server error" });

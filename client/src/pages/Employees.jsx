@@ -9,8 +9,8 @@ import EditEmployeeModal from "../components/EditEmployeeModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
-  // const backendURL = "http://localhost:3000";
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000";
 
   const [employees, setEmployees] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -24,10 +24,9 @@ const Employees = () => {
       try {
         const res = await axios.get(`${backendURL}/employee/get-employees`);
 
-        console.log(res.data);
         setEmployees(res.data);
       } catch (err) {
-        console.error(err);
+        alert(err.response.data.message);
       }
     };
 
@@ -83,7 +82,7 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -114,7 +113,7 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -136,7 +135,7 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
