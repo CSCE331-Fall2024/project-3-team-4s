@@ -5,6 +5,7 @@ import Button from "./Button";
 const AddEmployeeModal = ({ onCancel, onAdd }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
 
   return (
@@ -23,6 +24,12 @@ const AddEmployeeModal = ({ onCancel, onAdd }) => {
             type="text"
             placeholder="Last Name"
             onChange={(e) => setLastName(e.target.value)}
+          />
+          <input
+            className="input-add"
+            type="email"
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <select
@@ -45,7 +52,7 @@ const AddEmployeeModal = ({ onCancel, onAdd }) => {
           <Button text={"Cancel"} onClick={onCancel} />
           <Button
             text={"Add"}
-            onClick={() => onAdd(firstName, lastName, role)}
+            onClick={() => onAdd(firstName, lastName, role, email)}
           />
         </div>
       </div>

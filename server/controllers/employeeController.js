@@ -15,9 +15,9 @@ const getEmployees = async (req, res) => {
 const addEmployee = async (req, res) => {
   try {
     // Extract the first_name, last_name, and role from the request body
-    const { first_name, last_name, role } = req.body;
+    const { first_name, last_name, role, email } = req.body;
 
-    if (!first_name || !last_name || !role) {
+    if (!first_name || !last_name || !role || !email) {
       return res.status(400).json({ message: "Please fill out all fields" });
     }
 
@@ -30,8 +30,8 @@ const addEmployee = async (req, res) => {
     if (existingEmployee) {
       // If the employee exists, set fired to false and update the role
       const updatedEmployee = await db.one(
-        "UPDATE employee SET fired = false, role = $1 WHERE employee_id = $2 RETURNING *",
-        [role, existingEmployee.employee_id]
+        "UPDATE employee SET fired = false, role = $1, email = $2 WHERE employee_id = $3 RETURNING *",
+        [role, email, existingEmployee.employee_id]
       );
 
       return res.json({
@@ -41,8 +41,8 @@ const addEmployee = async (req, res) => {
     }
 
     const newEmployee = await db.one(
-      "INSERT INTO employee (first_name, last_name, role) VALUES ($1, $2, $3) RETURNING *",
-      [first_name, last_name, role]
+      "INSERT INTO employee (first_name, last_name, role, email) VALUES ($1, $2, $3, $4) RETURNING *",
+      [first_name, last_name, role, email]
     );
 
     res.json({
@@ -59,11 +59,11 @@ const updateEmployee = async (req, res) => {
     // Extract the id from the request parameters
     const { id } = req.params;
     // Extract the first_name, last_name, and role from the request body
-    const { first_name, last_name, role } = req.body;
+    const { first_name, last_name, role, email } = req.body;
 
     const updatedEmployee = await db.one(
-      "UPDATE employee SET first_name = $1, last_name = $2, role = $3 WHERE employee_id = $4 RETURNING *",
-      [first_name, last_name, role, id]
+      "UPDATE employee SET first_name = $1, last_name = $2, role = $3, email = $4 WHERE employee_id = $5 RETURNING *",
+      [first_name, last_name, role, email, id]
     );
 
     res.json({

@@ -9,8 +9,8 @@ import EditEmployeeModal from "../components/EditEmployeeModal";
 import DeleteModal from "../components/DeleteModal";
 
 const Employees = () => {
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
 
   const [employees, setEmployees] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -63,12 +63,13 @@ const Employees = () => {
   };
 
   // Button handlers
-  const addEmployee = async (firstName, lastName, role) => {
+  const addEmployee = async (firstName, lastName, role, email) => {
     try {
       const employee = {
         first_name: firstName,
         last_name: lastName,
         role: role,
+        email: email,
       };
 
       const res = await axios.post(
@@ -86,12 +87,13 @@ const Employees = () => {
     }
   };
 
-  const editEmployee = async (firstName, lastName, role) => {
+  const editEmployee = async (firstName, lastName, role, email) => {
     try {
       const employee = {
         first_name: firstName,
         last_name: lastName,
         role: role,
+        email: email,
       };
 
       const res = await axios.put(
@@ -151,6 +153,7 @@ const Employees = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Role</th>
+                <th>Email</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -162,6 +165,7 @@ const Employees = () => {
                   <td>{employee.first_name}</td>
                   <td>{employee.last_name}</td>
                   <td>{employee.role}</td>
+                  <td>{employee.email}</td>
                   <td className="icons-container">
                     <Icon
                       src="/edit-icon.svg"

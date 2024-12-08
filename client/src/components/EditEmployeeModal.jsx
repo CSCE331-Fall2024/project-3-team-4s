@@ -6,6 +6,7 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
   const [firstName, setFirstName] = useState(employee.first_name);
   const [lastName, setLastName] = useState(employee.last_name);
   const [role, setRole] = useState(employee.role);
+  const [email, setEmail] = useState(employee.email);
 
   return (
     <div className="modal-edit">
@@ -25,6 +26,13 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+          />
+          <input
+            className="input-edit"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <select
@@ -47,7 +55,7 @@ const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
           <Button text={"Cancel"} onClick={onCancel} />
           <Button
             text={"Update"}
-            onClick={() => onEdit(firstName, lastName, role)}
+            onClick={() => onEdit(firstName, lastName, role, email)}
           />
         </div>
       </div>
