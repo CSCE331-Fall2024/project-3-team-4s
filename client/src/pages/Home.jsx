@@ -21,6 +21,34 @@ const Home = () => {
     heading: "Panda Express",
   });
 
+  const validateToken = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = `${backendURL}/auth/google`; // Redirect to Google login
+    }
+
+    try {
+      const res = await fetch(`${backendURL}/auth/verify-token`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      // Skip verification if token is valid
+      if (data.valid) {
+        navigate("/employee");
+      } else {
+        window.location.href = `${backendURL}/auth/google`; // Redirect to Google login
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Fetch translations and current weather
   useEffect(() => {
     const fetchTranslations = async () => {
@@ -55,7 +83,7 @@ const Home = () => {
 
     if (unauthorized && isRendered) {
       if (window.confirm("Unauthorized access")) {
-        window.location.replace(window.location.origin); // Navigate to the home page without query params
+        window.history.replaceState({}, document.title, "/"); // Remove unauthorized from URL
       }
     }
   }, [isRendered]);
@@ -96,7 +124,7 @@ const Home = () => {
       <div className="home-right">
         <Button
           text={text.employee}
-          onClick={() => (window.location.href = `${backendURL}/auth/google`)}
+          onClick={validateToken}
           className="med-custom-button"
         />
       </div>

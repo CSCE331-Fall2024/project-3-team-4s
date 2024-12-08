@@ -1,5 +1,6 @@
 import axios from "axios";
 import db from "../db.js";
+import jwt from "jsonwebtoken";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -51,7 +52,13 @@ const googleCallback = async (req, res) => {
       ]);
     }
 
-    return res.redirect("http://localhost:5173/employee");
+    const token = jwt.sign(
+      { employeeID: employee.employee_id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1min" }
+    );
+
+    res.redirect(`http://localhost:5173/employee?token=${token}`);
   } catch (error) {
     console.error(error);
   }
@@ -78,4 +85,24 @@ const verifyManager = async (req, res) => {
   res.status(200).json({ message: "Manager verified" });
 };
 
-export { googleLogin, googleCallback, verifyManager };
+const verifyToken = (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ valid: false, message: "Token not provided" });
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    return res.status(200).json({ valid: true });
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ valid: false, message: "Token invalid or expired" });
+  }
+};
+
+export { googleLogin, googleCallback, verifyManager, verifyToken };
