@@ -2,18 +2,18 @@ import db from "../db.js"
 
 const pushToMenuItemTable = async (req, res) => {
   try {
-    const { menu_item_id } = req.body;
+    const { menu_item_id, item_quantity } = req.body;
 
-    if (!menu_item_id) {
-      return res.status(400).json({ message: "Please provide the menu item ID" });
+    if (!menu_item_id || !item_quantity) {
+      return res.status(400).json({ message: "Please provide the menu item ID and item quantity" });
     }
 
     const updatedItem = await db.oneOrNone(
       `UPDATE menu_item 
-       SET current_servings = current_servings - 1 
-       WHERE menu_item_id = $1 AND current_servings > 0
+       SET current_servings = current_servings - $2 
+       WHERE menu_item_id = $1 AND current_servings >= $2
        RETURNING *`,
-      [menu_item_id]
+      [menu_item_id, item_quantity]
     );
 
     if (!updatedItem) {
@@ -100,5 +100,125 @@ const pushToTransactionsMenuTable = async (req, res) => {
   }
 };
 
+const addCustomer = async (req, res) => {
+  try {
+    let { first_name, last_name, email, phone } = req.body;
+
+    // Trim whitespace and convert email to lowercase
+    email = email.trim().toLowerCase();
+    first_name = first_name.trim();
+    last_name = last_name.trim();
+    phone = phone.trim();
+
+    // Validate input
+    if (!first_name || !last_name || !email || !phone) {
+      return res
+        .status(400)
+        .json({ message: "First name, last name, email, and phone number are required." });
+    }
+
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    // Validate phone number format (e.g., 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: "Invalid phone number format. Please enter a 10-digit number." });
+    }
+
+    // Check if email or phone already exists in the database
+    const emailExists = await db.oneOrNone(
+      `SELECT 1 FROM customer WHERE email = $1`,
+      [email]
+    );
+
+    const phoneExists = await db.oneOrNone(
+      `SELECT 1 FROM customer WHERE phone = $1`,
+      [phone]
+    );
+
+    if (emailExists) {
+      return res.status(400).json({ message: "A customer with this email already exists." });
+    }
+
+    if (phoneExists) {
+      return res.status(400).json({ message: "A customer with this phone number already exists." });
+    }
+
+    // If email and phone are unique, insert the new customer
+    const newCustomer = await db.one(
+      `INSERT INTO customer (first_name, last_name, email, reward_points, phone)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [first_name, last_name, email, 0, phone]
+    );
+
+    res.status(201).json({ success: true, customer: newCustomer });
+  } catch (err) {
+    console.error("Error adding customer:", err);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+const getCustomerByPhone = async (req, res) => {
+  try {
+    const { phone } = req.query;
+
+    // Validate phone number format
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ success: false, message: "Invalid phone number format. Please enter a 10-digit number." });
+    }
+
+    // Search for the customer by phone number
+    const customer = await db.oneOrNone(
+      `SELECT customer_id, first_name, last_name, email, phone FROM customer WHERE phone = $1`,
+      [phone]
+    );
+
+    if (customer) {
+      res.status(200).json({ success: true, customer });
+    } else {
+      res.status(404).json({ success: false, message: "Customer not found." });
+    }
+  } catch (error) {
+    console.error("Error fetching customer by phone:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+};
+
+const updateCustomerPoints = async (req, res) => {
+  try {
+    const { customer_id, reward_points } = req.body;
+
+    if (!customer_id || reward_points === undefined) {
+      return res.status(400).json({ message: "Please provide customer ID and reward points." });
+    }
+    
+    console.log("Received data:", { customer_id, reward_points });
+
+    const updatedCustomer = await db.oneOrNone(
+      `UPDATE customer
+       SET reward_points = reward_points + $2
+       WHERE customer_id = $1
+       RETURNING *`,
+      [customer_id, reward_points]
+    );
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ message: "Customer not found." });
+    }
+
+    res.json({ customer: updatedCustomer });
+  } catch (err) {
+    console.error("Error updating customer points:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
+
   
-  export { pushToTransactionsMenuTable, pushToTransactionTable, pushToMenuItemTable };
+  export { pushToTransactionsMenuTable, pushToTransactionTable, pushToMenuItemTable, addCustomer, getCustomerByPhone, updateCustomerPoints };
