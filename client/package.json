@@ -10,7 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nivo/bar": "^0.87.0",
+    "@nivo/core": "^0.87.0",
+    "@nivo/line": "^0.87.0",
     "axios": "^1.7.7",
+    "file-saver": "^2.0.5",
+    "he": "^1.2.0",
+    "html-to-image": "^1.11.11",
+    "my-react-app": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
