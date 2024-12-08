@@ -523,10 +523,10 @@ const CustomerHome = () => {
 
       <button className="navbar-button" onClick={() => navigate("/order")}>
         View Order
-      </button>
+      </button> 
 
-      <button className="navbar-button-2" onClick={() => navigate("/order")}>
-        View Order
+      <button className="navbar-button-2" onClick={() => navigate("/")}>
+        Back to Home
       </button>
 
       <PopupNotification popupDetails={popupDetails} />

@@ -97,8 +97,67 @@
 .container {
     display: flex;
     gap: 20px;
-    padding: 20px;
+    padding: 20px 20px 0px 20px;
     font-family: Arial, sans-serif;
+  }
+
+  .recommended-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .recommended-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    font-weight: bolder;
+  }
+  
+  .recommended-item-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .recommended-item span {
+    display: block;
+    text-align: center;
+  }
+  
+  .weather-recommendation h3{
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    padding: 10px;
+  }
+
+  .weather-recommendation h1{
+    text-align: center;
+    font-size: 56px;
+    font-weight: bold;
+  }
+
+  .weather-recommendation {
+    display: flex;
+    gap: 20px;
+    max-height: 58vh; /* Set the fixed height for the order summary */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    background-color: #f9f9f9; /* Optional: Set a background color */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
   }
 
   .order-summary, .pickup-details { 

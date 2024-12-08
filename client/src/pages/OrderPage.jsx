@@ -3,25 +3,92 @@ import "./OrderPage.css";
 import { useOrder } from "./OrderContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { currentWeather } from "../utils/weatherUtil";
 
 const OrderPage = () => {
   // const backendURL = import.meta.env.VITE_BACKEND_URL;
   const backendURL = "http://localhost:3000"; // Replace with actual backend URL
 
+  const [recommendedItems, setRecommendedItems] = useState([]);
+  const [weather, setWeather] = useState(0);
+  const [temperatureColor, setTemperatureColor] = useState("black");
+  const [weatherIcon, setWeatherIcon] = useState("");
+
+  useEffect(() => {
+    const fetchWeatherAndItems = async () => {
+      try {
+        const weather = await currentWeather();
+        let recommended = [];
+
+        if (weather < 32) {
+          setTemperatureColor("#001f3f"); // Dark blue for freezing weather
+          setWeatherIcon("❄️"); // Snowflake for cold weather
+        } else if (weather < 60) {
+          setTemperatureColor("#0074D9"); // Light blue for cold weather
+          setWeatherIcon("❄️"); // Snowflake for cold weather
+        } else if (weather > 60) {
+          if (weather <= 100) {
+            setTemperatureColor("#FF851B"); // Orange for hot weather
+            setWeatherIcon("☀️"); // Sun for hot weather
+          } else {
+            setTemperatureColor("#FF4136"); // Darker orange/red for very hot weather
+            setWeatherIcon("☀️"); // Sun for hot weather
+          }
+        } else {
+          setTemperatureColor("black"); // Neutral weather
+        }
+
+        if (weather < 60) {
+          recommended = [
+            "Sweet Fire Chicken Breast",
+            "Hot Ones Blazing Bourbon Chicken",
+            "Chili Sauce",
+            "Chicken Egg Roll",
+          ];
+        } else if (weather >= 60) {
+          recommended = [
+            "Peach Lychee Flavored Refresher",
+            "Minute Maid Lemonade",
+            "Fuze Raspberry Iced Tea",
+            "Watermelon Mango Flavored Refresher",
+            "Apple Pie Roll",
+          ];
+        } else {
+          recommended = [
+            "The Original Orange Chicken",
+            "Beijing Beef",
+            "Mushroom Chicken",
+            "String Bean Chicken Breast",
+          ];
+        }
+
+        // Fetch prices for recommended items
+        const priceResponses = await Promise.all(
+          recommended.map((item) =>
+            axios.get(`${backendURL}/kiosk/prices`, { params: { itemName: item } })
+          )
+        );
+
+        const itemPrices = priceResponses.reduce((acc, response, index) => {
+          acc[recommended[index]] = response.data.price;
+          return acc;
+        }, {});
+
+        setPrices((prev) => ({ ...prev, ...itemPrices }));
+        setRecommendedItems(recommended);
+        setWeather(weather);
+      } catch (error) {
+        console.error("Error fetching weather or recommended items:", error);
+      }
+    };
+
+    fetchWeatherAndItems();
+  }, []);
+
+
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
   const [itemData, setItemData] = useState([]); // Cache for fetched item data
-
-  const fetchWeather = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/weather/weather', {
-        params: { city: 'College Station' },
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching weather:', error);
-    }
-  };
 
   const incrementQuantity = (index) => {
     const updatedOrderList = [...orderList];
@@ -163,18 +230,13 @@ const OrderPage = () => {
       const sidesAndEntreesPrice = sidesAndEntrees.reduce((sum, subItem) => {
         const subItemPrice = prices[subItem.name] || 0;
 
-        let subCategoryName = itemData.find(
-          (data) => data.item_name === subItem.name
-        )?.item_category;
-        if (subCategoryName === "Side") {
-          subCategoryName = "A La Carte Side";
-        } else if (subCategoryName === "Entree") {
-          subCategoryName = "A La Carte Entree";
-        }
+        // let subCategoryName = itemData.find(
+        //   (data) => data.item_name === subItem.name
+        // )?.item_category;     
 
-        const subCategoryPrice = subCategoryName
-          ? prices[subCategoryName] || 0
-          : 0;
+        // const subCategoryPrice = subCategoryName
+        //   ? prices[subCategoryName] || 0
+        //   : 0;
 
         return sum + subItemPrice;
       }, 0);
@@ -597,8 +659,34 @@ const OrderPage = () => {
           </button>
         </div>
       </div>
+      <div className="weather-recommendation">
+        <h3 style={{ backgroundColor : temperatureColor}}>
+          <br/><br/>
+          Recommendation <br/>Based<br/> on<br/> Today's<br/> Weather
+        </h3>
+        <h1 style={{ color: temperatureColor}}>
+          <br/>
+          {weather !== null ? `${weather}°F` : "Loading..."} <br/> {weatherIcon}
+        </h1>
+        <div className="recommended-items">
+          {recommendedItems.map((item) => (
+            <div key={item} className="recommended-item">
+              <img
+                src={getItemImage(item)}
+                alt={item}
+                className="recommended-item-image"
+              />
+              <div>
+                <span>{item}</span><br/>
+                <span>${(prices[item] || 0).toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
+
 
 export default OrderPage;
