@@ -1,25 +1,17 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EmployeeHome.css";
 import Button from "../components/Button";
-import ManagerVerifyModal from "../components/ManagerVerifyModal";
 
 const EmployeeHome = () => {
   const backendURL = "http://localhost:3000";
   // const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
-  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
-  const openVerifyModal = () => {
-    setShowVerifyModal(true);
-  };
+  const verifyManager = async () => {
+    const managerID = localStorage.getItem("employeeID");
 
-  const closeVerifyModal = () => {
-    setShowVerifyModal(false);
-  };
-
-  const verifyManager = async (managerID) => {
     try {
       const res = await axios.post(`${backendURL}/auth/verify-manager`, {
         managerID,
@@ -73,7 +65,7 @@ const EmployeeHome = () => {
         <Button
           text="Manager"
           className="big-custom-button"
-          onClick={openVerifyModal}
+          onClick={verifyManager}
         />
         <Button
           text="Cashier"
@@ -81,13 +73,6 @@ const EmployeeHome = () => {
           onClick={() => navigate("/cashier")}
         />
       </div>
-
-      {showVerifyModal && (
-        <ManagerVerifyModal
-          onCancel={closeVerifyModal}
-          onVerify={verifyManager}
-        />
-      )}
     </div>
   );
 };
