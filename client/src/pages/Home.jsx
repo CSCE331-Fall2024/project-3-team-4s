@@ -17,8 +17,7 @@ const Home = () => {
     translate: "Translate",
     accessiblity: "Accessibility Options",
     order: "Place Order",
-    manager: "Manager",
-    cashier: "Cashier",
+    employee: "Employee",
     heading: "Panda Express",
   });
 
@@ -32,8 +31,7 @@ const Home = () => {
             await translate("Accessibility Options", language)
           ),
           order: he.decode(await translate("Place Order", language)),
-          manager: he.decode(await translate("Manager", language)),
-          cashier: he.decode(await translate("Cashier", language)),
+          employee: he.decode(await translate("Employee", language)),
           heading: he.decode(await translate("Panda Express", language)),
         };
 
@@ -97,12 +95,7 @@ const Home = () => {
 
       <div className="home-right">
         <Button
-          text={text.manager}
-          onClick={() => (window.location.href = `${backendURL}/auth/google`)}
-          className="med-custom-button"
-        />
-        <Button
-          text={text.cashier}
+          text={text.employee}
           onClick={() => (window.location.href = `${backendURL}/auth/google`)}
           className="med-custom-button"
         />

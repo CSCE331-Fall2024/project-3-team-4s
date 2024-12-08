@@ -51,10 +51,31 @@ const googleCallback = async (req, res) => {
       ]);
     }
 
-    return res.redirect("http://localhost:5173/manager");
+    return res.redirect("http://localhost:5173/employee");
   } catch (error) {
     console.error(error);
   }
 };
 
-export { googleLogin, googleCallback };
+const verifyManager = async (req, res) => {
+  const { managerID } = req.body;
+
+  if (!managerID) {
+    return res.status(400).json({ message: "Manager ID is required" });
+  }
+
+  const employee = await db.oneOrNone(
+    "SELECT role FROM employee WHERE employee_id = $1",
+    managerID
+  );
+
+  const role = employee.role;
+
+  if (role !== "Manager") {
+    return res.status(404).json({ message: "Manager not found" });
+  }
+
+  res.status(200).json({ message: "Manager verified" });
+};
+
+export { googleLogin, googleCallback, verifyManager };
