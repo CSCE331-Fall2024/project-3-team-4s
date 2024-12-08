@@ -1,19 +1,13 @@
 // CashierHome.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/CashierHome.css";
-// CashierHome.js
-import React, { useEffect, useState, useContext } from "react";
-import Keyboard from "react-simple-keyboard";
-import "react-simple-keyboard/build/css/index.css";
-import "./CashierHome.css";
 import axios from "axios";
 import "./Employees.css";
 import { useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const navigate = useNavigate(); //back to homepage
-  // const backendURL = "http://localhost:3000";
+  const navigate = useNavigate(); // Navigate to homepage
+  const backendURL = "http://localhost:3000";
 
   // State Variables
   const [activeTab, setActiveTab] = useState("Orders");
@@ -37,19 +31,22 @@ const CashierHome = () => {
   const [halfSides, setHalfSides] = useState(0);
   const [paymentType, setPaymentType] = useState("");
 
-  // Added state for original items to preserve English data
-  const [originalEntrees, setOriginalEntrees] = useState([]);
-  const [originalSides, setOriginalSides] = useState([]);
-  const [originalAppetizers, setOriginalAppetizers] = useState([]);
-  const [originalDrinks, setOriginalDrinks] = useState([]);
-  const [originalMealTypes, setOriginalMealTypes] = useState([]);
-  const [originalSauces, setOriginalSauces] = useState([]);
-
-  // State to track data fetching completion
-  const [dataFetched, setDataFetched] = useState(false);
-  //edge case with bottle and refresher
+  // State for special items
   const [refresherCost, setRefresherCost] = useState(0);
   const [bottleCost, setBottleCost] = useState(0);
+
+  // Customer addition
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [customerFirstName, setCustomerFirstName] = useState("");
+  const [customerLastName, setCustomerLastName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  // Customer sign in
+  const [customerID, setCustomerID] = useState("");
+  const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
+  const [searchPhone, setSearchPhone] = useState("");
+  const [signedInCustomerFirst, setSignedInCustomerFirst] = useState(null);
+  const [signedInCustomerLast, setSignedInCustomerLast] = useState(null);
 
   // New State Variables for Custom Item Modal
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
@@ -83,7 +80,6 @@ const CashierHome = () => {
           (item) => item.item_name.toLowerCase() === "bottle"
         );
 
-        // Save their costs to state variables
         if (refresherItem) {
           setRefresherCost(refresherItem.item_price);
         }
@@ -91,16 +87,14 @@ const CashierHome = () => {
           setBottleCost(bottleItem.item_price);
         }
 
-        // Filter out "refresher" and "bottle" from meal types
-        const filteredMealTypes = res5.data.filter(
+        // Filter out certain meal types
+        const filteredMealTypes = mealTypesRes.data.filter(
           (item) =>
             item.item_name.toLowerCase() !== "refresher" &&
             item.item_name.toLowerCase() !== "bottle"
         );
 
-        // Update the state with the filtered meal types
         setMealTypes(filteredMealTypes);
-
       } catch (err) {
         console.error("Error fetching food data:", err);
       }
