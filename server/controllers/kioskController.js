@@ -130,7 +130,7 @@ const postOrder = async (req, res) => {
         transactionType,
         customerId,
         employeeId,
-        weekNumber,
+        weekNumber,       
       ]
     );
 
@@ -159,7 +159,7 @@ const postOrder = async (req, res) => {
 
         // Insert into Menu_item_transaction
         await db.none(
-          `INSERT INTO Menu_item_transaction (menu_item_id, transaction_id, item_quantity)
+          `INSERT INTO menu_item_transaction (menu_item_id, transaction_id, item_quantity)
                     VALUES ($1, $2, $3)`,
           [menuItemId, transactionId, quantity]
         );
