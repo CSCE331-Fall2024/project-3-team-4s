@@ -6,6 +6,11 @@ import Button from "../components/Button";
 const ManagerHome = () => {
   const navigate = useNavigate();
 
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div className="manager-home-container">
       <PageHeader pageTitle="Admin" />
@@ -34,6 +39,19 @@ const ManagerHome = () => {
             text="Manage Inventory"
             onClick={() => navigate("/inventory")}
             className="big-custom-button"
+          />
+        </div>
+
+        <div className="manager-home-nav">
+          <Button
+            text="Home"
+            className="med-custom-button"
+            onClick={() => navigate("/")}
+          />
+          <Button
+            text="Logout"
+            className="med-custom-button"
+            onClick={logout}
           />
         </div>
       </div>

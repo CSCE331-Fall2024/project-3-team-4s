@@ -31,3 +31,10 @@
   height: 100%;
   margin: 1rem;
 }
+
+.manager-home-nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
