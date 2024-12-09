@@ -1,6 +1,7 @@
 .custom-button {
-  width: 7.5rem;
-  padding: 0.75rem 0;
+  width: calc(7.5rem * var(--button-scale));
+  padding: calc(0.75rem * var(--button-scale)) 0;
+  font-size: calc(1rem * var(--text-scale)); 
   background-color: #d1282e;
   color: white;
   border: none;
@@ -8,21 +9,24 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: transform 0.2s ease, font-size 0.2s ease, padding 0.2s ease;
 }
 
 .custom-button:hover {
   background-color: darkred;
 }
 
+
 .med-custom-button {
-  width: 8rem;
-  padding: 1rem 0;
-  font-size: 1rem;
+  width: calc(8rem * var(--button-scale));
+  padding: calc(1rem * var(--button-scale)) 0;
+  font-size: calc(1.2rem * var(--text-scale)); 
 }
 
+
 .big-custom-button {
-  width: 25rem;
-  padding: 5rem 0;
-  font-size: 2rem;
+  width: calc(25rem * var(--button-scale));
+  padding: calc(5rem * var(--button-scale)) 0;
+  font-size: calc(2rem * var(--text-scale)); 
   font-weight: bold;
 }

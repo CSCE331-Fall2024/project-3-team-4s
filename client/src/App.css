@@ -3,3 +3,22 @@
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
+:root {
+  --button-scale: 1;
+  --text-scale: 1;
+  --brightness: 1; 
+  --contrast: 1; 
+}
+
+body {
+  filter: brightness(var(--brightness)) contrast(var(--contrast));
+}
+
+button {
+  transform: scale(var(--button-scale));
+  font-size: calc(1rem * var(--text-scale));
+}
+
+h1, h2, h3, p, span {
+  font-size: calc(1rem * var(--text-scale));
+}
