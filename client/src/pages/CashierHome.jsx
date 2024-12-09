@@ -856,9 +856,6 @@ const CashierHome = () => {
             >
               Checkout
             </button>
-            <button className="debug" onClick={debug}>
-              Debug
-            </button>
             <button onClick={restockServings}>Restock Servings</button>
           </div>
 
