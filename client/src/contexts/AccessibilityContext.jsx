@@ -11,7 +11,12 @@ export const AccessibilityProvider = ({ children }) => {
   });
 
   const updateSettings = (newSettings) => {
-    setSettings((prevSettings) => ({ ...prevSettings, ...newSettings }));
+    setSettings((prevSettings) => ({
+      buttonSize: Math.min(Math.max(newSettings.buttonSize || prevSettings.buttonSize, 100), 300),
+      textSize: Math.min(Math.max(newSettings.textSize || prevSettings.textSize, 100), 300),
+      brightness: Math.min(Math.max(newSettings.brightness || prevSettings.brightness, 50), 150),
+      contrast: Math.min(Math.max(newSettings.contrast || prevSettings.contrast, 50), 150),
+    }));
   };
 
   useEffect(() => {
