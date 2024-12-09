@@ -26,10 +26,9 @@ const Inventory = () => {
       try {
         const res = await axios.get(`${backendURL}/inventory/get-inventory`);
 
-        console.log(res.data);
         setInventory(res.data);
       } catch (err) {
-        console.error(err);
+        alert(err.response.data.message);
       }
     };
 
@@ -86,7 +85,7 @@ const Inventory = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -118,7 +117,7 @@ const Inventory = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -140,7 +139,7 @@ const Inventory = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 

@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
   const navigate = useNavigate(); // Navigate to homepage
-  const backendURL = "http://localhost:3000";
+  // const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   // State Variables
   const [activeTab, setActiveTab] = useState("Orders");
@@ -56,7 +57,14 @@ const CashierHome = () => {
   useEffect(() => {
     const fetchFood = async () => {
       try {
-        const [entreesRes, sidesRes, appetizersRes, drinksRes, saucesRes, mealTypesRes] = await Promise.all([
+        const [
+          entreesRes,
+          sidesRes,
+          appetizersRes,
+          drinksRes,
+          saucesRes,
+          mealTypesRes,
+        ] = await Promise.all([
           axios.get(`${backendURL}/kiosk/entrees`),
           axios.get(`${backendURL}/kiosk/sides`),
           axios.get(`${backendURL}/kiosk/appetizers`),
@@ -75,6 +83,7 @@ const CashierHome = () => {
         const refresherItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "refresher"
         );
+
         const bottleItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "bottle"
         );
@@ -174,7 +183,7 @@ const CashierHome = () => {
       item_name: tabName.item_name,
       item_price: tabName.item_price,
       menu_item_id: tabName.menu_item_id,
-      item_category: tabName.item_category || "MealType" // fallback if no category
+      item_category: tabName.item_category || "MealType", // fallback if no category
     };
 
     setCurrentOrder([initialItem]);
@@ -202,14 +211,23 @@ const CashierHome = () => {
       setCurrentOrder([...currentOrder, item]);
       setCurrentOrderIDs([...currentOrderIDs, item.menu_item_id]);
       setCurrentOrderCost([...currentOrderCost, item.item_price]);
-    } else if ((item.item_category === "Drink" || item.item_category === "Refresher" || item.item_category === "Bottle") && numDrinks > 0) {
+    } else if (
+      (item.item_category === "Drink" ||
+        item.item_category === "Refresher" ||
+        item.item_category === "Bottle") &&
+      numDrinks > 0
+    ) {
       setNumDrinks(numDrinks - 1);
       // For drinks with dynamic pricing
       let priceToAdd = item.item_price;
       if (item.item_category === "Refresher") {
-        priceToAdd = (parseFloat(refresherCost) + parseFloat(item.item_price)).toFixed(2);
+        priceToAdd = (
+          parseFloat(refresherCost) + parseFloat(item.item_price)
+        ).toFixed(2);
       } else if (item.item_category === "Bottle") {
-        priceToAdd = (parseFloat(bottleCost) + parseFloat(item.item_price)).toFixed(2);
+        priceToAdd = (
+          parseFloat(bottleCost) + parseFloat(item.item_price)
+        ).toFixed(2);
       }
       const newItem = { ...item, item_price: priceToAdd };
       setCurrentOrder([...currentOrder, newItem]);
@@ -279,16 +297,20 @@ const CashierHome = () => {
     }
 
     if (currentOrders.length > 0) {
-      const userConfirmed = window.confirm("Are you sure you want to checkout?");
+      const userConfirmed = window.confirm(
+        "Are you sure you want to checkout?"
+      );
       if (!userConfirmed) {
         console.log("User canceled checkout.");
         return;
       }
 
       try {
-        let totalCost = currentOrders.reduce((sum, order) => {
-          return sum + parseFloat(order.totalCost);
-        }, 0).toFixed(2);
+        let totalCost = currentOrders
+          .reduce((sum, order) => {
+            return sum + parseFloat(order.totalCost);
+          }, 0)
+          .toFixed(2);
 
         console.log("Total Cost Calculated:", totalCost);
 
@@ -319,7 +341,8 @@ const CashierHome = () => {
           transactionData
         );
 
-        const transactionId = transactionResponse.data.transaction.transaction_id;
+        const transactionId =
+          transactionResponse.data.transaction.transaction_id;
         console.log("Transaction created with ID:", transactionId);
 
         // Step 3: Aggregate Items Across Orders using their quantities
@@ -330,7 +353,11 @@ const CashierHome = () => {
           const itemsInOrder = order.items;
 
           if (itemsInOrder.length !== orderItemIDs.length) {
-            console.error(`Mismatch in items and IDs for order ${i + 1}:`, itemsInOrder, orderItemIDs);
+            console.error(
+              `Mismatch in items and IDs for order ${i + 1}:`,
+              itemsInOrder,
+              orderItemIDs
+            );
             throw new Error(`Mismatch in items and IDs for order ${i + 1}`);
           }
 
@@ -338,8 +365,12 @@ const CashierHome = () => {
             const menuItemId = orderItemIDs[j];
             if (!menuItemId) {
               console.error(`menuItemId is undefined for item "${item.name}"`);
-              alert(`Error processing item "${item.name}": Menu item ID is undefined.`);
-              throw new Error(`Checkout aborted due to error with item "${item.name}"`);
+              alert(
+                `Error processing item "${item.name}": Menu item ID is undefined.`
+              );
+              throw new Error(
+                `Checkout aborted due to error with item "${item.name}"`
+              );
             }
 
             // Add item quantity
@@ -347,7 +378,9 @@ const CashierHome = () => {
               menuItemId,
               (itemQuantityMap.get(menuItemId) || 0) + item.quantity
             );
-            console.log(`Added item to map: menu_item_id=${menuItemId}, quantity=${item.quantity}`);
+            console.log(
+              `Added item to map: menu_item_id=${menuItemId}, quantity=${item.quantity}`
+            );
           });
         });
 
@@ -359,7 +392,9 @@ const CashierHome = () => {
               transaction_id: transactionId,
               item_quantity: itemQuantity,
             });
-            console.log(`Inserted into menu_item_transaction: menu_item_id=${menuItemId}, transaction_id=${transactionId}, item_quantity=${itemQuantity}`);
+            console.log(
+              `Inserted into menu_item_transaction: menu_item_id=${menuItemId}, transaction_id=${transactionId}, item_quantity=${itemQuantity}`
+            );
 
             await axios.put(`${backendURL}/cashier/put-menu`, {
               menu_item_id: menuItemId,
@@ -367,19 +402,35 @@ const CashierHome = () => {
             });
             console.log(`Updated menu_item: menu_item_id=${menuItemId}`);
           } catch (error) {
-            console.error(`Error processing item with menu_item_id ${menuItemId}:`, error.response?.data?.message || error.message);
-            alert(`Error processing item with menu_item_id "${menuItemId}": ${error.response?.data?.message || error.message}`);
-            throw new Error(`Checkout aborted due to error with menu_item_id "${menuItemId}"`);
+            console.error(
+              `Error processing item with menu_item_id ${menuItemId}:`,
+              error.response?.data?.message || error.message
+            );
+            alert(
+              `Error processing item with menu_item_id "${menuItemId}": ${
+                error.response?.data?.message || error.message
+              }`
+            );
+            throw new Error(
+              `Checkout aborted due to error with menu_item_id "${menuItemId}"`
+            );
           }
         }
 
         // Add points if customer is logged in
         if (customerID) {
-          console.log("Adding points to customer:", customerID, totalCost * 100);
-          const pointsResponse = await axios.put(`${backendURL}/cashier/update-customer-points`, {
-            customer_id: customerID,
-            reward_points: parseFloat((totalCost * 100).toFixed(2)),
-          });
+          console.log(
+            "Adding points to customer:",
+            customerID,
+            totalCost * 100
+          );
+          const pointsResponse = await axios.put(
+            `${backendURL}/cashier/update-customer-points`,
+            {
+              customer_id: customerID,
+              reward_points: parseFloat((totalCost * 100).toFixed(2)),
+            }
+          );
           console.log("Points added to customer:", pointsResponse.data);
         }
 
@@ -404,7 +455,16 @@ const CashierHome = () => {
   // Debug Function
   const debug = () => {
     console.log("Current Order:", currentOrder);
-    console.log("Appetizers:", numAppetizers, "Drinks:", numDrinks, "Entrees:", numEntrees, "Sides:", numSides);
+    console.log(
+      "Appetizers:",
+      numAppetizers,
+      "Drinks:",
+      numDrinks,
+      "Entrees:",
+      numEntrees,
+      "Sides:",
+      numSides
+    );
     console.log("Current Orders:", currentOrders);
     console.log("Current Orders IDs:", currentOrdersIDs);
     console.log("Current Order Cost:", currentOrderCost);
@@ -430,10 +490,12 @@ const CashierHome = () => {
         .toFixed(2);
 
       // Count how many sides are in the current order
-      const sidesCount = currentOrder.filter(item => item.item_category === "Side").length;
+      const sidesCount = currentOrder.filter(
+        (item) => item.item_category === "Side"
+      ).length;
       console.log("Sides Count:", sidesCount);
       // Transform items with quantity
-      const transformedItems = currentOrder.map(item => {
+      const transformedItems = currentOrder.map((item) => {
         let quantity = 1;
         if (item.item_category === "Side" && sidesCount === 2) {
           quantity = 0.5;
@@ -444,13 +506,13 @@ const CashierHome = () => {
           name: item.item_name,
           category: item.item_category,
           price: item.item_price,
-          quantity: quantity
+          quantity: quantity,
         };
       });
 
       const newOrder = {
         items: transformedItems,
-        totalCost: totalCost
+        totalCost: totalCost,
       };
 
       setCurrentOrders([...currentOrders, newOrder]);
@@ -479,7 +541,12 @@ const CashierHome = () => {
 
   // Add Customer
   const handleAddCustomer = async () => {
-    if (!customerFirstName || !customerLastName || !customerEmail || !customerPhone) {
+    if (
+      !customerFirstName ||
+      !customerLastName ||
+      !customerEmail ||
+      !customerPhone
+    ) {
       alert("Please fill in all fields.");
       return;
     }
@@ -510,7 +577,10 @@ const CashierHome = () => {
       }
     } catch (error) {
       console.error("Error adding customer:", error);
-      alert(error.response?.data?.message || "An error occurred while adding the customer.");
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while adding the customer."
+      );
     }
   };
 
@@ -528,16 +598,21 @@ const CashierHome = () => {
     }
 
     try {
-      const response = await axios.get(`${backendURL}/cashier/get-customer-by-phone`, {
-        params: { phone: searchPhone },
-      });
+      const response = await axios.get(
+        `${backendURL}/cashier/get-customer-by-phone`,
+        {
+          params: { phone: searchPhone },
+        }
+      );
 
       if (response.data.success && response.data.customer) {
         const { customer_id, first_name, last_name } = response.data.customer;
         setCustomerID(customer_id);
         setSignedInCustomerFirst(first_name);
         setSignedInCustomerLast(last_name);
-        alert(`Customer Selected: ${first_name} ${last_name} (ID: ${customer_id})`);
+        alert(
+          `Customer Selected: ${first_name} ${last_name} (ID: ${customer_id})`
+        );
         setShowSelectCustomerModal(false);
         setSearchPhone("");
       } else {
@@ -545,7 +620,10 @@ const CashierHome = () => {
       }
     } catch (error) {
       console.error("Error selecting customer:", error);
-      alert(error.response?.data?.message || "An error occurred while selecting the customer.");
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while selecting the customer."
+      );
     }
   };
 
@@ -681,14 +759,19 @@ const CashierHome = () => {
         {/* Order Summary Section */}
         <div className="order">
           <div className="orderItems">
-            <p>Current Customer: {signedInCustomerFirst} {signedInCustomerLast}</p>
-            <p>Current Order: {currentOrder.map((i) => i.item_name).join(", ")}</p>
+            <p>
+              Current Customer: {signedInCustomerFirst} {signedInCustomerLast}
+            </p>
+            <p>
+              Current Order: {currentOrder.map((i) => i.item_name).join(", ")}
+            </p>
           </div>
           <ul className="current-orders-list">
             {currentOrders.map((order, index) => (
               <li key={index} className="order-item">
                 <span className="order-text">
-                  {order.items.map((itm) => itm.name).join(", ")} : ${order.totalCost}
+                  {order.items.map((itm) => itm.name).join(", ")} : $
+                  {order.totalCost}
                 </span>
                 <button
                   className="remove-button"
@@ -700,12 +783,19 @@ const CashierHome = () => {
             ))}
           </ul>
           <div className="orderCost">
-            <h3>Total Cost: ${currentOrders.reduce((sum, order) => sum + parseFloat(order.totalCost), 0).toFixed(2)}</h3>
+            <h3>
+              Total Cost: $
+              {currentOrders
+                .reduce((sum, order) => sum + parseFloat(order.totalCost), 0)
+                .toFixed(2)}
+            </h3>
           </div>
 
           {/* Payment Type Selection */}
           <div className="paymentType">
-            <h3>Transaction Type <span style={{ color: 'red' }}>*</span></h3>
+            <h3>
+              Transaction Type <span style={{ color: "red" }}>*</span>
+            </h3>
             <div className="transaction-options">
               <label>
                 <input
@@ -746,7 +836,11 @@ const CashierHome = () => {
             <button
               className="checkoutCHECK"
               onClick={checkout}
-              title={!paymentType ? "Select a transaction type to proceed" : "Checkout"}
+              title={
+                !paymentType
+                  ? "Select a transaction type to proceed"
+                  : "Checkout"
+              }
             >
               Checkout
             </button>
@@ -761,6 +855,7 @@ const CashierHome = () => {
             <button  onClick={() => setShowSelectCustomerModal(!showSelectCustomerModal)}>Select Customer</button>
             <button  onClick={clearCustomer}>Clear Customer</button>
             <button  onClick={home_screen}>Return to Home</button>
+
           </div>
         </div>
       </div>
