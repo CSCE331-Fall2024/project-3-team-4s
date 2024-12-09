@@ -41,8 +41,12 @@ const EmployeeHome = () => {
         // Decode the token to extract the payload
         const payload = decodeJWT(token);
         const employeeID = payload.employeeID;
+        const employeeFirstName = payload.employeeFirstName;
+        const employeeLastName = payload.employeeLastName;
 
         localStorage.setItem("employeeID", employeeID); // Store employee ID in local storage
+        localStorage.setItem("employeeFirstName", employeeFirstName); // Store first name in local storage
+        localStorage.setItem("employeeLastName", employeeLastName); // Store last name in local storage
         localStorage.setItem("token", token); // Store token in local storage
 
         window.history.replaceState({}, document.title, "/employee"); // Remove token from URL

@@ -55,8 +55,10 @@ const googleCallback = async (req, res) => {
 
     const token = jwt.sign(
       { employeeID: employee.employee_id },
+      { employeeFirstName: employee.first_name },
+      { employeeLastName: employee.last_name },
       process.env.JWT_SECRET,
-      { expiresIn: "1min" }
+      { expiresIn: "1hr" }
     );
 
     res.redirect(`${FRONTEND_URL}/employee?token=${token}`);
