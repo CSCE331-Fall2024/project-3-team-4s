@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import "./CashierHome.css";
 import axios from "axios";
-import "./Employees.css";
 import { useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
@@ -326,8 +325,8 @@ const CashierHome = () => {
             .split(".")[0],
           transaction_date: new Date().toISOString().split("T")[0],
           transaction_type: paymentType,
-          customer_id: customerID || null,
-          employee_id: 1,
+          customer_id: customerID || "", // Get customer ID if signed in
+          employee_id: localStorage.getItem("employeeID"), // Get employee ID from local storage
           week_number: weekNumber,
         };
         if (totalCost <= 0) {
@@ -536,6 +535,7 @@ const CashierHome = () => {
       console.log("User canceled");
       return;
     }
+    localStorage.clear();
     navigate("/");
   };
 
@@ -850,26 +850,12 @@ const CashierHome = () => {
           </div>
 
           <div className="bottom-buttons">
-            <button className="back-button" onClick={home_screen}>
-              Return to Home
-            </button>
-            <button
-              className="add-customer"
-              onClick={() => setShowCustomerModal(!showCustomerModal)}
-            >
-              Add Customer
-            </button>
-            <button
-              className="select-customer"
-              onClick={() =>
-                setShowSelectCustomerModal(!showSelectCustomerModal)
-              }
-            >
-              Select Customer
-            </button>
-            <button className="clear-customer" onClick={clearCustomer}>
-              Clear Customer
-            </button>
+
+            <button  onClick={() => setShowCustomerModal(!showCustomerModal)}>Add Customer</button>
+            <button  onClick={() => setShowSelectCustomerModal(!showSelectCustomerModal)}>Select Customer</button>
+            <button  onClick={clearCustomer}>Clear Customer</button>
+            <button  onClick={home_screen}>Return to Home</button>
+
           </div>
         </div>
       </div>
