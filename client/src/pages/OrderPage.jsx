@@ -7,10 +7,26 @@ import { useTranslate } from "../contexts/TranslateContext";
 import he from "he";
 import { translate } from "../utils/translateUtil";
 import { currentWeather } from "../utils/weatherUtil";
+import Button from "../components/Button";
 
 const OrderPage = () => {
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const backendURL = "http://localhost:3000"; // Replace with actual backend URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000"; // Replace with actual backend URL
+  const [itemData, setItemData] = useState([]); // Cache for fetched item data
+  
+  // Fetch all item data initially
+  useEffect(() => {
+    const fetchAllItems = async () => {
+      try {
+        const response = await axios.get(`${backendURL}/kiosk/items`);
+        setItemData(response.data); // Assuming response.data is an array of item objects
+      } catch (error) {
+        console.error("Error fetching item data:", error);
+      }
+    };
+    fetchAllItems();
+  }, []);
+
 
   const [text, setText] = useState({
     currentOrder: "Your Current Order",
@@ -43,13 +59,29 @@ const OrderPage = () => {
     on: "on",
     Today: "Today's",
     Weather: "Weather",
+    itemNames: {},
+    sides: "Sides",
+    entree: "Entrees",
   });
 
   const { language } = useTranslate();
 
   useEffect(() => {
     const fetchTranslations = async () => {
+      if (!itemData || itemData.length === 0) return
+      
       try {
+
+        const translatedItemNames = {};
+        // Translate item names dynamically
+        for (const item of itemData) {
+          if (item.item_name) {
+            translatedItemNames[item.item_name] = he.decode(
+              await translate(item.item_name, language)
+            );
+          }
+        }
+        
         const translatedText = {
           currentOrder: he.decode(await translate("Your Current Order", language)),
           remove : he.decode(await translate("Remove", language)),
@@ -81,6 +113,9 @@ const OrderPage = () => {
           on: he.decode(await translate("on", language)),
           Today: he.decode(await translate("Today's", language)),
           Weather: he.decode(await translate("Weather", language)),
+          itemNames: translatedItemNames,
+          sides: he.decode(await translate("Sides", language)),
+          entree: he.decode(await translate("Entrees", language)),
         };
         setText(translatedText);
       } catch (error) {
@@ -89,7 +124,7 @@ const OrderPage = () => {
     };
 
     fetchTranslations();
-  }, [language]);
+  }, [language,itemData]);
 
     
 
@@ -193,7 +228,6 @@ const OrderPage = () => {
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
-  const [itemData, setItemData] = useState([]); // Cache for fetched item data
 
   const incrementQuantity = (index) => {
     const updatedOrderList = [...orderList];
@@ -228,19 +262,6 @@ const OrderPage = () => {
   
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };  
-
-  // Fetch all item data initially
-  useEffect(() => {
-    const fetchAllItems = async () => {
-      try {
-        const response = await axios.get(`${backendURL}/kiosk/items`);
-        setItemData(response.data); // Assuming response.data is an array of item objects
-      } catch (error) {
-        console.error("Error fetching item data:", error);
-      }
-    };
-    fetchAllItems();
-  }, []);
 
   // Populate prices cache
   useEffect(() => {
@@ -590,12 +611,12 @@ const OrderPage = () => {
 
       <div className="container">
         <div className="order-summary">
-          <button className="add-more" onClick={goToCustomerPage}>
-            + {text.addMore}
-          </button>
-          <button className="add-more-2" onClick={clearOrder}>
-            {text.removeAll}
-          </button>
+          <Button className="add-more" onClick={goToCustomerPage} text={`+ ${text.addMore}`}>
+            
+          </Button>
+          <Button className="add-more-2" onClick={clearOrder} text = {text.removeAll}>
+            
+          </Button>
           <br></br><br></br>
           <h2>{text.currentOrder}</h2>
 
@@ -632,7 +653,7 @@ const OrderPage = () => {
                       <div className="item-details">
                         {/* Name and Price */}
                         <div className="item-row">
-                          <span className="item-name">{item.name}</span>
+                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
@@ -642,39 +663,41 @@ const OrderPage = () => {
                         <div className="item-sides-entrees">
                           {sides.length > 0 && (
                             <>
-                              <h4>Sides</h4>
+                              <h4>{text.sides}</h4>
                               <ul>
                                 {sides.map((side, sideIndex) => (
-                                  <li key={sideIndex}>{side.name}</li>
+                                  <li key={sideIndex}>{text.itemNames[side.name] || side.name}</li>
                                 ))}
                               </ul>
                             </>
                           )}
                           {entrees.length > 0 && (
                             <>
-                              <h4>Entrees</h4>
+                              <h4>{text.entree}</h4>
                               <ul>
                                 {entrees.map((entree, entreeIndex) => (
-                                  <li key={entreeIndex}>{entree.name}</li>
+                                  <li key={entreeIndex}>{text.itemNames[entree.name] || entree.name}</li>
                                 ))}
                               </ul>
                             </>
                           )}
                         </div>
 
+
                         {/* Quantity Selector */}
                         <div className="item-row">
-                          <button
+                          <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
+                            text = {text.remove}
                           >
-                            {text.remove}
-                          </button>
+                            
+                          </Button>
                           {!(item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") ? (
                             <div className="quantity-selector">
-                              <button onClick={() => decrementQuantity(index)}>-</button>
+                              <Button className="quant" onClick={() => decrementQuantity(index)} text = "-" ></Button>
                               <span>{item.quantity}</span>
-                              <button onClick={() => incrementQuantity(index)}>+</button>
+                              <Button onClick={() => incrementQuantity(index)} text = "+" className="quant"></Button>
                             </div>
                           ) : null}
                         </div>
@@ -692,26 +715,27 @@ const OrderPage = () => {
                       />
                       <div className="item-details">
                         <div className="item-row">
-                          <span className="item-name">{item.name}</span>
+                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
                         </div>
                         <div className="item-row">
-                          <button
+                          <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
+                            text = {text.remove}
                           >
-                            {text.remove}
-                          </button>
+                            
+                          </Button>
                           <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>
-                              -
-                            </button>
+                            <Button onClick={() => decrementQuantity(index)} text = "-">
+                              
+                            </Button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>
-                              +
-                            </button>
+                            <Button onClick={() => incrementQuantity(index)} text="+">
+                              
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -775,9 +799,9 @@ const OrderPage = () => {
             <br />
           </div>
           <br />
-          <button className="checkout-order" onClick={handleCheckout}>
-            {text.checkout}
-          </button>
+          <Button className="checkout-order" onClick={handleCheckout} text = {text.checkout}>
+            
+          </Button>
         </div>
       </div>
       <div className="weather-recommendation">
@@ -803,7 +827,7 @@ const OrderPage = () => {
                 className="recommended-item-image"
               />
               <div className="recommended-item-text">
-                <span>{item}</span>
+                <span>{text.itemNames[item] || item}</span>
               </div>
             </div>
             <div className="hover-text" style={{

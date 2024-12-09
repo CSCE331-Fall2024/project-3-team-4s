@@ -60,7 +60,7 @@
   color: white;
   border: none;
   padding: 5px 10px;
-  font-size: 13px;
+  font-size: 14px;
   border-radius: 3px;
   width: auto;
   cursor: pointer;
@@ -81,7 +81,10 @@
   background-color: #f4f4f4;
   border: 1px solid #ccc;
   padding: 5px 10px;
+  height: auto;
+  width: auto;
   cursor: pointer;
+  color: black;
 }
 
 .quantity-selector button:hover {
@@ -222,6 +225,12 @@
   .pickup-details {
     flex: 1;
   }
+
+  .quant{
+    width: 50%;
+    height: auto;
+    color: black;
+  }
   
   .add-more {
     background-color: #e60000;
@@ -231,10 +240,12 @@
     border-radius: 5px;
     font-size: 20px;
     cursor: pointer;
+    width: auto;height: auto;
   }
 
   .add-more-2 {
-    margin-left: 62%;
+    margin-left: 5%;
+    width: auto;height: auto;
     background-color: #e60000;
     color: #fff;
     padding: 10px;
