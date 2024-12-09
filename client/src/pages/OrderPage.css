@@ -120,6 +120,50 @@
     margin-bottom: 20px;
     font-weight: bolder;
   }
+
+  .recommended-item-container {
+    position: relative;
+    cursor: pointer; /* Show pointer cursor */
+  }
+  
+  .recommended-item {
+    position: relative;
+  }
+  
+  .recommended-item-image {
+    width: 100%; /* Adjust size as needed */
+    border-radius: 8px; /* Optional styling */
+  }
+  
+  .recommended-item-text {
+    text-align: center;
+    margin-top: 8px;
+  }
+  
+  .hover-text {
+    position: absolute;
+    text-align: center;
+    left: 50%; bottom: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(230, 0, 0, 0.7); /* Semi-transparent background */
+    color: white;
+    border-radius: 4px;
+    font-size: 24px;
+    padding: 10px;
+    opacity: 0; /* Hidden by default */
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .recommended-item-container:hover .hover-text {
+    opacity: 1; /* Show on hover */
+  }
+  
+  .recommended-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: rgb(250, 228, 232);
+    scale: 1.1;
+  }
   
   .recommended-item-image {
     width: 100%;
@@ -161,7 +205,7 @@
   }
 
   .order-summary, .pickup-details { 
-    max-height: 58vh; /* Set the fixed height for the order summary */
+    max-height: 450px; /* Set the fixed height for the order summary */
     overflow-y: auto; /* Enable vertical scrolling */
     border: 1px solid #ccc; /* Optional: Add a border */
     padding: 15px; /* Optional: Add padding inside the box */
@@ -190,7 +234,7 @@
   }
 
   .add-more-2 {
-    margin-left: 629px;
+    margin-left: 62%;
     background-color: #e60000;
     color: #fff;
     padding: 10px;

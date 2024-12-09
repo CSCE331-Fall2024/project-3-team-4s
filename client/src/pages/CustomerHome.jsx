@@ -793,7 +793,7 @@ const CustomerHome = () => {
               <button onClick={handleBackToMenu} className="back-button-to-menu2">
                   Go Back
                 </button> 
-              <h3>Step 1 : Choose Your Side</h3>
+              <h3>Your Selected Side</h3>
             </div>
             <div className="sides-container">
               {sides.map((side) => (
@@ -820,7 +820,7 @@ const CustomerHome = () => {
             <br></br>
             <br></br>
             <br></br>
-            <h3>Step 2: Choose Your Entree</h3>
+            <h3>Your Selected Entrees</h3>
             <br></br>
             <div className="entrees-container">
               {entrees.map((entree) => {

@@ -3,16 +3,121 @@ import "./OrderPage.css";
 import { useOrder } from "./OrderContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslate } from "../contexts/TranslateContext";
+import he from "he";
+import { translate } from "../utils/translateUtil";
 import { currentWeather } from "../utils/weatherUtil";
 
 const OrderPage = () => {
   // const backendURL = import.meta.env.VITE_BACKEND_URL;
   const backendURL = "http://localhost:3000"; // Replace with actual backend URL
 
+  const [text, setText] = useState({
+    currentOrder: "Your Current Order",
+    addMore: "Add More Items",
+    removeAll: "Remove All Items",
+    remove: "Remove",
+    subtotal: "Subtotal",
+    tax: "Tax",
+    total: "Total",
+    paymentMethod: "Payment Method",
+    checkout: "Checkout",
+    utensils: "Utensils",
+    napkins: "Napkins",
+    additionalRequests: "Additional Requests?",
+    creditDebit: "Credit Card/Debit Card",
+    giftCard: "Gift Card",
+    loading: "Loading...",
+    clickToAdd: "Click to Add",
+    doYouWantToDelete: "Do you really want to delete this item?",
+    noItems: "No items in your order. Add some items to your order before checking out.",
+    addItem: "Do you want to add this item to your order?",
+    deleteItems: "Do you really want to delete all the items in the order?",
+    deleteItem: "Do you really want to delete this item?",
+    pleaseadditems: "Please add items to your order before checking out.",
+    selectPayment: "Please select a payment method.",
+    proceedToCheckout: "Are you sure you want to proceed to checkout?",
+    confirmation: "Order confirmed! Thank you for your purchase.",
+    recommendation: "Recommendation",
+    based: "Based",
+    on: "on",
+    Today: "Today's",
+    Weather: "Weather",
+  });
+
+  const { language } = useTranslate();
+
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      try {
+        const translatedText = {
+          currentOrder: he.decode(await translate("Your Current Order", language)),
+          remove : he.decode(await translate("Remove", language)),
+          noItems: he.decode(await translate("No items in your order. Add some items to your order before checking out.", language)),
+          addMore: he.decode(await translate("Add More Items", language)),
+          removeAll: he.decode(await translate("Remove All Items", language)),
+          subtotal: he.decode(await translate("Subtotal", language)),
+          tax: he.decode(await translate("Tax", language)),
+          total: he.decode(await translate("Total", language)),
+          paymentMethod: he.decode(await translate("Payment Method", language)),
+          checkout: he.decode(await translate("Checkout", language)),
+          utensils: he.decode(await translate("Utensils", language)),
+          napkins: he.decode(await translate("Napkins", language)),
+          additionalRequests: he.decode(await translate("Additional Requests?", language)),
+          creditDebit: he.decode(await translate("Credit Card/Debit Card", language)),
+          giftCard: he.decode(await translate("Gift Card", language)),
+          loading: he.decode(await translate("Loading...", language)),
+          clickToAdd: he.decode(await translate("Click to Add", language)),
+          doYouWantToDelete: he.decode(await translate("Do you really want to delete this item?", language)),
+          addItem: he.decode(await translate("Do you want to add this item to your order?", language)),
+          deleteItems: he.decode(await translate("Do you really want to delete all the items in the order?", language)),
+          deleteItem: he.decode(await translate("Do you really want to delete this item?", language)),
+          confirmation: he.decode(await translate("Order confirmed! Thank you for your purchase.", language)),
+          pleaseadditems: he.decode(await translate("Please add items to your order before checking out.", language)),
+          selectPayment: he.decode(await translate("Please select a payment method.", language)),
+          proceedToCheckout: he.decode(await translate("Are you sure you want to proceed to checkout?", language)),
+          recommendation: he.decode(await translate("Recommendation", language)),
+          based: he.decode(await translate("Based", language)),
+          on: he.decode(await translate("on", language)),
+          Today: he.decode(await translate("Today's", language)),
+          Weather: he.decode(await translate("Weather", language)),
+        };
+        setText(translatedText);
+      } catch (error) {
+        console.error("Error fetching translations:", error);
+      }
+    };
+
+    fetchTranslations();
+  }, [language]);
+
+    
+
   const [recommendedItems, setRecommendedItems] = useState([]);
   const [weather, setWeather] = useState(0);
   const [temperatureColor, setTemperatureColor] = useState("black");
   const [weatherIcon, setWeatherIcon] = useState("");
+
+  const addRecommendedItemToOrder = (itemName) => {
+    const confirm = window.confirm(text.addItem); // Display a confirmation message
+    if(!confirm) return;
+    // Check if the item already exists in the orderList
+    const existingItemIndex = orderList.findIndex((item) => item.name === itemName);
+
+    if (existingItemIndex !== -1) {
+      // If the item exists, increment its quantity
+      const updatedOrderList = [...orderList];
+      updatedOrderList[existingItemIndex].quantity += 1;
+      setOrderList(updatedOrderList);
+    } else {
+      // If the item does not exist, add it with a quantity of 1
+      const newItem = {
+        name: itemName,
+        quantity: 1,
+      };
+      setOrderList([...orderList, newItem]);
+    }
+  };
 
   useEffect(() => {
     const fetchWeatherAndItems = async () => {
@@ -106,6 +211,24 @@ const OrderPage = () => {
     }
   };
 
+  const hexToRgba = (hex, alpha) => {
+    let r = 0, g = 0, b = 0;
+  
+    // Handle shorthand hex colors (e.g., #FFF)
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+      // Handle full hex colors (e.g., #FFFFFF)
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+    }
+  
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };  
+
   // Fetch all item data initially
   useEffect(() => {
     const fetchAllItems = async () => {
@@ -160,7 +283,7 @@ const OrderPage = () => {
   console.log(orderList);
   const clearOrder = () => {
     const confirmed = window.confirm(
-      "Do you really want to Remove all the items?"
+      text.deleteItems
     );
     if (confirmed) {
       setOrderList([]);
@@ -310,7 +433,7 @@ const OrderPage = () => {
   };
 
   const removeItem = (indexToRemove) => {
-    const confirmed = window.confirm("Do you really want to delete this item?");
+    const confirmed = window.confirm(text.deleteItem);
     if (!confirmed) return;
 
     const updatedOrderList = [...orderList];
@@ -395,17 +518,17 @@ const OrderPage = () => {
   const handleCheckout = async () => {
 
     if (orderList.length === 0) {
-      alert("Please add items to your order before checking out.");
+      alert(text.pleaseadditems);
       return;
     }
 
     if (!transactionType) {
-      alert("Please select a payment method.");
+      alert(text.selectPayment);
       return;
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to proceed to checkout?"
+      text.proceedToCheckout
     );
     if (confirmed) {
       const consolidatedOrderList = consolidateOrderList(orderList); // Consolidate duplicates
@@ -419,7 +542,7 @@ const OrderPage = () => {
         });
   
         if (response.status === 200) {
-          alert("Order has been successfully checked out!");
+          alert(text.confirmation);
           clearOrderCheckout(); // Clears the local order list
         }
       } catch (error) {
@@ -463,18 +586,18 @@ const OrderPage = () => {
 
   return (
     <div className="background">
-      <h2 className="page-title">Your Current Order</h2>
+      <h2 className="page-title">{text.currentOrder}</h2>
 
       <div className="container">
         <div className="order-summary">
           <button className="add-more" onClick={goToCustomerPage}>
-            + Add More Items
+            + {text.addMore}
           </button>
           <button className="add-more-2" onClick={clearOrder}>
-            Remove All Items
+            {text.removeAll}
           </button>
           <br></br><br></br>
-          <h2>Your Order</h2>
+          <h2>{text.currentOrder}</h2>
 
 
           {orderList.length > 0 ? (
@@ -545,17 +668,15 @@ const OrderPage = () => {
                             className="remove-button"
                             onClick={() => removeItem(index)}
                           >
-                            Remove
+                            {text.remove}
                           </button>
-                          <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>
-                              -
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>
-                              +
-                            </button>
-                          </div>
+                          {!(item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") ? (
+                            <div className="quantity-selector">
+                              <button onClick={() => decrementQuantity(index)}>-</button>
+                              <span>{item.quantity}</span>
+                              <button onClick={() => incrementQuantity(index)}>+</button>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -581,7 +702,7 @@ const OrderPage = () => {
                             className="remove-button"
                             onClick={() => removeItem(index)}
                           >
-                            Remove
+                            {text.remove}
                           </button>
                           <div className="quantity-selector">
                             <button onClick={() => decrementQuantity(index)}>
@@ -601,23 +722,23 @@ const OrderPage = () => {
               return items;
             })()
           ) : (
-            <p>No items in the order.</p>
+            <p>{text.noItems}</p>
           )}
         </div>
 
         <div className="pickup-details">
-          <h3>Additional Requests?</h3>
+          <h3>{text.additionalRequests}</h3>
           <div className="additional-requests">
             <label>
-              <input type="checkbox" /> Utensils
+              <input type="checkbox" /> {text.utensils}
             </label>
             <label>
-              <input type="checkbox" /> Napkins
+              <input type="checkbox" /> {text.napkins}
             </label>
           </div>
           <br />
           <br />
-          <h3>Payment Method</h3>
+          <h3>{text.paymentMethod}</h3>
           <br />
           <div className="payment-method">
           <label>
@@ -628,7 +749,7 @@ const OrderPage = () => {
               onChange={handleTransactionTypeChange}
               checked={transactionType === "Credit/Debit"}
             />
-            Credit Card/Debit Card
+            {text.creditDebit}
           </label>
           <br />
           <br />
@@ -640,48 +761,56 @@ const OrderPage = () => {
               onChange={handleTransactionTypeChange}
               checked={transactionType === "Gift Card"}
             />
-            Gift Card
+            {text.giftCard}
           </label>
           </div>
           <br />
           <br />
           <div className="total-price">
-            <h3>Subtotal: ${calculateTotalPrice().toFixed(2)}</h3>
+            <h3>{text.subtotal} ${calculateTotalPrice().toFixed(2)}</h3>
             <br />
-            <h3>Tax (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
+            <h3>{text.tax} (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
             <br />
-            <h3>Total: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+            <h3>{text.total}: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
             <br />
           </div>
-
+          <br />
           <button className="checkout-order" onClick={handleCheckout}>
-            Checkout
+            {text.checkout}
           </button>
         </div>
       </div>
       <div className="weather-recommendation">
         <h3 style={{ backgroundColor : temperatureColor}}>
           <br/><br/>
-          Recommendation <br/>Based<br/> on<br/> Today's<br/> Weather
+          {text.recommendation} <br/>{text.based}<br/> {text.on}<br/> {text.Today}<br/> {text.Weather}  
         </h3>
         <h1 style={{ color: temperatureColor}}>
           <br/>
           {weather !== null ? `${weather}°F` : "Loading..."} <br/> {weatherIcon}
         </h1>
         <div className="recommended-items">
-          {recommendedItems.map((item) => (
-            <div key={item} className="recommended-item">
+        {recommendedItems.map((item) => (
+          <div
+            key={item}
+            className="recommended-item-container"
+            onClick={() => addRecommendedItemToOrder(item)} // Add click handler
+          >
+            <div className="recommended-item">
               <img
                 src={getItemImage(item)}
                 alt={item}
                 className="recommended-item-image"
               />
-              <div>
-                <span>{item}</span><br/>
-                <span>${(prices[item] || 0).toFixed(2)}</span>
+              <div className="recommended-item-text">
+                <span>{item}</span>
               </div>
             </div>
-          ))}
+            <div className="hover-text" style={{
+          backgroundColor: hexToRgba(temperatureColor, 0.85), // Dynamically set background color
+        }}>{text.clickToAdd}</div>
+          </div>
+        ))}
         </div>
       </div>
     </div>

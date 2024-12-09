@@ -115,8 +115,8 @@ const postOrder = async (req, res) => {
   const transactionDate = new Date();
   const transactionTime = transactionDate.toTimeString().split(" ")[0]; // Time in HH:MM:SS format
   const weekNumber = 1;
-  const customerId = 1;
-  const employeeId = 1;
+  const customerId = null;
+  const employeeId = null;
 
   try {
     // Insert into the transaction table and get the transaction_id
