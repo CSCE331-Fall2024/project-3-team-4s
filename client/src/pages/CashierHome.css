@@ -382,3 +382,7 @@ input[type="text"] {
     cursor: pointer;
 }
 
+.bottom-buttons button {
+    position: static; /* Ensures buttons follow normal flow */
+    flex: 1; /* Ensures buttons share equal space */
+}
