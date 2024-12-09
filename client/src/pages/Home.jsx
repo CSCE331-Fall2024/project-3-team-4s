@@ -9,8 +9,8 @@ import { useTranslate } from "../contexts/TranslateContext";
 import he from "he";
 
 const Home = () => {
-  // const backendURL = "http://localhost:3000";
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = "http://localhost:3000";
+  // const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const navigate = useNavigate();
   const { language } = useTranslate();

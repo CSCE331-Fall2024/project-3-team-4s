@@ -4,8 +4,10 @@ import jwt from "jsonwebtoken";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+// const REDIRECT_URI = process.env.REDIRECT_URI;
+const REDIRECT_URI = "http://localhost:3000/auth/google/callback";
+// const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = "http://localhost:5173";
 
 const googleLogin = (req, res) => {
   const googleAuth = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=email%20profile`;
