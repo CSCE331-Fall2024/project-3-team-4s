@@ -9,17 +9,49 @@ import { useTranslate } from "../contexts/TranslateContext";
 import he from "he";
 
 const Home = () => {
+  // const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
   const { language } = useTranslate();
+  const [isRendered, setIsRendered] = useState(false);
   const [text, setText] = useState({
     translate: "Translate",
     accessiblity: "Accessibility Options",
     order: "Place Order",
-    manager: "Manager",
-    cashier: "Cashier",
+    employee: "Employee",
     heading: "Panda Express",
   });
 
+  const validateToken = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = `${backendURL}/auth/google`; // Redirect to Google login
+    }
+
+    try {
+      const res = await fetch(`${backendURL}/auth/verify-token`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      // Skip verification if token is valid
+      if (data.valid) {
+        navigate("/employee");
+      } else {
+        window.location.href = `${backendURL}/auth/google`; // Redirect to Google login
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Fetch translations and current weather
   useEffect(() => {
     const fetchTranslations = async () => {
       try {
@@ -29,14 +61,15 @@ const Home = () => {
             await translate("Accessibility Options", language)
           ),
           order: he.decode(await translate("Place Order", language)),
-          manager: he.decode(await translate("Manager", language)),
-          cashier: he.decode(await translate("Cashier", language)),
+          employee: he.decode(await translate("Employee", language)),
           heading: he.decode(await translate("Panda Express", language)),
         };
 
         setText(translatedText);
 
         console.log("Current Weather in CSTAT:", `${await currentWeather()}°F`);
+
+        setIsRendered(true);
       } catch (error) {
         console.error("Error fetching translations:", error);
       }
@@ -44,6 +77,18 @@ const Home = () => {
 
     fetchTranslations();
   }, [language]);
+
+  // Check for unauthorized access
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const unauthorized = params.get("unauthorized");
+
+    if (unauthorized && isRendered) {
+      if (window.confirm("Unauthorized access")) {
+        window.history.replaceState({}, document.title, "/"); // Remove unauthorized from URL
+      }
+    }
+  }, [isRendered]);
 
   const [showTranslateModal, setShowTranslateModal] = useState(false);
 
@@ -80,13 +125,8 @@ const Home = () => {
 
       <div className="home-right">
         <Button
-          text={text.manager}
-          onClick={() => navigate("/manager")}
-          className="med-custom-button"
-        />
-        <Button
-          text={text.cashier}
-          onClick={() => navigate("/cashier")}
+          text={text.employee}
+          onClick={validateToken}
           className="med-custom-button"
         />
       </div>

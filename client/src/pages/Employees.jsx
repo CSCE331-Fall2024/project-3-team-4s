@@ -24,10 +24,9 @@ const Employees = () => {
       try {
         const res = await axios.get(`${backendURL}/employee/get-employees`);
 
-        console.log(res.data);
         setEmployees(res.data);
       } catch (err) {
-        console.error(err);
+        alert(err.response.data.message);
       }
     };
 
@@ -64,12 +63,13 @@ const Employees = () => {
   };
 
   // Button handlers
-  const addEmployee = async (firstName, lastName, role) => {
+  const addEmployee = async (firstName, lastName, role, email) => {
     try {
       const employee = {
         first_name: firstName,
         last_name: lastName,
         role: role,
+        email: email,
       };
 
       const res = await axios.post(
@@ -83,16 +83,17 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
-  const editEmployee = async (firstName, lastName, role) => {
+  const editEmployee = async (firstName, lastName, role, email) => {
     try {
       const employee = {
         first_name: firstName,
         last_name: lastName,
         role: role,
+        email: email,
       };
 
       const res = await axios.put(
@@ -114,7 +115,7 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -136,7 +137,7 @@ const Employees = () => {
 
       alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
@@ -152,6 +153,7 @@ const Employees = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Role</th>
+                <th>Email</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -163,6 +165,7 @@ const Employees = () => {
                   <td>{employee.first_name}</td>
                   <td>{employee.last_name}</td>
                   <td>{employee.role}</td>
+                  <td>{employee.email}</td>
                   <td className="icons-container">
                     <Icon
                       src="/edit-icon.svg"
