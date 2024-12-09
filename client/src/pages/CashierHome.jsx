@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 
 const CashierHome = () => {
   const navigate = useNavigate(); // Navigate to homepage
-  const backendURL = "http://localhost:3000";
+  // const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_APP_BACKEND_URL;
 
   // State Variables
   const [activeTab, setActiveTab] = useState("Orders");
