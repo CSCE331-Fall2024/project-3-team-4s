@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const CashierHome = () => {
   const navigate = useNavigate(); // Navigate to homepage
   // const backendURL = "http://localhost:3000";
-  const backendURL = import.meta.env.VITE_APP_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   // State Variables
   const [activeTab, setActiveTab] = useState("Orders");
@@ -84,6 +84,7 @@ const CashierHome = () => {
         const refresherItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "refresher"
         );
+
         const bottleItem = mealTypesRes.data.find(
           (item) => item.item_name.toLowerCase() === "bottle"
         );
