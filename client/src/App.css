@@ -4,9 +4,9 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 :root {
-  --button-scale: 1; 
-  --text-scale: 1; 
-  --brightness: 1;
+  --button-scale: 1;
+  --text-scale: 1;
+  --brightness: 1; 
   --contrast: 1; 
 }
 
