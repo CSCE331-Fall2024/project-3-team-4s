@@ -6,8 +6,8 @@ import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 
 const EmployeeHome = () => {
-  const backendURL = "http://localhost:3000";
-  // const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
