@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CustomerHome.css";
+import { useTranslate } from "../contexts/TranslateContext";
+import { translate } from "../utils/translateUtil";
+import he from "he";
 
 import AppetizerModal from "../components/AppetizerModal";
 import SideModal from "../components/SideModal";
@@ -10,6 +13,7 @@ import BottomBar from "../components/BottomBar";
 import SauceModal from "../components/SauceModal";
 import PopupNotification from "../components/PopupNotification";
 import { useOrder } from "./OrderContext";
+import Button from "../components/Button";
 
 const imageMap = {
   Bowl: { image: "/bowl.avif", description: "1 Side & 1 Entree" },
@@ -138,10 +142,10 @@ const imageMap = {
   "Coke Mexico": { image: "/Coke_Mexico.avif", description: "" },
   "Coke Zero": { image: "/Coke_Zero.avif", description: "" },
   Smartwater: { image: "/Smartwater.avif", description: "" },
-  Sauces: { image: "/Soy_Sauce.png", description: "" },
+  Sauces: { image: "/sauce.png", description: "Choice of different blend of sauces" },
   "Soy Sauce": { image: "/Soy_Sauce.png", description: "" },
   "Sweet & Sour Sauce": { image: "/Sweet_&_Sour_Sauce.png", description: "" },
-  "Chili Sauce": { image: "/Chilli_Sauce.png", description: "" },
+  "Chili Sauce": { image: "/Chili_Sauce.png", description: "" },
   "Teriyaki Sauce": { image: "/Teriyaki_Sauce.png", description: "" },
   "Hot Mustard": { image: "/Hot_Mustard.png", description: "" },
 };
@@ -159,11 +163,12 @@ const displayOrder = [
 const CustomerHome = () => {
   // const backendURL = "http://localhost:3000";
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [menuItems, setMenuItems] = useState([]);
+  const { language } = useTranslate(); // Get current language
   const logo = "/logo.png";
   const { popupDetails } = useOrder();
 
   const { addToOrder } = useOrder();
-  const [menuItems, setMenuItems] = useState([]);
   const [sides, setSides] = useState([]); // Store sides here
   const [entrees, setEntrees] = useState([]); // Store entrees here
   const [appetizers, setAppetizers] = useState([]); // State for appetizers
@@ -181,6 +186,8 @@ const CustomerHome = () => {
   const [isSauceModalOpen, setIsSauceModalOpen] = useState(false); // Modal visibility state
   const [sauces, setSauces] = useState([]); // State for sauces
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(null); // 'side' or 'entree'
+
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -242,6 +249,7 @@ const CustomerHome = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      
       setSides(data);
     } catch (error) {
       console.error("Error fetching sides:", error);
@@ -292,6 +300,100 @@ const CustomerHome = () => {
     }
   };
 
+  const [translations, setTranslations] = useState({
+    pageHeading: "Choose your meal type to start your order",
+    customizeHeading: "Customize your",
+    goBack: "Go Back",
+    backToMenu: "Back to Menu",
+    bowlchooseSide: "Step 1 : Choose Your Side",
+    bowlchooseEntree: "Step 2 : Choose Your Entree",
+    selectSide: "Your Selected Side",
+    selectEntree: "Your Selected Entree",
+    chooseSide: "Choose Your Side",
+    chooseEntree: "Choose Your Entree",
+    chooseAppetizer: "Choose Your Appetizer",
+    chooseDrink: "Choose Your Drink",
+    chooseSauce: "Choose Your Sauce",
+    itemNames: {}, // To store translated item names
+    itemDescriptions: {}, // To store translated item descriptions
+    viewOrder: "View Order",
+    doSide: "Do you want to select the side",
+    doEntree: "Do you want to select the entree",
+  });
+
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      try {
+        const translatedTexts = {
+          pageHeading: he.decode(
+            await translate("Choose your meal type to start your order", language)
+          ),
+          customizeHeading: he.decode(await translate("Customize your", language)),
+          goBack: he.decode(await translate("Go Back", language)),
+          backToMenu: he.decode(await translate("Back to Menu", language)),
+          chooseSide: he.decode(await translate("Step 1: Choose Your Side", language)),
+          chooseEntree: he.decode(await translate("Step 2: Choose Your Entree", language)),
+          chooseAppetizer: he.decode(await translate("Choose Your Appetizer", language)),
+          chooseDrink: he.decode(await translate("Choose Your Drink", language)),
+          chooseSauce: he.decode(await translate("Choose Your Sauce", language)),
+          viewOrder: he.decode(await translate("View Order", language)),
+          selectSide: he.decode(await translate("Your Selected Side", language)),
+          selectEntree: he.decode(await translate("Your Selected Entree", language)),
+          bowlchooseEntree: he.decode(await translate("Step 2: Choose Your Entree", language)),
+          bowlchooseSide: he.decode(await translate("Step 1: Choose Your Side", language)),
+          doSide: he.decode(await translate("Do you want to select the side", language)),
+          doEntree: he.decode(await translate("Do you want to select the entree", language)),
+
+        };
+
+        // Translate menu item names and descriptions
+        const itemTranslations = {};
+        const descriptionTranslations = {};
+        for (const item of menuItems) {
+          const itemName = item.item_name;
+          itemTranslations[itemName] = he.decode(await translate(itemName, language));
+          descriptionTranslations[itemName] = he.decode(
+            await translate(imageMap[item.item_name]?.description || "", language)
+          );
+        }
+
+        const translateItems = async (items) => {
+          const itemTranslations = {};
+          for (const item of items) {
+            const translatedName = await translate(item.item_name, language);
+            itemTranslations[item.item_name] = he.decode(translatedName);
+          }
+          return itemTranslations;
+        };
+
+        const sideTranslations = await translateItems(sides);
+      const entreeTranslations = await translateItems(entrees);
+      const appetizerTranslations = await translateItems(appetizers);
+      const drinkTranslations = await translateItems(drinks);
+      const sauceTranslations = await translateItems(sauces);
+
+      setTranslations({
+        ...translatedTexts,
+        itemNames: {
+          ...itemTranslations,
+          ...sideTranslations,
+          ...entreeTranslations,
+          ...appetizerTranslations,
+          ...drinkTranslations,
+          ...sauceTranslations,
+        },
+        itemDescriptions: {
+          ...descriptionTranslations}
+      });
+    } catch (error) {
+      console.error("Error fetching translations:", error);
+    }
+  };
+
+  fetchTranslations();
+}, [language, menuItems, sides, entrees, appetizers, drinks, sauces]);
+
+
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
 
@@ -316,11 +418,10 @@ const CustomerHome = () => {
       fetchEntrees();
     }
 
-    if (item.item_name === "Bowl") {
+    if (["Bowl", "Plate", "Bigger Plate"].includes(item.item_name)) {
+      setSelectedItem(item);
       fetchSides();
-      fetchEntrees();
-      setSelectedSides([]); // Reset selected sides
-      setSelectedEntrees([]); // Reset selected entrees
+      setCurrentStep("side");
     }
   };
 
@@ -345,12 +446,13 @@ const CustomerHome = () => {
   };
 
   const handleSideSelect = (side) => {
-    if (selectedSides.includes(side)) {
-      // Deselect if the side is already selected
-      setSelectedSides(selectedSides.filter((s) => s !== side));
-    } else if (selectedSides.length < 2) {
-      // Add the side if less than two sides are selected
+    const confirmSelection = window.confirm(
+      `${translations.doSide} "${translations.itemNames[side.item_name] || side.item_name}"?`
+    );
+    if (confirmSelection) {
       setSelectedSides([...selectedSides, side]);
+      setCurrentStep("entree"); // Move to the next step
+      fetchEntrees();
     }
   };
 
@@ -362,38 +464,25 @@ const CustomerHome = () => {
       : 1;
 
   const handleEntreeSelect = (entree) => {
-    const entreeIndex = selectedEntrees.findIndex((e) => e.item === entree);
-
-    if (selectedItem.item_name === "Bowl") {
-      // For "Bowl," if the item is already selected, deselect it
-      if (entreeIndex !== -1) {
-        setSelectedEntrees([]);
-      } else {
-        // Add the selected entree since it's not yet selected
-        setSelectedEntrees([{ item: entree, count: 1 }]);
-      }
-    } else {
-      if (entreeIndex !== -1) {
-        // If the entree is already selected, increase its count up to the max per item limit
-        const newSelectedEntrees = [...selectedEntrees];
-        const maxPerItem = selectedItem.item_name === "Bigger Plate" ? 3 : 2;
-
-        // Ensure not to exceed the max per item limit or max total count
-        if (
-          newSelectedEntrees[entreeIndex].count < maxPerItem &&
-          selectedEntrees.reduce((acc, e) => acc + e.count, 0) < maxEntrees
-        ) {
-          newSelectedEntrees[entreeIndex].count += 1;
-          setSelectedEntrees(newSelectedEntrees);
-        }
-      } else if (
-        selectedEntrees.reduce((acc, e) => acc + e.count, 0) < maxEntrees
-      ) {
-        // Add a new entree if there’s room for more selections
-        setSelectedEntrees([...selectedEntrees, { item: entree, count: 1 }]);
+    const confirmSelection = window.confirm(
+      `${translations.doEntree} "${translations.itemNames[entree.item_name] || entree.item_name}"?`
+    );
+    if (confirmSelection) {
+      setSelectedEntrees([
+        ...selectedEntrees,
+        { item: entree, count: 1 }, // Add the entree with a count
+      ]);
+      // Check if more entrees can be added
+      const totalEntrees = selectedEntrees.reduce(
+        (acc, e) => acc + e.count,
+        1 // Include the current selection
+      );
+      if (totalEntrees >= maxEntrees) {
+        setCurrentStep("complete"); // Mark the selection process complete
       }
     }
   };
+
 
   const handleAppetizerClick = (appetizer) => {
     setSelectedAppetizer({
@@ -479,6 +568,7 @@ const CustomerHome = () => {
     setSelectedEntrees([]); // Reset selected entrees
     resetSelections();
     setSauces([]);
+    setCurrentStep("complete");
   };
 
   const sortedItems = [...menuItems].sort(
@@ -490,22 +580,18 @@ const CustomerHome = () => {
     <div className="background">
       <div className="nav-header">
         <h2 className="order-heading">
-          {selectedItem
-            ? `Customize your ${selectedItem.item_name}`
-            : "Choose your meal type to start your order"}
+          {translations.pageHeading}
         </h2>
       </div>
 
-      <button className="navbar-button" onClick={() => navigate("/order")}>
-        View Order
-      </button>
+      <Button text={translations.viewOrder} className="navbar-button" onClick={() => navigate("/order")} fontSize="32px">
+      </Button> 
 
-      <button className="navbar-button-2" onClick={() => navigate("/order")}>
-        View Order
-      </button>
+      <Button text={translations.backToMenu} className="navbar-button-2" onClick={() => navigate("/")} fontSize="32px">
+      </Button>
 
       <PopupNotification popupDetails={popupDetails} />
-
+      <br></br>
       <div className="menu-container">
         {!selectedItem ? (
           menuItems.map((item) => (
@@ -519,9 +605,10 @@ const CustomerHome = () => {
                 alt={item.item_name}
                 className="menu-item-image"
               />
-              <h2>{item.item_name}</h2>
+              <h2>{translations.itemNames[item.item_name] || item.item_name}</h2>
               <p className="image_description">
-                {imageMap[item.item_name]?.description}
+              {translations.itemDescriptions[item.item_name] ||
+                imageMap[item.item_name]?.description}
               </p>
               <p className="image_price">
                 $
@@ -532,14 +619,74 @@ const CustomerHome = () => {
               </p>
             </div>
           ))
+        ) : currentStep === "side" ? (
+          // Render sides step
+          <div className="steps-container">
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+            <h3>{translations.bowlchooseSide}</h3>
+            <br></br><br></br><br></br><br></br>
+            <div className="sides-container">
+              {sides.map((side) => (
+                <div
+                  key={side.menu_item_id}
+                  className="menu-item"
+                  onClick={() => handleSideSelect(side)}
+                >
+                  <img
+                    src={imageMap[side.item_name]?.image || logo}
+                    alt={side.item_name}
+                    className="menu-item-image"
+                  />
+                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
+                  <p className="image_description">
+                    {imageMap[side.item_name]?.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : currentStep === "entree" ? (
+          // Render entrees step
+          <div className="steps-container">
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+            <h3>{translations.bowlchooseEntree}</h3>
+            <br></br><br></br><br></br><br></br>
+            <div className="entrees-container">
+              {entrees.map((entree) => (
+                <div
+                  key={entree.menu_item_id}
+                  className="menu-item"
+                  onClick={() => handleEntreeSelect(entree)}
+                >
+                  <img
+                    src={imageMap[entree.item_name]?.image || logo}
+                    alt={entree.item_name}
+                    className="menu-item-image"
+                  />
+                  <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
+                  <p className="image_description">
+                    {imageMap[entree.item_name]?.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : selectedItem.item_name === "Sauces" ? (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Choose Your Sauce</h3>
+              <h3>{translations.chooseSauce}</h3>
+              <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
             </div>
+            
             <div className="drinks-container">
               {sauces.map((sauce) => (
                 <div
@@ -552,7 +699,7 @@ const CustomerHome = () => {
                     alt={sauce.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{sauce.item_name}</h2>
+                  <h2>{translations.itemNames[sauce.item_name] || sauce.item_name}</h2>
                   <p className="image_price">${sauce.item_price.toFixed(2)}</p>
                 </div>
               ))}
@@ -561,10 +708,11 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "Appetizer" ? (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Choose Your Appetizer</h3>
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button>  
+              <h3>{translations.chooseAppetizer}</h3>
             </div>
             <div className="appetizers-container">
               {appetizers.map((appetizer) => (
@@ -578,7 +726,7 @@ const CustomerHome = () => {
                     alt={appetizer.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{appetizer.item_name}</h2>
+                  <h2>{translations.itemNames[appetizer.item_name] || appetizer.item_name}</h2>
                 </div>
               ))}
             </div>
@@ -592,10 +740,11 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Choose Your Side</h3>
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+              <h3>{translations.chooseSide}</h3>
             </div>
             <div className="sides-container">
               {sides.map((side) => (
@@ -609,7 +758,7 @@ const CustomerHome = () => {
                     alt={side.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{side.item_name}</h2>
+                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
@@ -628,10 +777,11 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "A La Carte Entree" ? (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Choose Your Entree</h3>
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+              <h3>{translations.chooseEntree}</h3>
             </div>
             <div className="entrees-container">
               {entrees.map((entree) => (
@@ -645,7 +795,7 @@ const CustomerHome = () => {
                     alt={entree.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{entree.item_name}</h2>
+                  <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
                   <p className="image_description">
                     {imageMap[entree.item_name]?.description}
                   </p>
@@ -656,10 +806,11 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Choose Your Drink</h3>
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+              <h3>{translations.chooseDrink}</h3>
             </div>
             <div className="drinks-container">
               {drinks.map((drink) => (
@@ -673,7 +824,7 @@ const CustomerHome = () => {
                     alt={drink.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{drink.item_name}</h2>
+                  <h2>{translations.itemNames[drink.item_name] || drink.item_name}</h2>
                   <p className="image_description">
                     {imageMap[drink.item_name]?.description}
                   </p>
@@ -684,43 +835,38 @@ const CustomerHome = () => {
         ) : (
           <div className="steps-container">
             <div className="steps-header">
-              <button onClick={handleBackToMenu} className="back-button">
-                Go Back
-              </button>
-              <h3>Step 1 : Choose Your Side</h3>
+            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
+                </Button> 
+                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
+                </Button> 
+              <h3>{translations.selectSide}</h3>
             </div>
             <div className="sides-container">
               {sides.map((side) => (
                 <div
                   key={side.menu_item_id}
                   className={`menu-item ${
-                    selectedSides.length === 2 && !selectedSides.includes(side)
+                    selectedSides.length === 1 && !selectedSides.includes(side)
                       ? "unselected"
                       : ""
                   } ${selectedSides.includes(side) ? "selected" : ""}`}
-                  onClick={() => handleSideSelect(side)}
                 >
                   <img
                     src={imageMap[side.item_name]?.image || logo}
                     alt={side.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{side.item_name}</h2>
+                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
-                  {selectedSides.includes(side) && (
-                    <p className="selection-count">
-                      {selectedSides.length === 1 ? "1" : "1/2"}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
             <br></br>
             <br></br>
             <br></br>
-            <h3>Step 2: Choose Your Entree</h3>
+            <h3>{translations.selectEntree}</h3>
             <br></br>
             <div className="entrees-container">
               {entrees.map((entree) => {
@@ -737,20 +883,16 @@ const CustomerHome = () => {
                         ? "unselected"
                         : ""
                     } ${entreeData ? "selected" : ""}`}
-                    onClick={() => handleEntreeSelect(entree)}
                   >
                     <img
                       src={imageMap[entree.item_name]?.image || logo}
                       alt={entree.item_name}
                       className="menu-item-image"
                     />
-                    <h2>{entree.item_name}</h2>
+                    <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
                     <p className="image_description">
                       {imageMap[entree.item_name]?.description}
                     </p>
-                    {entreeData && (
-                      <p className="selection-count">{entreeData.count}</p>
-                    )}
                   </div>
                 );
               })}
@@ -758,6 +900,7 @@ const CustomerHome = () => {
           </div>
         )}
       </div>
+
       {selectedItem &&
         ["Bowl", "Plate", "Bigger Plate"].includes(selectedItem.item_name) && (
           <BottomBar

@@ -115,8 +115,8 @@ const postOrder = async (req, res) => {
   const transactionDate = new Date();
   const transactionTime = transactionDate.toTimeString().split(" ")[0]; // Time in HH:MM:SS format
   const weekNumber = 1;
-  const customerId = 1;
-  const employeeId = 1;
+  const customerId = null;
+  const employeeId = null;
 
   try {
     // Insert into the transaction table and get the transaction_id
@@ -130,30 +130,44 @@ const postOrder = async (req, res) => {
         transactionType,
         customerId,
         employeeId,
-        weekNumber,
+        weekNumber,       
       ]
     );
 
     const transactionId = transaction.transaction_id;
 
-    // For each item, get menu_item_id based on name, then insert into Menu_item_transaction
+    // For each item, get menu_item_id based on name, insert into Menu_item_transaction,
+    // and update the current_servings column in the menu_item table
     const itemPromises = orderList.map(async (item) => {
       const { name, quantity } = item;
 
-      // Look up the menu_item_id based on the name
+      // Look up the menu_item_id and current_servings based on the name
       const menuItem = await db.oneOrNone(
-        `SELECT menu_item_id FROM menu_item WHERE item_name = $1`,
+        `SELECT menu_item_id, current_servings FROM menu_item WHERE item_name = $1`,
         [name]
       );
 
       if (menuItem) {
-        const menuItemId = menuItem.menu_item_id;
+        const { menu_item_id: menuItemId, current_servings: currentServings } =
+          menuItem;
+
+        if (currentServings < quantity) {
+          throw new Error(
+            `Not enough servings for item "${name}". Available: ${currentServings}, Required: ${quantity}`
+          );
+        }
 
         // Insert into Menu_item_transaction
-        return db.none(
-          `INSERT INTO Menu_item_transaction (menu_item_id, transaction_id, item_quantity)
+        await db.none(
+          `INSERT INTO menu_item_transaction (menu_item_id, transaction_id, item_quantity)
                     VALUES ($1, $2, $3)`,
           [menuItemId, transactionId, quantity]
+        );
+
+        // Update the current_servings in the menu_item table
+        await db.none(
+          `UPDATE menu_item SET current_servings = current_servings - $1 WHERE menu_item_id = $2`,
+          [quantity, menuItemId]
         );
       } else {
         console.warn(`Item with name "${name}" not found in menu_item table.`);
@@ -161,12 +175,17 @@ const postOrder = async (req, res) => {
     });
 
     await Promise.all(itemPromises);
+
     res
       .status(200)
       .json({ message: "Order successfully added to the database" });
   } catch (error) {
     console.error("Error submitting order:", error);
-    res.status(500).json({ message: "Error submitting order" });
+    if (error.message.includes("Not enough servings")) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: "Error submitting order" });
+    }
   }
 };
 

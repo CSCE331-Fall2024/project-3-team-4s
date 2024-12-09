@@ -134,15 +134,19 @@ html {
   background-color: #c7212a; /* Panda Express red */
   color: white;
   font-weight: bold;
+  width: auto;
+  height: auto;
 }
 
 .navbar-button-2 {
   position: absolute;
+  width: auto;
+  height: auto;
   right: 0; /* Align the button to the right */
   font-size: 32px; /* Adjust the button's font size if needed */
   padding: 10px 15px; /* Add padding for better appearance */
   top: 2.5%;
-  right: 83%;
+  right: 82.3%;
   background-color: #c7212a; /* Panda Express red */
   color: white;
   font-weight: bold;
@@ -263,7 +267,8 @@ html {
 }
 
 .steps-container h3 {
-  font-size: 36px;
+  font-size: 44px;
+  font-weight: bold;
   text-align: center;
   margin: 0;
   color: #333;
@@ -276,8 +281,9 @@ html {
   gap: 15px;
 }
 
-.back-button {
+.back-button-to-menu {
   background-color: #c7212a;
+  top: 0;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -289,12 +295,38 @@ html {
   position:absolute;
   left: 0;
   padding-top: 45px;
-  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6);
-
+  width:20%;
+  text-align: center;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6); 
 }
 
-.back-button:hover {
-  background-color: #a91c23;
+.back-button-to-menu2 {
+  background-color: #c7212a;
+  color: white;
+  top: 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: auto;
+  font-size: 32px;
+  font-weight: bold;
+  position:absolute;
+  left: 80%;
+  padding-top: 45px;
+  width:20%;
+  text-align: center;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6); 
+}
+
+.back-button-to-menu:hover {
+  background-color: white;
+  color: black
+}
+
+.back-button-to-menu2:hover {
+  background-color: white;
+  color: black
 }
 
 .sides-container {
@@ -434,10 +466,14 @@ html {
   position: absolute;
   top: 10px;
   right: 10px;
+  width: auto;
+  height: auto;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
+  color: #333;
+  background-color: white;
 }
 
 .modal-image {

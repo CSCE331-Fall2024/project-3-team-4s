@@ -15,6 +15,21 @@
   flex-direction: column; /* Optional: stack children vertically */
 }
 
+.checkout-order{
+  font-size: 24px;
+  width: 100%;
+  background-color: #e60000;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.checkout-order:hover{
+  background-color: black;
+}
+
 .item-row {
   display: flex;
   justify-content: space-between;
@@ -41,19 +56,20 @@
 }
 
 .remove-button {
-  background-color: black;
+  background-color: #e60000;
   color: white;
   border: none;
   padding: 5px 10px;
-  font-size: 13px;
+  font-size: 14px;
   border-radius: 3px;
+  width: auto;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .remove-button:hover {
-  background-color: #d32f2f;
+  background-color: black;
 }
-
 
 .quantity-selector {
   display: flex;
@@ -65,7 +81,10 @@
   background-color: #f4f4f4;
   border: 1px solid #ccc;
   padding: 5px 10px;
+  height: auto;
+  width: auto;
   cursor: pointer;
+  color: black;
 }
 
 .quantity-selector button:hover {
@@ -81,14 +100,121 @@
 .container {
     display: flex;
     gap: 20px;
-    padding: 20px;
+    padding: 20px 20px 0px 20px;
     font-family: Arial, sans-serif;
   }
+
+  .recommended-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
   
-  .order-summary, .pickup-details {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
+  .recommended-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    font-weight: bolder;
+  }
+
+  .recommended-item-container {
+    position: relative;
+    cursor: pointer; /* Show pointer cursor */
+  }
+  
+  .recommended-item {
+    position: relative;
+  }
+  
+  .recommended-item-image {
+    width: 100%; /* Adjust size as needed */
+    border-radius: 8px; /* Optional styling */
+  }
+  
+  .recommended-item-text {
+    text-align: center;
+    margin-top: 8px;
+  }
+  
+  .hover-text {
+    position: absolute;
+    text-align: center;
+    left: 50%; bottom: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(230, 0, 0, 0.7); /* Semi-transparent background */
+    color: white;
+    border-radius: 4px;
+    font-size: 24px;
+    padding: 10px;
+    opacity: 0; /* Hidden by default */
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .recommended-item-container:hover .hover-text {
+    opacity: 1; /* Show on hover */
+  }
+  
+  .recommended-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: rgb(250, 228, 232);
+    scale: 1.1;
+  }
+  
+  .recommended-item-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .recommended-item span {
+    display: block;
+    text-align: center;
+  }
+  
+  .weather-recommendation h3{
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    padding: 10px;
+  }
+
+  .weather-recommendation h1{
+    text-align: center;
+    font-size: 56px;
+    font-weight: bold;
+  }
+
+  .weather-recommendation {
+    display: flex;
+    gap: 20px;
+    max-height: 58vh; /* Set the fixed height for the order summary */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    background-color: #f9f9f9; /* Optional: Set a background color */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+
+  .order-summary, .pickup-details { 
+    max-height: 450px; /* Set the fixed height for the order summary */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    padding: 15px; /* Optional: Add padding inside the box */
+    background-color: #f9f9f9; /* Optional: Set a background color */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    margin-bottom: 20px; /* Optional: Space below the box */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
   
@@ -99,6 +225,12 @@
   .pickup-details {
     flex: 1;
   }
+
+  .quant{
+    width: 50%;
+    height: auto;
+    color: black;
+  }
   
   .add-more {
     background-color: #e60000;
@@ -108,10 +240,12 @@
     border-radius: 5px;
     font-size: 20px;
     cursor: pointer;
+    width: auto;height: auto;
   }
 
   .add-more-2 {
-    margin-left: 629px;
+    margin-left: 5%;
+    width: auto;height: auto;
     background-color: #e60000;
     color: #fff;
     padding: 10px;

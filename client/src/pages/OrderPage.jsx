@@ -3,15 +3,231 @@ import "./OrderPage.css";
 import { useOrder } from "./OrderContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-import { Link } from "react-router-dom"; // Import Link
+import { useTranslate } from "../contexts/TranslateContext";
+import he from "he";
+import { translate } from "../utils/translateUtil";
+import { currentWeather } from "../utils/weatherUtil";
+import Button from "../components/Button";
 
 const OrderPage = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000"; // Replace with actual backend URL
+  const [itemData, setItemData] = useState([]); // Cache for fetched item data
+  
+  // Fetch all item data initially
+  useEffect(() => {
+    const fetchAllItems = async () => {
+      try {
+        const response = await axios.get(`${backendURL}/kiosk/items`);
+        setItemData(response.data); // Assuming response.data is an array of item objects
+      } catch (error) {
+        console.error("Error fetching item data:", error);
+      }
+    };
+    fetchAllItems();
+  }, []);
+
+
+  const [text, setText] = useState({
+    currentOrder: "Your Current Order",
+    addMore: "Add More Items",
+    removeAll: "Remove All Items",
+    remove: "Remove",
+    subtotal: "Subtotal",
+    tax: "Tax",
+    total: "Total",
+    paymentMethod: "Payment Method",
+    checkout: "Checkout",
+    utensils: "Utensils",
+    napkins: "Napkins",
+    additionalRequests: "Additional Requests?",
+    creditDebit: "Credit Card/Debit Card",
+    giftCard: "Gift Card",
+    loading: "Loading...",
+    clickToAdd: "Click to Add",
+    doYouWantToDelete: "Do you really want to delete this item?",
+    noItems: "No items in your order. Add some items to your order before checking out.",
+    addItem: "Do you want to add this item to your order?",
+    deleteItems: "Do you really want to delete all the items in the order?",
+    deleteItem: "Do you really want to delete this item?",
+    pleaseadditems: "Please add items to your order before checking out.",
+    selectPayment: "Please select a payment method.",
+    proceedToCheckout: "Are you sure you want to proceed to checkout?",
+    confirmation: "Order confirmed! Thank you for your purchase.",
+    recommendation: "Recommendation",
+    based: "Based",
+    on: "on",
+    Today: "Today's",
+    Weather: "Weather",
+    itemNames: {},
+    sides: "Sides",
+    entree: "Entrees",
+  });
+
+  const { language } = useTranslate();
+
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      if (!itemData || itemData.length === 0) return
+      
+      try {
+
+        const translatedItemNames = {};
+        // Translate item names dynamically
+        for (const item of itemData) {
+          if (item.item_name) {
+            translatedItemNames[item.item_name] = he.decode(
+              await translate(item.item_name, language)
+            );
+          }
+        }
+        
+        const translatedText = {
+          currentOrder: he.decode(await translate("Your Current Order", language)),
+          remove : he.decode(await translate("Remove", language)),
+          noItems: he.decode(await translate("No items in your order. Add some items to your order before checking out.", language)),
+          addMore: he.decode(await translate("Add More Items", language)),
+          removeAll: he.decode(await translate("Remove All Items", language)),
+          subtotal: he.decode(await translate("Subtotal", language)),
+          tax: he.decode(await translate("Tax", language)),
+          total: he.decode(await translate("Total", language)),
+          paymentMethod: he.decode(await translate("Payment Method", language)),
+          checkout: he.decode(await translate("Checkout", language)),
+          utensils: he.decode(await translate("Utensils", language)),
+          napkins: he.decode(await translate("Napkins", language)),
+          additionalRequests: he.decode(await translate("Additional Requests?", language)),
+          creditDebit: he.decode(await translate("Credit Card/Debit Card", language)),
+          giftCard: he.decode(await translate("Gift Card", language)),
+          loading: he.decode(await translate("Loading...", language)),
+          clickToAdd: he.decode(await translate("Click to Add", language)),
+          doYouWantToDelete: he.decode(await translate("Do you really want to delete this item?", language)),
+          addItem: he.decode(await translate("Do you want to add this item to your order?", language)),
+          deleteItems: he.decode(await translate("Do you really want to delete all the items in the order?", language)),
+          deleteItem: he.decode(await translate("Do you really want to delete this item?", language)),
+          confirmation: he.decode(await translate("Order confirmed! Thank you for your purchase.", language)),
+          pleaseadditems: he.decode(await translate("Please add items to your order before checking out.", language)),
+          selectPayment: he.decode(await translate("Please select a payment method.", language)),
+          proceedToCheckout: he.decode(await translate("Are you sure you want to proceed to checkout?", language)),
+          recommendation: he.decode(await translate("Recommendation", language)),
+          based: he.decode(await translate("Based", language)),
+          on: he.decode(await translate("on", language)),
+          Today: he.decode(await translate("Today's", language)),
+          Weather: he.decode(await translate("Weather", language)),
+          itemNames: translatedItemNames,
+          sides: he.decode(await translate("Sides", language)),
+          entree: he.decode(await translate("Entrees", language)),
+        };
+        setText(translatedText);
+      } catch (error) {
+        console.error("Error fetching translations:", error);
+      }
+    };
+
+    fetchTranslations();
+  }, [language,itemData]);
+
+    
+
+  const [recommendedItems, setRecommendedItems] = useState([]);
+  const [weather, setWeather] = useState(0);
+  const [temperatureColor, setTemperatureColor] = useState("black");
+  const [weatherIcon, setWeatherIcon] = useState("");
+
+  const addRecommendedItemToOrder = (itemName) => {
+    const confirm = window.confirm(text.addItem); // Display a confirmation message
+    if(!confirm) return;
+    // Check if the item already exists in the orderList
+    const existingItemIndex = orderList.findIndex((item) => item.name === itemName);
+
+    if (existingItemIndex !== -1) {
+      // If the item exists, increment its quantity
+      const updatedOrderList = [...orderList];
+      updatedOrderList[existingItemIndex].quantity += 1;
+      setOrderList(updatedOrderList);
+    } else {
+      // If the item does not exist, add it with a quantity of 1
+      const newItem = {
+        name: itemName,
+        quantity: 1,
+      };
+      setOrderList([...orderList, newItem]);
+    }
+  };
+
+  useEffect(() => {
+    const fetchWeatherAndItems = async () => {
+      try {
+        const weather = await currentWeather();
+        let recommended = [];
+
+        if (weather < 32) {
+          setTemperatureColor("#001f3f"); // Dark blue for freezing weather
+          setWeatherIcon("❄️"); // Snowflake for cold weather
+        } else if (weather < 60) {
+          setTemperatureColor("#0074D9"); // Light blue for cold weather
+          setWeatherIcon("❄️"); // Snowflake for cold weather
+        } else if (weather > 60) {
+          if (weather <= 100) {
+            setTemperatureColor("#FF851B"); // Orange for hot weather
+            setWeatherIcon("☀️"); // Sun for hot weather
+          } else {
+            setTemperatureColor("#FF4136"); // Darker orange/red for very hot weather
+            setWeatherIcon("☀️"); // Sun for hot weather
+          }
+        } else {
+          setTemperatureColor("black"); // Neutral weather
+        }
+
+        if (weather < 60) {
+          recommended = [
+            "Sweet Fire Chicken Breast",
+            "Hot Ones Blazing Bourbon Chicken",
+            "Chili Sauce",
+            "Chicken Egg Roll",
+          ];
+        } else if (weather >= 60) {
+          recommended = [
+            "Peach Lychee Flavored Refresher",
+            "Minute Maid Lemonade",
+            "Fuze Raspberry Iced Tea",
+            "Watermelon Mango Flavored Refresher",
+            "Apple Pie Roll",
+          ];
+        } else {
+          recommended = [
+            "The Original Orange Chicken",
+            "Beijing Beef",
+            "Mushroom Chicken",
+            "String Bean Chicken Breast",
+          ];
+        }
+
+        // Fetch prices for recommended items
+        const priceResponses = await Promise.all(
+          recommended.map((item) =>
+            axios.get(`${backendURL}/kiosk/prices`, { params: { itemName: item } })
+          )
+        );
+
+        const itemPrices = priceResponses.reduce((acc, response, index) => {
+          acc[recommended[index]] = response.data.price;
+          return acc;
+        }, {});
+
+        setPrices((prev) => ({ ...prev, ...itemPrices }));
+        setRecommendedItems(recommended);
+        setWeather(weather);
+      } catch (error) {
+        console.error("Error fetching weather or recommended items:", error);
+      }
+    };
+
+    fetchWeatherAndItems();
+  }, []);
+
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
-  const [itemData, setItemData] = useState([]); // Cache for fetched item data
 
   const incrementQuantity = (index) => {
     const updatedOrderList = [...orderList];
@@ -29,18 +245,23 @@ const OrderPage = () => {
     }
   };
 
-  // Fetch all item data initially
-  useEffect(() => {
-    const fetchAllItems = async () => {
-      try {
-        const response = await axios.get(`${backendURL}/kiosk/items`);
-        setItemData(response.data); // Assuming response.data is an array of item objects
-      } catch (error) {
-        console.error("Error fetching item data:", error);
-      }
-    };
-    fetchAllItems();
-  }, []);
+  const hexToRgba = (hex, alpha) => {
+    let r = 0, g = 0, b = 0;
+  
+    // Handle shorthand hex colors (e.g., #FFF)
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+      // Handle full hex colors (e.g., #FFFFFF)
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+    }
+  
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };  
 
   // Populate prices cache
   useEffect(() => {
@@ -83,12 +304,17 @@ const OrderPage = () => {
   console.log(orderList);
   const clearOrder = () => {
     const confirmed = window.confirm(
-      "Do you really want to Remove all the items?"
+      text.deleteItems
     );
     if (confirmed) {
       setOrderList([]);
-      localStorage.removeItem("orderList");
+      sessionStorage.removeItem("orderList");
     }
+  };
+
+  const clearOrderCheckout = () => {
+      setOrderList([]);
+      sessionStorage.removeItem("orderList");
   };
 
   // Fetch all prices initially for items in the order list
@@ -148,18 +374,13 @@ const OrderPage = () => {
       const sidesAndEntreesPrice = sidesAndEntrees.reduce((sum, subItem) => {
         const subItemPrice = prices[subItem.name] || 0;
 
-        let subCategoryName = itemData.find(
-          (data) => data.item_name === subItem.name
-        )?.item_category;
-        if (subCategoryName === "Side") {
-          subCategoryName = "A La Carte Side";
-        } else if (subCategoryName === "Entree") {
-          subCategoryName = "A La Carte Entree";
-        }
+        // let subCategoryName = itemData.find(
+        //   (data) => data.item_name === subItem.name
+        // )?.item_category;     
 
-        const subCategoryPrice = subCategoryName
-          ? prices[subCategoryName] || 0
-          : 0;
+        // const subCategoryPrice = subCategoryName
+        //   ? prices[subCategoryName] || 0
+        //   : 0;
 
         return sum + subItemPrice;
       }, 0);
@@ -219,11 +440,11 @@ const OrderPage = () => {
     "Coke Mexico": "/Coke_Mexico.avif",
     "Coke Zero": "/Coke_Zero.avif",
     Smartwater: "/Smartwater.avif",
-    Sauces: "/Sauces.png",
+    Sauces: "/Sauce.png",
     "Soy Sauce": "/Soy_Sauce.png",
     "Sweet & Sour Sauce": "/Sweet_&_Sour_Sauce.png",
     "Teriyaki Sauce": "/Teriyaki_Sauce.png",
-    "Chili Sauce": "/Chilli_Sauce.png",
+    "Chili Sauce": "/Chili_Sauce.png",
     "Hot Mustard": "/Hot_Mustard.png",
     default: "/logo.png", // Default image if no match is found
   };
@@ -233,7 +454,7 @@ const OrderPage = () => {
   };
 
   const removeItem = (indexToRemove) => {
-    const confirmed = window.confirm("Do you really want to delete this item?");
+    const confirmed = window.confirm(text.deleteItem);
     if (!confirmed) return;
 
     const updatedOrderList = [...orderList];
@@ -293,34 +514,66 @@ const OrderPage = () => {
     setOrderList(updatedOrderList);
   };
 
+  const [transactionType, setTransactionType] = useState(""); // Track selected payment method
+  const handleTransactionTypeChange = (event) => {
+    setTransactionType(event.target.value); // Update the selected payment method
+  };
+
+  const consolidateOrderList = (orderList) => {
+    const consolidated = {};
+  
+    orderList.forEach((item) => {
+      if (consolidated[item.name]) {
+        // If the item already exists, add its quantity
+        consolidated[item.name].quantity += item.quantity;
+      } else {
+        // Otherwise, add it as a new entry
+        consolidated[item.name] = { ...item };
+      }
+    });
+  
+    // Convert the object back to an array
+    return Object.values(consolidated);
+  };
+
   const handleCheckout = async () => {
+
+    if (orderList.length === 0) {
+      alert(text.pleaseadditems);
+      return;
+    }
+
+    if (!transactionType) {
+      alert(text.selectPayment);
+      return;
+    }
+
     const confirmed = window.confirm(
-      "Are you sure you want to proceed to checkout?"
+      text.proceedToCheckout
     );
     if (confirmed) {
-      const totalCost = orderList
-        .reduce((sum, item) => sum + prices[item.name] * item.quantity, 0)
-        .toFixed(2);
-      const transactionType = "card"; // Or set dynamically based on user input
-
+      const consolidatedOrderList = consolidateOrderList(orderList); // Consolidate duplicates
+      const totalCost = calculateTotalPrice() * 1.06;
+  
       try {
         const response = await axios.post(`${backendURL}/kiosk/order`, {
           totalCost,
           transactionType,
-          orderList, // Pass orderList directly if each item has menu_item_id and quantity
+          orderList: consolidatedOrderList, // Use the consolidated list
         });
-
+  
         if (response.status === 200) {
-          alert("Order has been successfully checked out!");
-          clearOrder(); // Clears the local order list
+          alert(text.confirmation);
+          clearOrderCheckout(); // Clears the local order list
         }
       } catch (error) {
         console.error("Error during checkout:", error);
         alert("There was an error processing your order. Please try again.");
       }
+      navigate("/");
     }
-    navigate("/");
   };
+  
 
   const navigate = useNavigate(); // Initialize the navigate function
   const goToCustomerPage = () => {
@@ -354,17 +607,19 @@ const OrderPage = () => {
 
   return (
     <div className="background">
-      <h2 className="page-title">Your Current Order</h2>
+      <h2 className="page-title">{text.currentOrder}</h2>
 
       <div className="container">
         <div className="order-summary">
-          <button className="add-more" onClick={goToCustomerPage}>
-            + Add More Items
-          </button>
-          <button className="add-more-2" onClick={clearOrder}>
-            Remove All Items
-          </button>
-          <h2>Your Order</h2>
+          <Button className="add-more" onClick={goToCustomerPage} text={`+ ${text.addMore}`}>
+            
+          </Button>
+          <Button className="add-more-2" onClick={clearOrder} text = {text.removeAll}>
+            
+          </Button>
+          <br></br><br></br>
+          <h2>{text.currentOrder}</h2>
+
 
           {orderList.length > 0 ? (
             (() => {
@@ -398,7 +653,7 @@ const OrderPage = () => {
                       <div className="item-details">
                         {/* Name and Price */}
                         <div className="item-row">
-                          <span className="item-name">{item.name}</span>
+                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
@@ -408,43 +663,43 @@ const OrderPage = () => {
                         <div className="item-sides-entrees">
                           {sides.length > 0 && (
                             <>
-                              <h4>Sides</h4>
+                              <h4>{text.sides}</h4>
                               <ul>
                                 {sides.map((side, sideIndex) => (
-                                  <li key={sideIndex}>{side.name}</li>
+                                  <li key={sideIndex}>{text.itemNames[side.name] || side.name}</li>
                                 ))}
                               </ul>
                             </>
                           )}
                           {entrees.length > 0 && (
                             <>
-                              <h4>Entrees</h4>
+                              <h4>{text.entree}</h4>
                               <ul>
                                 {entrees.map((entree, entreeIndex) => (
-                                  <li key={entreeIndex}>{entree.name}</li>
+                                  <li key={entreeIndex}>{text.itemNames[entree.name] || entree.name}</li>
                                 ))}
                               </ul>
                             </>
                           )}
                         </div>
 
+
                         {/* Quantity Selector */}
                         <div className="item-row">
-                          <button
+                          <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
+                            text = {text.remove}
                           >
-                            Remove
-                          </button>
-                          <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>
-                              -
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>
-                              +
-                            </button>
-                          </div>
+                            
+                          </Button>
+                          {!(item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") ? (
+                            <div className="quantity-selector">
+                              <Button className="quant" onClick={() => decrementQuantity(index)} text = "-" ></Button>
+                              <span>{item.quantity}</span>
+                              <Button onClick={() => incrementQuantity(index)} text = "+" className="quant"></Button>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -460,26 +715,27 @@ const OrderPage = () => {
                       />
                       <div className="item-details">
                         <div className="item-row">
-                          <span className="item-name">{item.name}</span>
+                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
                         </div>
                         <div className="item-row">
-                          <button
+                          <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
+                            text = {text.remove}
                           >
-                            Remove
-                          </button>
+                            
+                          </Button>
                           <div className="quantity-selector">
-                            <button onClick={() => decrementQuantity(index)}>
-                              -
-                            </button>
+                            <Button onClick={() => decrementQuantity(index)} text = "-">
+                              
+                            </Button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => incrementQuantity(index)}>
-                              +
-                            </button>
+                            <Button onClick={() => incrementQuantity(index)} text="+">
+                              
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -490,61 +746,100 @@ const OrderPage = () => {
               return items;
             })()
           ) : (
-            <p>No items in the order.</p>
+            <p>{text.noItems}</p>
           )}
         </div>
 
         <div className="pickup-details">
-          <h3>Additional Requests?</h3>
+          <h3>{text.additionalRequests}</h3>
           <div className="additional-requests">
             <label>
-              <input type="checkbox" /> Utensils
+              <input type="checkbox" /> {text.utensils}
             </label>
             <label>
-              <input type="checkbox" /> Napkins
+              <input type="checkbox" /> {text.napkins}
             </label>
           </div>
           <br />
-          <h3>Special Requests</h3>
-          <input
-            type="text"
-            className="special-request-input"
-            placeholder="Add Note"
-          />
           <br />
+          <h3>{text.paymentMethod}</h3>
           <br />
-          <h3>Coupon Code</h3>
-          <div className="coupon-code">
-            <input type="text" placeholder="Enter Code" />
-            <button>Add</button>
-          </div>
-          <br />
-          <h3>Payment Method</h3>
           <div className="payment-method">
-            <label>
-              <input type="radio" name="payment" /> Credit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" /> Debit Card
-            </label>
-            <label>
-              <input type="radio" name="payment" /> Cash
-            </label>
+          <label>
+            <input
+              type="radio"
+              name="payment"
+              value="Credit/Debit"
+              onChange={handleTransactionTypeChange}
+              checked={transactionType === "Credit/Debit"}
+            />
+            {text.creditDebit}
+          </label>
+          <br />
+          <br />
+          <label>
+            <input
+              type="radio"
+              name="payment"
+              value="Gift Card"
+              onChange={handleTransactionTypeChange}
+              checked={transactionType === "Gift Card"}
+            />
+            {text.giftCard}
+          </label>
           </div>
+          <br />
           <br />
           <div className="total-price">
-            <h3>Subtotal: ${calculateTotalPrice().toFixed(2)}</h3>
-            <h3>Tax (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
-            <h3>Total: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+            <h3>{text.subtotal} ${calculateTotalPrice().toFixed(2)}</h3>
+            <br />
+            <h3>{text.tax} (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
+            <br />
+            <h3>{text.total}: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+            <br />
           </div>
-
-          <button className="checkout" onClick={handleCheckout}>
-            Checkout
-          </button>
+          <br />
+          <Button className="checkout-order" onClick={handleCheckout} text = {text.checkout}>
+            
+          </Button>
+        </div>
+      </div>
+      <div className="weather-recommendation">
+        <h3 style={{ backgroundColor : temperatureColor}}>
+          <br/><br/>
+          {text.recommendation} <br/>{text.based}<br/> {text.on}<br/> {text.Today}<br/> {text.Weather}  
+        </h3>
+        <h1 style={{ color: temperatureColor}}>
+          <br/>
+          {weather !== null ? `${weather}°F` : "Loading..."} <br/> {weatherIcon}
+        </h1>
+        <div className="recommended-items">
+        {recommendedItems.map((item) => (
+          <div
+            key={item}
+            className="recommended-item-container"
+            onClick={() => addRecommendedItemToOrder(item)} // Add click handler
+          >
+            <div className="recommended-item">
+              <img
+                src={getItemImage(item)}
+                alt={item}
+                className="recommended-item-image"
+              />
+              <div className="recommended-item-text">
+                <span>{text.itemNames[item] || item}</span>
+              </div>
+            </div>
+            <div className="hover-text" style={{
+          backgroundColor: hexToRgba(temperatureColor, 0.85), // Dynamically set background color
+        }}>{text.clickToAdd}</div>
+          </div>
+        ))}
         </div>
       </div>
     </div>
   );
 };
+
 
 export default OrderPage;
