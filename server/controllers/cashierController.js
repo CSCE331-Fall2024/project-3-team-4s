@@ -1,11 +1,13 @@
-import db from "../db.js"
+import db from "../db.js";
 
 const pushToMenuItemTable = async (req, res) => {
   try {
     const { menu_item_id, item_quantity } = req.body;
 
     if (!menu_item_id || !item_quantity) {
-      return res.status(400).json({ message: "Please provide the menu item ID and item quantity" });
+      return res
+        .status(400)
+        .json({ message: "Please provide the menu item ID and item quantity" });
     }
 
     const updatedItem = await db.oneOrNone(
@@ -17,17 +19,17 @@ const pushToMenuItemTable = async (req, res) => {
     );
 
     if (!updatedItem) {
-      return res.status(400).json({ message: "Unable to update item. It may be out of stock." });
+      return res
+        .status(400)
+        .json({ message: "Unable to update item. It may be out of stock." });
     }
 
     res.json({ item: updatedItem });
   } catch (err) {
-    console.error('Error updating menu item:', err);
+    console.error("Error updating menu item:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-  
 
 const pushToTransactionTable = async (req, res) => {
   try {
@@ -36,11 +38,11 @@ const pushToTransactionTable = async (req, res) => {
       transaction_time,
       transaction_date,
       transaction_type,
-      customer_id,    // Optional, since it's nullable in the database
+      customer_id, // Optional, since it's nullable in the database
       employee_id,
-      week_number     // Optional, based on your table definition
+      week_number, // Optional, based on your table definition
     } = req.body;
-  
+
     // Validation: Check for required fields
     if (
       total_cost === undefined ||
@@ -49,20 +51,22 @@ const pushToTransactionTable = async (req, res) => {
       !transaction_type ||
       !employee_id
     ) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
-  
+
     // Prepare the values array for the INSERT statement
     const values = [
       total_cost,
       transaction_time,
       transaction_date,
       transaction_type,
-      customer_id || null,  // Use null if customer_id is undefined
+      customer_id || null, // Use null if customer_id is undefined
       employee_id,
-      week_number || null   // Use null if week_number is undefined
+      week_number || null, // Use null if week_number is undefined
     ];
-  
+
     const newTransaction = await db.one(
       `INSERT INTO transaction (
         total_cost, transaction_time, transaction_date, transaction_type,
@@ -70,22 +74,22 @@ const pushToTransactionTable = async (req, res) => {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       values
     );
-  
+
     res.json({ transaction: newTransaction });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
   }
-  
 };
 
-  
 const pushToTransactionsMenuTable = async (req, res) => {
   try {
     const { menu_item_id, transaction_id, item_quantity } = req.body;
 
     if (!menu_item_id || !transaction_id || !item_quantity) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
 
     const newTransactionMenuItem = await db.one(
@@ -95,7 +99,7 @@ const pushToTransactionsMenuTable = async (req, res) => {
 
     res.json({ transactionMenuItem: newTransactionMenuItem });
   } catch (err) {
-    console.error('Error adding transaction menu item:', err);
+    console.error("Error adding transaction menu item:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -112,9 +116,9 @@ const addCustomer = async (req, res) => {
 
     // Validate input
     if (!first_name || !last_name || !email || !phone) {
-      return res
-        .status(400)
-        .json({ message: "First name, last name, email, and phone number are required." });
+      return res.status(400).json({
+        message: "First name, last name, email, and phone number are required.",
+      });
     }
 
     // Validate email format
@@ -126,7 +130,9 @@ const addCustomer = async (req, res) => {
     // Validate phone number format (e.g., 10 digits)
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ message: "Invalid phone number format. Please enter a 10-digit number." });
+      return res.status(400).json({
+        message: "Invalid phone number format. Please enter a 10-digit number.",
+      });
     }
 
     // Check if email or phone already exists in the database
@@ -141,11 +147,15 @@ const addCustomer = async (req, res) => {
     );
 
     if (emailExists) {
-      return res.status(400).json({ message: "A customer with this email already exists." });
+      return res
+        .status(400)
+        .json({ message: "A customer with this email already exists." });
     }
 
     if (phoneExists) {
-      return res.status(400).json({ message: "A customer with this phone number already exists." });
+      return res
+        .status(400)
+        .json({ message: "A customer with this phone number already exists." });
     }
 
     // If email and phone are unique, insert the new customer
@@ -169,7 +179,10 @@ const getCustomerByPhone = async (req, res) => {
     // Validate phone number format
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ success: false, message: "Invalid phone number format. Please enter a 10-digit number." });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid phone number format. Please enter a 10-digit number.",
+      });
     }
 
     // Search for the customer by phone number
@@ -194,9 +207,11 @@ const updateCustomerPoints = async (req, res) => {
     const { customer_id, reward_points } = req.body;
 
     if (!customer_id || reward_points === undefined) {
-      return res.status(400).json({ message: "Please provide customer ID and reward points." });
+      return res
+        .status(400)
+        .json({ message: "Please provide customer ID and reward points." });
     }
-    
+
     console.log("Received data:", { customer_id, reward_points });
 
     const updatedCustomer = await db.oneOrNone(
@@ -216,9 +231,30 @@ const updateCustomerPoints = async (req, res) => {
     console.error("Error updating customer points:", err);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
+const restockServings = async (req, res) => {
+  try {
+    await db.none(
+      `UPDATE menu_item
+       SET current_servings = 75
+       WHERE current_servings < 25`
+    );
 
+    res.json({
+      message: "Servings restocked successfully",
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-  
-  export { pushToTransactionsMenuTable, pushToTransactionTable, pushToMenuItemTable, addCustomer, getCustomerByPhone, updateCustomerPoints };
+export {
+  pushToTransactionsMenuTable,
+  pushToTransactionTable,
+  pushToMenuItemTable,
+  addCustomer,
+  getCustomerByPhone,
+  updateCustomerPoints,
+  restockServings,
+};

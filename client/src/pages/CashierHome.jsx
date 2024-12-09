@@ -634,6 +634,18 @@ const CashierHome = () => {
     alert("Customer cleared.");
   };
 
+  const restockServings = async () => {
+    try {
+      const response = await axios.put(
+        `${backendURL}/cashier/restock-servings`
+      );
+
+      alert(response.data.message);
+    } catch (err) {
+      alert(err.response.data.message);
+    }
+  };
+
   const tabs = mealTypes;
 
   return (
@@ -847,15 +859,22 @@ const CashierHome = () => {
             <button className="debug" onClick={debug}>
               Debug
             </button>
+            <button onClick={restockServings}>Restock Servings</button>
           </div>
 
           <div className="bottom-buttons">
-
-            <button  onClick={() => setShowCustomerModal(!showCustomerModal)}>Add Customer</button>
-            <button  onClick={() => setShowSelectCustomerModal(!showSelectCustomerModal)}>Select Customer</button>
-            <button  onClick={clearCustomer}>Clear Customer</button>
-            <button  onClick={home_screen}>Return to Home</button>
-
+            <button onClick={() => setShowCustomerModal(!showCustomerModal)}>
+              Add Customer
+            </button>
+            <button
+              onClick={() =>
+                setShowSelectCustomerModal(!showSelectCustomerModal)
+              }
+            >
+              Select Customer
+            </button>
+            <button onClick={clearCustomer}>Clear Customer</button>
+            <button onClick={home_screen}>Return to Home</button>
           </div>
         </div>
       </div>
