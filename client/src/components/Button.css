@@ -8,6 +8,7 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: transform 0.2s ease, font-size 0.2s ease, padding 0.2s ease;
 }
 
 .custom-button:hover {
@@ -17,12 +18,10 @@
 .med-custom-button {
   width: 8rem;
   padding: 1rem 0;
-  font-size: 1rem;
 }
 
 .big-custom-button {
   width: 25rem;
   padding: 5rem 0;
-  font-size: 2rem;
   font-weight: bold;
 }

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./Home.css";
 import Button from "../components/Button";
+import AccessibilityModal from "../components/AccessibilityModal";
 import TranslateModal from "../components/TranslateModal";
 import { translate } from "../utils/translateUtil";
 import { currentWeather } from "../utils/weatherUtil";
@@ -13,7 +14,7 @@ const Home = () => {
   const { language } = useTranslate();
   const [text, setText] = useState({
     translate: "Translate",
-    accessiblity: "Accessibility Options",
+    accessibility: "Accessibility Options",
     order: "Place Order",
     manager: "Manager",
     cashier: "Cashier",
@@ -25,7 +26,7 @@ const Home = () => {
       try {
         const translatedText = {
           translate: he.decode(await translate("Translate", language)),
-          accessiblity: he.decode(
+          accessibility: he.decode(
             await translate("Accessibility Options", language)
           ),
           order: he.decode(await translate("Place Order", language)),
@@ -46,6 +47,7 @@ const Home = () => {
   }, [language]);
 
   const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [showAccessibilityModal, setShowAccessibilityModal] = useState(false);
 
   const openTranslateModal = () => {
     setShowTranslateModal(true);
@@ -53,6 +55,14 @@ const Home = () => {
 
   const closeTranslateModal = () => {
     setShowTranslateModal(false);
+  };
+
+  const openAccessibilityModal = () => {
+    setShowAccessibilityModal(true); 
+  };
+
+  const closeAccessibilityModal = () => {
+    setShowAccessibilityModal(false);
   };
 
   return (
@@ -63,7 +73,11 @@ const Home = () => {
           className="med-custom-button"
           onClick={openTranslateModal}
         />
-        <Button text={text.accessiblity} className="med-custom-button" />
+        <Button
+          text={text.accessibility}
+          className="med-custom-button"
+          onClick={openAccessibilityModal}
+        />
       </div>
 
       <div className="home-center">
@@ -92,6 +106,7 @@ const Home = () => {
       </div>
 
       {showTranslateModal && <TranslateModal onSave={closeTranslateModal} />}
+      {showAccessibilityModal && (<AccessibilityModal onClose={closeAccessibilityModal} />)}
     </div>
   );
 };

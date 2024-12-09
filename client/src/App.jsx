@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { useContext } from "react";
+import { AccessibilityContext } from "./contexts/AccessibilityContext";
 import Home from "./pages/Home";
 import CustomerHome from "./pages/CustomerHomeWrapper";
 import ManagerHome from "./pages/ManagerHome";
@@ -15,10 +17,16 @@ import { TranslateProvider } from "./contexts/TranslateContext";
 import { LanguageProvider } from "./pages/LanguageContext";
 
 const App = () => {
+  const { settings } = useContext(AccessibilityContext);
+
+  const appStyle = {
+    filter: `brightness(${settings.brightness}%) contrast(${settings.contrast}%)`,
+  };
+
   return (
     <LanguageProvider>
       <TranslateProvider>
-        <div className="global">
+        <div className="global" style={appStyle}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/customer" element={<CustomerHome />} />
