@@ -36,7 +36,7 @@ const addEmployee = async (req, res) => {
 
       return res.json({
         employee: updatedEmployee,
-        message: `${first_name} ${last_name} hired.`,
+        message: `${first_name} ${last_name} hired`,
       });
     }
 
@@ -47,7 +47,7 @@ const addEmployee = async (req, res) => {
 
     res.json({
       employee: newEmployee,
-      message: `${first_name} ${last_name} hired.`,
+      message: `${first_name} ${last_name} hired`,
     });
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
@@ -68,7 +68,7 @@ const updateEmployee = async (req, res) => {
 
     res.json({
       employee: updatedEmployee,
-      message: `${first_name} ${last_name} employee information updated.`,
+      message: `${first_name} ${last_name} employee information updated`,
     });
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });

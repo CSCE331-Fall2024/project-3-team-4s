@@ -10,6 +10,7 @@ import DeleteModal from "../components/DeleteModal";
 
 const EditMenu = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  // const backendURL = "http://localhost:3000";
 
   const [menuItems, setMenuItems] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -59,13 +60,14 @@ const EditMenu = () => {
     setSelectedMenuItem(null);
   };
 
-  const addMenuItem = async (name, price, category, servings) => {
+  const addMenuItem = async (name, price, category) => {
     try {
+      const priceValue = parseFloat(price);
+
       const menuItem = {
         item_name: name,
-        item_price: price,
+        item_price: priceValue,
         item_category: category,
-        current_servings: servings,
       };
 
       const res = await axios.post(
@@ -73,20 +75,20 @@ const EditMenu = () => {
         menuItem
       );
 
-      setMenuItems([...menuItems, res.data]);
+      setMenuItems([...menuItems, res.data.menuItem]);
       closeAddModal();
+      alert(res.data.message);
     } catch (err) {
-      console.error(err);
+      alert(err.response.data.message);
     }
   };
 
-  const editMenuItem = async (name, price, category, servings) => {
+  const editMenuItem = async (name, price, category) => {
     try {
       const menuItem = {
         item_name: name,
         item_price: price,
         item_category: category,
-        current_servings: servings,
       };
 
       const res = await axios.put(
@@ -97,12 +99,13 @@ const EditMenu = () => {
       setMenuItems(
         menuItems.map((item) =>
           item.menu_item_id === selectedMenuItem.menu_item_id
-            ? { ...item, ...res.data }
+            ? { ...item, ...res.data.menuItem }
             : item
         )
       );
 
       closeEditModal();
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -139,7 +142,7 @@ const EditMenu = () => {
                 <th>Price</th>
                 <th>Category</th>
                 <th>Current Servings</th>
-                <th>Options</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>

@@ -168,7 +168,7 @@ const Inventory = () => {
                   <td>{item.ingredient_id}</td>
                   <td>{item.ingredient_name}</td>
                   <td>{item.current_stock}</td>
-                  <td>{item.price.toFixed(2)}</td>
+                  <td>${item.price.toFixed(2)}</td>
                   <td>{item.unit}</td>
                   <td>{item.min_stock}</td>
                   <td className="icons-container">
