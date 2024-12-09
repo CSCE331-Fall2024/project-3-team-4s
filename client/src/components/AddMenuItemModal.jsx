@@ -6,25 +6,6 @@ const AddMenuItemModal = ({ onCancel, onAdd }) => {
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [itemCategory, setItemCategory] = useState("");
-  const [currentServings, setCurrentServings] = useState("");
-
-  const handleAdd = () => {
-    if (!itemName || !itemPrice || !itemCategory) {
-      alert("Please fill in all the required fields (name, price, category).");
-      return;
-    }
-
-    const priceValue = parseFloat(itemPrice);
-    if (isNaN(priceValue) || priceValue <= 0) {
-      alert("Please enter a valid price.");
-      return;
-    }
-
-    const servingsValue = parseInt(currentServings, 10) || 0; // Default to 0 if empty
-
-    // Call the parent function to add the item
-    onAdd(itemName, priceValue, itemCategory, servingsValue);
-  };
 
   return (
     <div className="modal-add">
@@ -41,28 +22,36 @@ const AddMenuItemModal = ({ onCancel, onAdd }) => {
           <input
             className="input-add"
             type="number"
-            placeholder="Item Price"
+            placeholder="Price"
             value={itemPrice}
             onChange={(e) => setItemPrice(e.target.value)}
           />
-          <input
+
+          <select
             className="input-add"
-            type="text"
-            placeholder="Item Category"
-            value={itemCategory}
+            name="category"
             onChange={(e) => setItemCategory(e.target.value)}
-          />
-          <input
-            className="input-add"
-            type="number"
-            placeholder="Current Servings (optional)"
-            value={currentServings}
-            onChange={(e) => setCurrentServings(e.target.value)}
-          />
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            <option value="Meal">Meal</option>
+            <option value="Entree">Entree</option>
+            <option value="Appetizer">Appetizer</option>
+            <option value="Side">Side</option>
+            <option value="Drink">Drink</option>
+            <option value="Refresher">Refresher</option>
+            <option value="Bottle">Bottle</option>
+            <option value="Sauces">Sauces</option>
+          </select>
         </form>
         <div className="modal-actions-add">
           <Button text="Cancel" onClick={onCancel} />
-          <Button text="Add" onClick={handleAdd} />
+          <Button
+            text="Add"
+            onClick={() => onAdd(itemName, itemPrice, itemCategory)}
+          />
         </div>
       </div>
     </div>
