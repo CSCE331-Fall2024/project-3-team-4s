@@ -13,7 +13,7 @@ import Employees from "./pages/Employees";
 import OrderPage from "./pages/OrderPageWrapper";
 import CategoryPage from "./pages/CategoryPage";
 import EmployeeHome from "./pages/EmployeeHome";
-import { OrderProvider } from "./pages/OrderContext";
+import { OrderProvider } from "./contexts/OrderContext";
 import { TranslateProvider } from "./contexts/TranslateContext";
 
 const App = () => {
