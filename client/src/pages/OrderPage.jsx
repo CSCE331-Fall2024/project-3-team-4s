@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./OrderPage.css";
-import { useOrder } from "./OrderContext";
+import { useOrder } from "../contexts/OrderContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslate } from "../contexts/TranslateContext";
@@ -13,7 +13,7 @@ const OrderPage = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   // const backendURL = "http://localhost:3000"; // Replace with actual backend URL
   const [itemData, setItemData] = useState([]); // Cache for fetched item data
-  
+
   // Fetch all item data initially
   useEffect(() => {
     const fetchAllItems = async () => {
@@ -26,7 +26,6 @@ const OrderPage = () => {
     };
     fetchAllItems();
   }, []);
-
 
   const [text, setText] = useState({
     currentOrder: "Your Current Order",
@@ -46,7 +45,8 @@ const OrderPage = () => {
     loading: "Loading...",
     clickToAdd: "Click to Add",
     doYouWantToDelete: "Do you really want to delete this item?",
-    noItems: "No items in your order. Add some items to your order before checking out.",
+    noItems:
+      "No items in your order. Add some items to your order before checking out.",
     addItem: "Do you want to add this item to your order?",
     deleteItems: "Do you really want to delete all the items in the order?",
     deleteItem: "Do you really want to delete this item?",
@@ -68,10 +68,9 @@ const OrderPage = () => {
 
   useEffect(() => {
     const fetchTranslations = async () => {
-      if (!itemData || itemData.length === 0) return
-      
-      try {
+      if (!itemData || itemData.length === 0) return;
 
+      try {
         const translatedItemNames = {};
         // Translate item names dynamically
         for (const item of itemData) {
@@ -81,11 +80,18 @@ const OrderPage = () => {
             );
           }
         }
-        
+
         const translatedText = {
-          currentOrder: he.decode(await translate("Your Current Order", language)),
-          remove : he.decode(await translate("Remove", language)),
-          noItems: he.decode(await translate("No items in your order. Add some items to your order before checking out.", language)),
+          currentOrder: he.decode(
+            await translate("Your Current Order", language)
+          ),
+          remove: he.decode(await translate("Remove", language)),
+          noItems: he.decode(
+            await translate(
+              "No items in your order. Add some items to your order before checking out.",
+              language
+            )
+          ),
           addMore: he.decode(await translate("Add More Items", language)),
           removeAll: he.decode(await translate("Remove All Items", language)),
           subtotal: he.decode(await translate("Subtotal", language)),
@@ -95,20 +101,57 @@ const OrderPage = () => {
           checkout: he.decode(await translate("Checkout", language)),
           utensils: he.decode(await translate("Utensils", language)),
           napkins: he.decode(await translate("Napkins", language)),
-          additionalRequests: he.decode(await translate("Additional Requests?", language)),
-          creditDebit: he.decode(await translate("Credit Card/Debit Card", language)),
+          additionalRequests: he.decode(
+            await translate("Additional Requests?", language)
+          ),
+          creditDebit: he.decode(
+            await translate("Credit Card/Debit Card", language)
+          ),
           giftCard: he.decode(await translate("Gift Card", language)),
           loading: he.decode(await translate("Loading...", language)),
           clickToAdd: he.decode(await translate("Click to Add", language)),
-          doYouWantToDelete: he.decode(await translate("Do you really want to delete this item?", language)),
-          addItem: he.decode(await translate("Do you want to add this item to your order?", language)),
-          deleteItems: he.decode(await translate("Do you really want to delete all the items in the order?", language)),
-          deleteItem: he.decode(await translate("Do you really want to delete this item?", language)),
-          confirmation: he.decode(await translate("Order confirmed! Thank you for your purchase.", language)),
-          pleaseadditems: he.decode(await translate("Please add items to your order before checking out.", language)),
-          selectPayment: he.decode(await translate("Please select a payment method.", language)),
-          proceedToCheckout: he.decode(await translate("Are you sure you want to proceed to checkout?", language)),
-          recommendation: he.decode(await translate("Recommendation", language)),
+          doYouWantToDelete: he.decode(
+            await translate("Do you really want to delete this item?", language)
+          ),
+          addItem: he.decode(
+            await translate(
+              "Do you want to add this item to your order?",
+              language
+            )
+          ),
+          deleteItems: he.decode(
+            await translate(
+              "Do you really want to delete all the items in the order?",
+              language
+            )
+          ),
+          deleteItem: he.decode(
+            await translate("Do you really want to delete this item?", language)
+          ),
+          confirmation: he.decode(
+            await translate(
+              "Order confirmed! Thank you for your purchase.",
+              language
+            )
+          ),
+          pleaseadditems: he.decode(
+            await translate(
+              "Please add items to your order before checking out.",
+              language
+            )
+          ),
+          selectPayment: he.decode(
+            await translate("Please select a payment method.", language)
+          ),
+          proceedToCheckout: he.decode(
+            await translate(
+              "Are you sure you want to proceed to checkout?",
+              language
+            )
+          ),
+          recommendation: he.decode(
+            await translate("Recommendation", language)
+          ),
           based: he.decode(await translate("Based", language)),
           on: he.decode(await translate("on", language)),
           Today: he.decode(await translate("Today's", language)),
@@ -124,9 +167,7 @@ const OrderPage = () => {
     };
 
     fetchTranslations();
-  }, [language,itemData]);
-
-    
+  }, [language, itemData]);
 
   const [recommendedItems, setRecommendedItems] = useState([]);
   const [weather, setWeather] = useState(0);
@@ -135,9 +176,11 @@ const OrderPage = () => {
 
   const addRecommendedItemToOrder = (itemName) => {
     const confirm = window.confirm(text.addItem); // Display a confirmation message
-    if(!confirm) return;
+    if (!confirm) return;
     // Check if the item already exists in the orderList
-    const existingItemIndex = orderList.findIndex((item) => item.name === itemName);
+    const existingItemIndex = orderList.findIndex(
+      (item) => item.name === itemName
+    );
 
     if (existingItemIndex !== -1) {
       // If the item exists, increment its quantity
@@ -205,7 +248,9 @@ const OrderPage = () => {
         // Fetch prices for recommended items
         const priceResponses = await Promise.all(
           recommended.map((item) =>
-            axios.get(`${backendURL}/kiosk/prices`, { params: { itemName: item } })
+            axios.get(`${backendURL}/kiosk/prices`, {
+              params: { itemName: item },
+            })
           )
         );
 
@@ -224,7 +269,6 @@ const OrderPage = () => {
 
     fetchWeatherAndItems();
   }, []);
-
 
   const { orderList, setOrderList } = useOrder();
   const [prices, setPrices] = useState({}); // Cache for fetched prices
@@ -246,8 +290,10 @@ const OrderPage = () => {
   };
 
   const hexToRgba = (hex, alpha) => {
-    let r = 0, g = 0, b = 0;
-  
+    let r = 0,
+      g = 0,
+      b = 0;
+
     // Handle shorthand hex colors (e.g., #FFF)
     if (hex.length === 4) {
       r = parseInt(hex[1] + hex[1], 16);
@@ -259,9 +305,9 @@ const OrderPage = () => {
       g = parseInt(hex[3] + hex[4], 16);
       b = parseInt(hex[5] + hex[6], 16);
     }
-  
+
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };  
+  };
 
   // Populate prices cache
   useEffect(() => {
@@ -303,9 +349,7 @@ const OrderPage = () => {
 
   console.log(orderList);
   const clearOrder = () => {
-    const confirmed = window.confirm(
-      text.deleteItems
-    );
+    const confirmed = window.confirm(text.deleteItems);
     if (confirmed) {
       setOrderList([]);
       sessionStorage.removeItem("orderList");
@@ -313,8 +357,8 @@ const OrderPage = () => {
   };
 
   const clearOrderCheckout = () => {
-      setOrderList([]);
-      sessionStorage.removeItem("orderList");
+    setOrderList([]);
+    sessionStorage.removeItem("orderList");
   };
 
   // Fetch all prices initially for items in the order list
@@ -376,7 +420,7 @@ const OrderPage = () => {
 
         // let subCategoryName = itemData.find(
         //   (data) => data.item_name === subItem.name
-        // )?.item_category;     
+        // )?.item_category;
 
         // const subCategoryPrice = subCategoryName
         //   ? prices[subCategoryName] || 0
@@ -521,7 +565,7 @@ const OrderPage = () => {
 
   const consolidateOrderList = (orderList) => {
     const consolidated = {};
-  
+
     orderList.forEach((item) => {
       if (consolidated[item.name]) {
         // If the item already exists, add its quantity
@@ -531,13 +575,12 @@ const OrderPage = () => {
         consolidated[item.name] = { ...item };
       }
     });
-  
+
     // Convert the object back to an array
     return Object.values(consolidated);
   };
 
   const handleCheckout = async () => {
-
     if (orderList.length === 0) {
       alert(text.pleaseadditems);
       return;
@@ -548,20 +591,18 @@ const OrderPage = () => {
       return;
     }
 
-    const confirmed = window.confirm(
-      text.proceedToCheckout
-    );
+    const confirmed = window.confirm(text.proceedToCheckout);
     if (confirmed) {
       const consolidatedOrderList = consolidateOrderList(orderList); // Consolidate duplicates
       const totalCost = calculateTotalPrice() * 1.06;
-  
+
       try {
         const response = await axios.post(`${backendURL}/kiosk/order`, {
           totalCost,
           transactionType,
           orderList: consolidatedOrderList, // Use the consolidated list
         });
-  
+
         if (response.status === 200) {
           alert(text.confirmation);
           clearOrderCheckout(); // Clears the local order list
@@ -573,7 +614,6 @@ const OrderPage = () => {
       navigate("/");
     }
   };
-  
 
   const navigate = useNavigate(); // Initialize the navigate function
   const goToCustomerPage = () => {
@@ -611,15 +651,19 @@ const OrderPage = () => {
 
       <div className="container">
         <div className="order-summary">
-          <Button className="add-more" onClick={goToCustomerPage} text={`+ ${text.addMore}`}>
-            
-          </Button>
-          <Button className="add-more-2" onClick={clearOrder} text = {text.removeAll}>
-            
-          </Button>
-          <br></br><br></br>
+          <Button
+            className="add-more"
+            onClick={goToCustomerPage}
+            text={`+ ${text.addMore}`}
+          ></Button>
+          <Button
+            className="add-more-2"
+            onClick={clearOrder}
+            text={text.removeAll}
+          ></Button>
+          <br></br>
+          <br></br>
           <h2>{text.currentOrder}</h2>
-
 
           {orderList.length > 0 ? (
             (() => {
@@ -653,7 +697,9 @@ const OrderPage = () => {
                       <div className="item-details">
                         {/* Name and Price */}
                         <div className="item-row">
-                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
+                          <span className="item-name">
+                            {text.itemNames[item.name] || item.name}
+                          </span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
@@ -666,7 +712,9 @@ const OrderPage = () => {
                               <h4>{text.sides}</h4>
                               <ul>
                                 {sides.map((side, sideIndex) => (
-                                  <li key={sideIndex}>{text.itemNames[side.name] || side.name}</li>
+                                  <li key={sideIndex}>
+                                    {text.itemNames[side.name] || side.name}
+                                  </li>
                                 ))}
                               </ul>
                             </>
@@ -676,28 +724,39 @@ const OrderPage = () => {
                               <h4>{text.entree}</h4>
                               <ul>
                                 {entrees.map((entree, entreeIndex) => (
-                                  <li key={entreeIndex}>{text.itemNames[entree.name] || entree.name}</li>
+                                  <li key={entreeIndex}>
+                                    {text.itemNames[entree.name] || entree.name}
+                                  </li>
                                 ))}
                               </ul>
                             </>
                           )}
                         </div>
 
-
                         {/* Quantity Selector */}
                         <div className="item-row">
                           <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
-                            text = {text.remove}
-                          >
-                            
-                          </Button>
-                          {!(item.name === "Bowl" || item.name === "Plate" || item.name === "Bigger Plate") ? (
+                            text={text.remove}
+                          ></Button>
+                          {!(
+                            item.name === "Bowl" ||
+                            item.name === "Plate" ||
+                            item.name === "Bigger Plate"
+                          ) ? (
                             <div className="quantity-selector">
-                              <Button className="quant" onClick={() => decrementQuantity(index)} text = "-" ></Button>
+                              <Button
+                                className="quant"
+                                onClick={() => decrementQuantity(index)}
+                                text="-"
+                              ></Button>
                               <span>{item.quantity}</span>
-                              <Button onClick={() => incrementQuantity(index)} text = "+" className="quant"></Button>
+                              <Button
+                                onClick={() => incrementQuantity(index)}
+                                text="+"
+                                className="quant"
+                              ></Button>
                             </div>
                           ) : null}
                         </div>
@@ -715,7 +774,9 @@ const OrderPage = () => {
                       />
                       <div className="item-details">
                         <div className="item-row">
-                          <span className="item-name">{text.itemNames[item.name] || item.name}</span>
+                          <span className="item-name">
+                            {text.itemNames[item.name] || item.name}
+                          </span>
                           <span className="item-price">
                             ${getItemTotalPrice(item).toFixed(2)}
                           </span>
@@ -724,18 +785,18 @@ const OrderPage = () => {
                           <Button
                             className="remove-button"
                             onClick={() => removeItem(index)}
-                            text = {text.remove}
-                          >
-                            
-                          </Button>
+                            text={text.remove}
+                          ></Button>
                           <div className="quantity-selector">
-                            <Button onClick={() => decrementQuantity(index)} text = "-">
-                              
-                            </Button>
+                            <Button
+                              onClick={() => decrementQuantity(index)}
+                              text="-"
+                            ></Button>
                             <span>{item.quantity}</span>
-                            <Button onClick={() => incrementQuantity(index)} text="+">
-                              
-                            </Button>
+                            <Button
+                              onClick={() => incrementQuantity(index)}
+                              text="+"
+                            ></Button>
                           </div>
                         </div>
                       </div>
@@ -765,81 +826,99 @@ const OrderPage = () => {
           <h3>{text.paymentMethod}</h3>
           <br />
           <div className="payment-method">
-          <label>
-            <input
-              type="radio"
-              name="payment"
-              value="Credit/Debit"
-              onChange={handleTransactionTypeChange}
-              checked={transactionType === "Credit/Debit"}
-            />
-            {text.creditDebit}
-          </label>
-          <br />
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="payment"
-              value="Gift Card"
-              onChange={handleTransactionTypeChange}
-              checked={transactionType === "Gift Card"}
-            />
-            {text.giftCard}
-          </label>
+            <label>
+              <input
+                type="radio"
+                name="payment"
+                value="Credit/Debit"
+                onChange={handleTransactionTypeChange}
+                checked={transactionType === "Credit/Debit"}
+              />
+              {text.creditDebit}
+            </label>
+            <br />
+            <br />
+            <label>
+              <input
+                type="radio"
+                name="payment"
+                value="Gift Card"
+                onChange={handleTransactionTypeChange}
+                checked={transactionType === "Gift Card"}
+              />
+              {text.giftCard}
+            </label>
           </div>
           <br />
           <br />
           <div className="total-price">
-            <h3>{text.subtotal} ${calculateTotalPrice().toFixed(2)}</h3>
+            <h3>
+              {text.subtotal} ${calculateTotalPrice().toFixed(2)}
+            </h3>
             <br />
-            <h3>{text.tax} (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}</h3>
+            <h3>
+              {text.tax} (6%): ${(calculateTotalPrice() * 0.06).toFixed(2)}
+            </h3>
             <br />
-            <h3>{text.total}: ${(calculateTotalPrice() * 1.06).toFixed(2)}</h3>
+            <h3>
+              {text.total}: ${(calculateTotalPrice() * 1.06).toFixed(2)}
+            </h3>
             <br />
           </div>
           <br />
-          <Button className="checkout-order" onClick={handleCheckout} text = {text.checkout}>
-            
-          </Button>
+          <Button
+            className="checkout-order"
+            onClick={handleCheckout}
+            text={text.checkout}
+          ></Button>
         </div>
       </div>
       <div className="weather-recommendation">
-        <h3 style={{ backgroundColor : temperatureColor}}>
-          <br/><br/>
-          {text.recommendation} <br/>{text.based}<br/> {text.on}<br/> {text.Today}<br/> {text.Weather}  
+        <h3 style={{ backgroundColor: temperatureColor }}>
+          <br />
+          <br />
+          {text.recommendation} <br />
+          {text.based}
+          <br /> {text.on}
+          <br /> {text.Today}
+          <br /> {text.Weather}
         </h3>
-        <h1 style={{ color: temperatureColor}}>
-          <br/>
-          {weather !== null ? `${weather}°F` : "Loading..."} <br/> {weatherIcon}
+        <h1 style={{ color: temperatureColor }}>
+          <br />
+          {weather !== null ? `${weather}°F` : "Loading..."} <br />{" "}
+          {weatherIcon}
         </h1>
         <div className="recommended-items">
-        {recommendedItems.map((item) => (
-          <div
-            key={item}
-            className="recommended-item-container"
-            onClick={() => addRecommendedItemToOrder(item)} // Add click handler
-          >
-            <div className="recommended-item">
-              <img
-                src={getItemImage(item)}
-                alt={item}
-                className="recommended-item-image"
-              />
-              <div className="recommended-item-text">
-                <span>{text.itemNames[item] || item}</span>
+          {recommendedItems.map((item) => (
+            <div
+              key={item}
+              className="recommended-item-container"
+              onClick={() => addRecommendedItemToOrder(item)} // Add click handler
+            >
+              <div className="recommended-item">
+                <img
+                  src={getItemImage(item)}
+                  alt={item}
+                  className="recommended-item-image"
+                />
+                <div className="recommended-item-text">
+                  <span>{text.itemNames[item] || item}</span>
+                </div>
+              </div>
+              <div
+                className="hover-text"
+                style={{
+                  backgroundColor: hexToRgba(temperatureColor, 0.85), // Dynamically set background color
+                }}
+              >
+                {text.clickToAdd}
               </div>
             </div>
-            <div className="hover-text" style={{
-          backgroundColor: hexToRgba(temperatureColor, 0.85), // Dynamically set background color
-        }}>{text.clickToAdd}</div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </div>
   );
 };
-
 
 export default OrderPage;

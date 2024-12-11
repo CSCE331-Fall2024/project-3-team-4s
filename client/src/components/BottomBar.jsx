@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useTranslate } from "../contexts/TranslateContext"; // Import translation context
 import { translate } from "../utils/translateUtil"; // Import translation function
-import Button from '../components/Button'; // Import your custom Button component
-import '../pages/CustomerHome.css';
+import Button from "../components/Button"; // Import your custom Button component
+import "../pages/CustomerHome.css";
 
-const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, resetSelections }) => {
+const BottomBar = ({
+  selectedItem,
+  selectedSides,
+  selectedEntrees,
+  addToOrder,
+  resetSelections,
+}) => {
   const { language } = useTranslate(); // Get the current language
   const [translatedSelected, setTranslatedSelected] = useState("Selected:");
-  const [translatedAddToOrder, setTranslatedAddToOrder] = useState("Add to Order");
-  const [translatedAlertSide, setTranslatedAlertSide] = useState("Please select at least one side.");
+  const [translatedAddToOrder, setTranslatedAddToOrder] =
+    useState("Add to Order");
+  const [translatedAlertSide, setTranslatedAlertSide] = useState(
+    "Please select at least one side."
+  );
   const [translatedAlertEntree, setTranslatedAlertEntree] = useState("");
   const [translatedSides, setTranslatedSides] = useState([]);
   const [translatedEntrees, setTranslatedEntrees] = useState([]);
@@ -20,8 +29,14 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
       try {
         const selectedText = await translate("Selected:", language);
         const addToOrderText = await translate("Add to Order", language);
-        const alertSideText = await translate("Please select at least one side.", language);
-        const alertEntreeText = await translate("Please select at least {requiredEntrees} entree(s).", language);
+        const alertSideText = await translate(
+          "Please select at least one side.",
+          language
+        );
+        const alertEntreeText = await translate(
+          "Please select at least {requiredEntrees} entree(s).",
+          language
+        );
         const sideTranslations = await translate("Side", language);
         const entreeTranslations = await translate("Entree", language);
 
@@ -57,11 +72,11 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
 
   const validateSelections = () => {
     const requiredEntrees =
-      selectedItem.item_name === 'Bowl'
+      selectedItem.item_name === "Bowl"
         ? 1
-        : selectedItem.item_name === 'Plate'
+        : selectedItem.item_name === "Plate"
         ? 2
-        : selectedItem.item_name === 'Bigger Plate'
+        : selectedItem.item_name === "Bigger Plate"
         ? 3
         : 0;
 
@@ -70,9 +85,14 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
       return false;
     }
 
-    const totalEntreesSelected = selectedEntrees.reduce((sum, entree) => sum + entree.count, 0);
+    const totalEntreesSelected = selectedEntrees.reduce(
+      (sum, entree) => sum + entree.count,
+      0
+    );
     if (totalEntreesSelected < requiredEntrees) {
-      alert(translatedAlertEntree.replace("{requiredEntrees}", requiredEntrees));
+      alert(
+        translatedAlertEntree.replace("{requiredEntrees}", requiredEntrees)
+      );
       return false;
     }
 
@@ -86,7 +106,10 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
 
     const items = [
       ...selectedSides.map((side) => ({ name: side.item_name, quantity: 1 })),
-      ...selectedEntrees.map((entree) => ({ name: entree.item.item_name, quantity: entree.count })),
+      ...selectedEntrees.map((entree) => ({
+        name: entree.item.item_name,
+        quantity: entree.count,
+      })),
     ];
     items.forEach((item) => addToOrder(item.name, item.quantity));
 
@@ -96,25 +119,29 @@ const BottomBar = ({ selectedItem, selectedSides, selectedEntrees, addToOrder, r
   return (
     <div className="bottom-bar">
       <div className="selected-items">
-        <h3>{translatedSelected} {selectedItem.item_name}</h3>
+        <h3>
+          {translatedSelected} {selectedItem.item_name}
+        </h3>
         <ul>
           {translatedSides.map((side, index) => (
             <li key={index}>
-              <strong>{sidetext}</strong> {side.translatedName || side.item_name}
+              <strong>{sidetext}</strong>{" "}
+              {side.translatedName || side.item_name}
             </li>
           ))}
           {translatedEntrees.map((entree, index) => (
             <li key={index}>
-              <strong>{entreetext}</strong> {entree.translatedName || entree.item.item_name} x {entree.count}
+              <strong>{entreetext}</strong>{" "}
+              {entree.translatedName || entree.item.item_name} x {entree.count}
             </li>
           ))}
         </ul>
       </div>
-      <Button 
-        className="add-to-order-button-bottom" 
-        onClick={handleAddToOrder} 
-        text={translatedAddToOrder} 
-        fontSize="16px" 
+      <Button
+        className="add-to-order-button-bottom"
+        onClick={handleAddToOrder}
+        text={translatedAddToOrder}
+        fontSize="16px"
       />
     </div>
   );

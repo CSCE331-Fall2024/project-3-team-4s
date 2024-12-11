@@ -12,7 +12,7 @@ import DrinkModal from "../components/DrinkModal";
 import BottomBar from "../components/BottomBar";
 import SauceModal from "../components/SauceModal";
 import PopupNotification from "../components/PopupNotification";
-import { useOrder } from "./OrderContext";
+import { useOrder } from "../contexts/OrderContext";
 import Button from "../components/Button";
 
 const imageMap = {
@@ -142,7 +142,10 @@ const imageMap = {
   "Coke Mexico": { image: "/Coke_Mexico.avif", description: "" },
   "Coke Zero": { image: "/Coke_Zero.avif", description: "" },
   Smartwater: { image: "/Smartwater.avif", description: "" },
-  Sauces: { image: "/sauce.png", description: "Choice of different blend of sauces" },
+  Sauces: {
+    image: "/sauce.png",
+    description: "Choice of different blend of sauces",
+  },
   "Soy Sauce": { image: "/Soy_Sauce.png", description: "" },
   "Sweet & Sour Sauce": { image: "/Sweet_&_Sour_Sauce.png", description: "" },
   "Chili Sauce": { image: "/Chili_Sauce.png", description: "" },
@@ -187,7 +190,6 @@ const CustomerHome = () => {
   const [sauces, setSauces] = useState([]); // State for sauces
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(null); // 'side' or 'entree'
-
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -249,7 +251,7 @@ const CustomerHome = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      
+
       setSides(data);
     } catch (error) {
       console.error("Error fetching sides:", error);
@@ -326,24 +328,50 @@ const CustomerHome = () => {
       try {
         const translatedTexts = {
           pageHeading: he.decode(
-            await translate("Choose your meal type to start your order", language)
+            await translate(
+              "Choose your meal type to start your order",
+              language
+            )
           ),
-          customizeHeading: he.decode(await translate("Customize your", language)),
+          customizeHeading: he.decode(
+            await translate("Customize your", language)
+          ),
           goBack: he.decode(await translate("Go Back", language)),
           backToMenu: he.decode(await translate("Back to Menu", language)),
-          chooseSide: he.decode(await translate("Step 1: Choose Your Side", language)),
-          chooseEntree: he.decode(await translate("Step 2: Choose Your Entree", language)),
-          chooseAppetizer: he.decode(await translate("Choose Your Appetizer", language)),
-          chooseDrink: he.decode(await translate("Choose Your Drink", language)),
-          chooseSauce: he.decode(await translate("Choose Your Sauce", language)),
+          chooseSide: he.decode(
+            await translate("Step 1: Choose Your Side", language)
+          ),
+          chooseEntree: he.decode(
+            await translate("Step 2: Choose Your Entree", language)
+          ),
+          chooseAppetizer: he.decode(
+            await translate("Choose Your Appetizer", language)
+          ),
+          chooseDrink: he.decode(
+            await translate("Choose Your Drink", language)
+          ),
+          chooseSauce: he.decode(
+            await translate("Choose Your Sauce", language)
+          ),
           viewOrder: he.decode(await translate("View Order", language)),
-          selectSide: he.decode(await translate("Your Selected Side", language)),
-          selectEntree: he.decode(await translate("Your Selected Entree", language)),
-          bowlchooseEntree: he.decode(await translate("Step 2: Choose Your Entree", language)),
-          bowlchooseSide: he.decode(await translate("Step 1: Choose Your Side", language)),
-          doSide: he.decode(await translate("Do you want to select the side", language)),
-          doEntree: he.decode(await translate("Do you want to select the entree", language)),
-
+          selectSide: he.decode(
+            await translate("Your Selected Side", language)
+          ),
+          selectEntree: he.decode(
+            await translate("Your Selected Entree", language)
+          ),
+          bowlchooseEntree: he.decode(
+            await translate("Step 2: Choose Your Entree", language)
+          ),
+          bowlchooseSide: he.decode(
+            await translate("Step 1: Choose Your Side", language)
+          ),
+          doSide: he.decode(
+            await translate("Do you want to select the side", language)
+          ),
+          doEntree: he.decode(
+            await translate("Do you want to select the entree", language)
+          ),
         };
 
         // Translate menu item names and descriptions
@@ -351,9 +379,14 @@ const CustomerHome = () => {
         const descriptionTranslations = {};
         for (const item of menuItems) {
           const itemName = item.item_name;
-          itemTranslations[itemName] = he.decode(await translate(itemName, language));
+          itemTranslations[itemName] = he.decode(
+            await translate(itemName, language)
+          );
           descriptionTranslations[itemName] = he.decode(
-            await translate(imageMap[item.item_name]?.description || "", language)
+            await translate(
+              imageMap[item.item_name]?.description || "",
+              language
+            )
           );
         }
 
@@ -367,32 +400,32 @@ const CustomerHome = () => {
         };
 
         const sideTranslations = await translateItems(sides);
-      const entreeTranslations = await translateItems(entrees);
-      const appetizerTranslations = await translateItems(appetizers);
-      const drinkTranslations = await translateItems(drinks);
-      const sauceTranslations = await translateItems(sauces);
+        const entreeTranslations = await translateItems(entrees);
+        const appetizerTranslations = await translateItems(appetizers);
+        const drinkTranslations = await translateItems(drinks);
+        const sauceTranslations = await translateItems(sauces);
 
-      setTranslations({
-        ...translatedTexts,
-        itemNames: {
-          ...itemTranslations,
-          ...sideTranslations,
-          ...entreeTranslations,
-          ...appetizerTranslations,
-          ...drinkTranslations,
-          ...sauceTranslations,
-        },
-        itemDescriptions: {
-          ...descriptionTranslations}
-      });
-    } catch (error) {
-      console.error("Error fetching translations:", error);
-    }
-  };
+        setTranslations({
+          ...translatedTexts,
+          itemNames: {
+            ...itemTranslations,
+            ...sideTranslations,
+            ...entreeTranslations,
+            ...appetizerTranslations,
+            ...drinkTranslations,
+            ...sauceTranslations,
+          },
+          itemDescriptions: {
+            ...descriptionTranslations,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching translations:", error);
+      }
+    };
 
-  fetchTranslations();
-}, [language, menuItems, sides, entrees, appetizers, drinks, sauces]);
-
+    fetchTranslations();
+  }, [language, menuItems, sides, entrees, appetizers, drinks, sauces]);
 
   const handleMenuItemClick = (item) => {
     setSelectedItem(item);
@@ -447,7 +480,9 @@ const CustomerHome = () => {
 
   const handleSideSelect = (side) => {
     const confirmSelection = window.confirm(
-      `${translations.doSide} "${translations.itemNames[side.item_name] || side.item_name}"?`
+      `${translations.doSide} "${
+        translations.itemNames[side.item_name] || side.item_name
+      }"?`
     );
     if (confirmSelection) {
       setSelectedSides([...selectedSides, side]);
@@ -465,7 +500,9 @@ const CustomerHome = () => {
 
   const handleEntreeSelect = (entree) => {
     const confirmSelection = window.confirm(
-      `${translations.doEntree} "${translations.itemNames[entree.item_name] || entree.item_name}"?`
+      `${translations.doEntree} "${
+        translations.itemNames[entree.item_name] || entree.item_name
+      }"?`
     );
     if (confirmSelection) {
       setSelectedEntrees([
@@ -482,7 +519,6 @@ const CustomerHome = () => {
       }
     }
   };
-
 
   const handleAppetizerClick = (appetizer) => {
     setSelectedAppetizer({
@@ -579,16 +615,22 @@ const CustomerHome = () => {
   return (
     <div className="background">
       <div className="nav-header">
-        <h2 className="order-heading">
-          {translations.pageHeading}
-        </h2>
+        <h2 className="order-heading">{translations.pageHeading}</h2>
       </div>
 
-      <Button text={translations.viewOrder} className="navbar-button" onClick={() => navigate("/order")} fontSize="32px">
-      </Button> 
+      <Button
+        text={translations.viewOrder}
+        className="navbar-button"
+        onClick={() => navigate("/order")}
+        fontSize="32px"
+      ></Button>
 
-      <Button text={translations.backToMenu} className="navbar-button-2" onClick={() => navigate("/")} fontSize="32px">
-      </Button>
+      <Button
+        text={translations.backToMenu}
+        className="navbar-button-2"
+        onClick={() => navigate("/")}
+        fontSize="32px"
+      ></Button>
 
       <PopupNotification popupDetails={popupDetails} />
       <br></br>
@@ -605,10 +647,12 @@ const CustomerHome = () => {
                 alt={item.item_name}
                 className="menu-item-image"
               />
-              <h2>{translations.itemNames[item.item_name] || item.item_name}</h2>
+              <h2>
+                {translations.itemNames[item.item_name] || item.item_name}
+              </h2>
               <p className="image_description">
-              {translations.itemDescriptions[item.item_name] ||
-                imageMap[item.item_name]?.description}
+                {translations.itemDescriptions[item.item_name] ||
+                  imageMap[item.item_name]?.description}
               </p>
               <p className="image_price">
                 $
@@ -622,12 +666,21 @@ const CustomerHome = () => {
         ) : currentStep === "side" ? (
           // Render sides step
           <div className="steps-container">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+            <Button
+              onClick={handleBackToMenu}
+              className="back-button-to-menu"
+              text={translations.goBack}
+            ></Button>
+            <Button
+              onClick={handleBackToMenu}
+              className="back-button-to-menu2"
+              text={translations.goBack}
+            ></Button>
             <h3>{translations.bowlchooseSide}</h3>
-            <br></br><br></br><br></br><br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
             <div className="sides-container">
               {sides.map((side) => (
                 <div
@@ -640,7 +693,9 @@ const CustomerHome = () => {
                     alt={side.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[side.item_name] || side.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
@@ -651,12 +706,21 @@ const CustomerHome = () => {
         ) : currentStep === "entree" ? (
           // Render entrees step
           <div className="steps-container">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+            <Button
+              onClick={handleBackToMenu}
+              className="back-button-to-menu"
+              text={translations.goBack}
+            ></Button>
+            <Button
+              onClick={handleBackToMenu}
+              className="back-button-to-menu2"
+              text={translations.goBack}
+            ></Button>
             <h3>{translations.bowlchooseEntree}</h3>
-            <br></br><br></br><br></br><br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
             <div className="entrees-container">
               {entrees.map((entree) => (
                 <div
@@ -669,7 +733,10 @@ const CustomerHome = () => {
                     alt={entree.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[entree.item_name] ||
+                      entree.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[entree.item_name]?.description}
                   </p>
@@ -681,12 +748,18 @@ const CustomerHome = () => {
           <div className="steps-container">
             <div className="steps-header">
               <h3>{translations.chooseSauce}</h3>
-              <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
             </div>
-            
+
             <div className="drinks-container">
               {sauces.map((sauce) => (
                 <div
@@ -699,7 +772,9 @@ const CustomerHome = () => {
                     alt={sauce.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[sauce.item_name] || sauce.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[sauce.item_name] || sauce.item_name}
+                  </h2>
                   <p className="image_price">${sauce.item_price.toFixed(2)}</p>
                 </div>
               ))}
@@ -708,10 +783,16 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "Appetizer" ? (
           <div className="steps-container">
             <div className="steps-header">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button>  
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
               <h3>{translations.chooseAppetizer}</h3>
             </div>
             <div className="appetizers-container">
@@ -726,7 +807,10 @@ const CustomerHome = () => {
                     alt={appetizer.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[appetizer.item_name] || appetizer.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[appetizer.item_name] ||
+                      appetizer.item_name}
+                  </h2>
                 </div>
               ))}
             </div>
@@ -740,10 +824,16 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "A La Carte Side" ? (
           <div className="steps-container">
             <div className="steps-header">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
               <h3>{translations.chooseSide}</h3>
             </div>
             <div className="sides-container">
@@ -758,7 +848,9 @@ const CustomerHome = () => {
                     alt={side.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[side.item_name] || side.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
@@ -777,10 +869,16 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "A La Carte Entree" ? (
           <div className="steps-container">
             <div className="steps-header">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
               <h3>{translations.chooseEntree}</h3>
             </div>
             <div className="entrees-container">
@@ -795,7 +893,10 @@ const CustomerHome = () => {
                     alt={entree.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[entree.item_name] ||
+                      entree.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[entree.item_name]?.description}
                   </p>
@@ -806,10 +907,16 @@ const CustomerHome = () => {
         ) : selectedItem.item_name === "Drinks" ? (
           <div className="steps-container">
             <div className="steps-header">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
               <h3>{translations.chooseDrink}</h3>
             </div>
             <div className="drinks-container">
@@ -824,7 +931,9 @@ const CustomerHome = () => {
                     alt={drink.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[drink.item_name] || drink.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[drink.item_name] || drink.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[drink.item_name]?.description}
                   </p>
@@ -835,10 +944,16 @@ const CustomerHome = () => {
         ) : (
           <div className="steps-container">
             <div className="steps-header">
-            <Button onClick={handleBackToMenu} className="back-button-to-menu" text={translations.goBack}>
-                </Button> 
-                <Button onClick={handleBackToMenu} className="back-button-to-menu2" text={translations.goBack}>
-                </Button> 
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu"
+                text={translations.goBack}
+              ></Button>
+              <Button
+                onClick={handleBackToMenu}
+                className="back-button-to-menu2"
+                text={translations.goBack}
+              ></Button>
               <h3>{translations.selectSide}</h3>
             </div>
             <div className="sides-container">
@@ -856,7 +971,9 @@ const CustomerHome = () => {
                     alt={side.item_name}
                     className="menu-item-image"
                   />
-                  <h2>{translations.itemNames[side.item_name] || side.item_name}</h2>
+                  <h2>
+                    {translations.itemNames[side.item_name] || side.item_name}
+                  </h2>
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
@@ -889,7 +1006,10 @@ const CustomerHome = () => {
                       alt={entree.item_name}
                       className="menu-item-image"
                     />
-                    <h2>{translations.itemNames[entree.item_name] || entree.item_name}</h2>
+                    <h2>
+                      {translations.itemNames[entree.item_name] ||
+                        entree.item_name}
+                    </h2>
                     <p className="image_description">
                       {imageMap[entree.item_name]?.description}
                     </p>

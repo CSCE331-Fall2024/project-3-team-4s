@@ -6,8 +6,7 @@ import AppetizerModal from "../components/AppetizerModal";
 import SideModal from "../components/SideModal";
 import EntreeModal from "../components/EntreeModal";
 import DrinkModal from "../components/DrinkModal";
-import BottomBar from "../components/BottomBar";
-import { useOrder } from "./OrderContext";
+import { useOrder } from "../contexts/OrderContext";
 
 const imageMap = {
   Bowl: { image: "/bowl.avif", description: "1 Side & 1 Entree" },

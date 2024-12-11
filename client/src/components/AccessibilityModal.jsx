@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { AccessibilityContext } from "../contexts/AccessibilityContext";
 import Button from "./Button";
 import "./AccessibilityModal.css";
