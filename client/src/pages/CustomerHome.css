@@ -10,6 +10,53 @@ html {
   font-family: "Rubik", sans-serif;
 }
 
+.allergy-info-button {
+  background-color: #e60000;
+  border: none;
+  padding: 5px 10px;
+  margin-top: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.allergy-info-button:hover {
+  background-color: black;
+}
+
+.allergy-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 1000;
+}
+
+.allergy-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.allergy-content h2 {
+  margin-bottom: 10px;
+}
+
+.allergy-content button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  background-color: black;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
 .background {
   background-image: linear-gradient(
       rgba(255, 255, 255, 0.6),

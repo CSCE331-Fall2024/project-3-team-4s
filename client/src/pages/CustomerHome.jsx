@@ -163,6 +163,35 @@ const displayOrder = [
   "Drink",
 ];
 
+const allergies = {
+  "Beyond Original Orange Chicken" : "Contains Soybeans and Wheat",
+  "The Original Orange Chicken" : "Contains Sesame, Milk, Eggs, Soybeans and Wheat",
+  "Black Pepper Sirloin Steak" : "Contains Soybeans and Wheat",
+  "Honey Walnut Shrimp" : "Contains Shellfish, Milk, Eggs, Treenuts, Soybeans and Wheat",
+  "Honey Sesame Chicken Breast" : "Contains Soybeans and Wheat",
+  "Hot Ones Blazing Bourbon Chicken" : "Contains Soybeans and Wheat",
+  "Kung Pao Chicken" : "Contains Peanuts, Soybeans and Wheat",
+  "String Bean Chicken Breast" : "Contains Soybeans and Wheat",
+  "Sweet Fire Chicken Breast" : "Contains Soybeans and Wheat",
+  "Grilled Teriyaki Chicken" : "Contains Soybeans and Wheat",
+  "Mushroom Chicken" : "Contains Soybeans and Wheat",
+  "Beijing Beef" : "Contains Soybeans and Wheat",
+  "Broccoli Beef" : "Contains Soybeans and Wheat",
+  "Super Greens" : "Contains Soybeans and Wheat",
+  "Chow Mein" : "Contains Sesame, Soybeans and Wheat",
+  "Fried Rice" : "Contains Eggs, Soybeans and Wheat",
+  "White Rice" : "Contains wheat",
+  "Apple Pie Roll" : "Contains Milk, Eggs, Soybeans and Wheat",
+  "Chicken Egg Roll" : "Contains Milk, Eggs, Soybeans and Wheat",
+  "Cream Cheese Rangoon" : "Contains Milk, Eggs, Soybeans and Wheat",
+  "Veggie Spring Roll" : "Contains Milk, Eggs, Soybeans and Wheat",
+  "Soy Sauce" : "Contains Soybeans and Wheat",
+  "Sweet & Sour Sauce" : "Contains Soybeans and Wheat",
+  "Chili Sauce" : "Contains Soybeans and Wheat",
+  "Teriyaki Sauce" : "Contains Soybeans and Wheat",
+  "Hot Mustard" : "Contains Soybeans and Wheat",
+};
+
 const CustomerHome = () => {
   // const backendURL = "http://localhost:3000";
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -190,6 +219,7 @@ const CustomerHome = () => {
   const [sauces, setSauces] = useState([]); // State for sauces
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(null); // 'side' or 'entree'
+  
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -321,6 +351,8 @@ const CustomerHome = () => {
     viewOrder: "View Order",
     doSide: "Do you want to select the side",
     doEntree: "Do you want to select the entree",
+    allergies: "Allergy Information: ",
+    selAllergies: "Allergy Info",
   });
 
   useEffect(() => {
@@ -372,6 +404,8 @@ const CustomerHome = () => {
           doEntree: he.decode(
             await translate("Do you want to select the entree", language)
           ),
+          allergies: he.decode(await translate("Allergy Information: ", language)),
+          selAllergies: he.decode(await translate("Allergy Info", language)),
         };
 
         // Translate menu item names and descriptions
@@ -699,6 +733,16 @@ const CustomerHome = () => {
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(allergies[side.item_name]);
+                    }}
+                    fontSize="16px"
+                    text={translations.selAllergies}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -740,6 +784,16 @@ const CustomerHome = () => {
                   <p className="image_description">
                     {imageMap[entree.item_name]?.description}
                   </p>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(allergies[entree.item_name]);
+                    }}
+                    fontSize="16px"
+                    text={translations.selAllergies}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -776,6 +830,16 @@ const CustomerHome = () => {
                     {translations.itemNames[sauce.item_name] || sauce.item_name}
                   </h2>
                   <p className="image_price">${sauce.item_price.toFixed(2)}</p>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(`Allergy Information: ${allergies[sauce.item_name]}`);
+                    }}
+                    fontSize="16px"
+                    text={"Allergy Info"}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -811,6 +875,16 @@ const CustomerHome = () => {
                     {translations.itemNames[appetizer.item_name] ||
                       appetizer.item_name}
                   </h2>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(allergies[appetizer.item_name]);
+                    }}
+                    fontSize="16px"
+                    text={translations.selAllergies}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -854,6 +928,16 @@ const CustomerHome = () => {
                   <p className="image_description">
                     {imageMap[side.item_name]?.description}
                   </p>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(allergies[side.item_name]);
+                    }}
+                    fontSize="16px"
+                    text={translations.selAllergies}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -900,6 +984,16 @@ const CustomerHome = () => {
                   <p className="image_description">
                     {imageMap[entree.item_name]?.description}
                   </p>
+                  <Button
+                    className="allergy-info-button"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent click event
+                      window.alert(allergies[entree.item_name]);
+                    }}
+                    fontSize="16px"
+                    text={translations.selAllergies}
+                  >
+                  </Button>
                 </div>
               ))}
             </div>
@@ -1020,6 +1114,7 @@ const CustomerHome = () => {
           </div>
         )}
       </div>
+
 
       {selectedItem &&
         ["Bowl", "Plate", "Bigger Plate"].includes(selectedItem.item_name) && (
