@@ -15,7 +15,6 @@ import CategoryPage from "./pages/CategoryPage";
 import EmployeeHome from "./pages/EmployeeHome";
 import { OrderProvider } from "./pages/OrderContext";
 import { TranslateProvider } from "./contexts/TranslateContext";
-import { LanguageProvider } from "./pages/LanguageContext";
 
 const App = () => {
   const { settings } = useContext(AccessibilityContext);
@@ -25,33 +24,31 @@ const App = () => {
   };
 
   return (
-    <LanguageProvider>
-      <TranslateProvider>
-        <div className="global" style={appStyle}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/customer" element={<CustomerHome />} />
-            <Route path="/manager" element={<ManagerHome />} />
-            <Route path="/cashier" element={<CashierHome />} />
-            <Route path="/employee" element={<EmployeeHome />} />
-            <Route path="/menu" element={<EditMenu />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/restock" element={<Restock />} />
-            <Route path="/employees" element={<Employees />} />
-            <Route path="/order" element={<OrderPage />} />
-            <Route
-              path="/category/:categoryName"
-              element={
-                <OrderProvider>
-                  <CategoryPage />
-                </OrderProvider>
-              }
-            />
-          </Routes>
-        </div>
-      </TranslateProvider>
-    </LanguageProvider>
+    <TranslateProvider>
+      <div className="global" style={appStyle}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/customer" element={<CustomerHome />} />
+          <Route path="/manager" element={<ManagerHome />} />
+          <Route path="/cashier" element={<CashierHome />} />
+          <Route path="/employee" element={<EmployeeHome />} />
+          <Route path="/menu" element={<EditMenu />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/restock" element={<Restock />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/order" element={<OrderPage />} />
+          <Route
+            path="/category/:categoryName"
+            element={
+              <OrderProvider>
+                <CategoryPage />
+              </OrderProvider>
+            }
+          />
+        </Routes>
+      </div>
+    </TranslateProvider>
   );
 };
 

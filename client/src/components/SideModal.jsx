@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useOrder } from '../pages/OrderContext';
+import React, { useState, useEffect } from "react";
+import { useOrder } from "../contexts/OrderContext";
 import { useTranslate } from "../contexts/TranslateContext"; // Import your translation context
 import { translate } from "../utils/translateUtil"; // Import your translation function
-import Button from '../components/Button'; // Import your custom Button component
-import '../pages/CustomerHome.css';
+import Button from "../components/Button"; // Import your custom Button component
+import "../pages/CustomerHome.css";
 
 const SideModal = ({ side, onClose, resetSelections }) => {
   if (!side) return null;
@@ -31,7 +31,8 @@ const SideModal = ({ side, onClose, resetSelections }) => {
   }, [side.name, language]);
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
-  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const decrementQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
     addToOrder(side.name, quantity);
@@ -42,15 +43,17 @@ const SideModal = ({ side, onClose, resetSelections }) => {
   return (
     <div className="modal-overlay">
       <div className="modal">
-      <span>
-        <Button
-          className="close-button"
-          onClick={onClose}
-          text="X"
-          fontSize="36px"
-        />
+        <span>
+          <Button
+            className="close-button"
+            onClick={onClose}
+            text="X"
+            fontSize="36px"
+          />
         </span>
-        <br /><br /><br />
+        <br />
+        <br />
+        <br />
         <div className="modal-name">
           <h2>{translatedName || side.name}</h2>
         </div>
@@ -59,7 +62,7 @@ const SideModal = ({ side, onClose, resetSelections }) => {
         <div className="modal-name">
           <h2 className="appetizer-price">${side.price.toFixed(2)}</h2>
         </div>
-        
+
         {/* Quantity Selector */}
         <div className="quantity-selector">
           <Button

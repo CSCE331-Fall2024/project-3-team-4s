@@ -1,7 +1,7 @@
 // CustomerHomeWrapper.js
-import React from 'react';
-import { OrderProvider } from './OrderContext';
-import CustomerHome from './CustomerHome';
+import React from "react";
+import { OrderProvider } from "../contexts/OrderContext";
+import CustomerHome from "./CustomerHome";
 
 const CustomerHomeWrapper = () => (
   <OrderProvider>

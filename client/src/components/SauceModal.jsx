@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useOrder } from '../pages/OrderContext';
+import React, { useState, useEffect } from "react";
+import { useOrder } from "../contexts/OrderContext";
 import { useTranslate } from "../contexts/TranslateContext"; // Import your translation context
 import { translate } from "../utils/translateUtil"; // Import your translation function
-import Button from '../components/Button'; // Import your custom Button component
-import '../pages/CustomerHome.css';
+import Button from "../components/Button"; // Import your custom Button component
+import "../pages/CustomerHome.css";
 
 const SauceModal = ({ sauce, onClose, resetSelections }) => {
   if (!sauce) return null;
@@ -31,7 +31,8 @@ const SauceModal = ({ sauce, onClose, resetSelections }) => {
   }, [sauce.name, language]);
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
-  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const decrementQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToOrder = () => {
     addToOrder(sauce.name, quantity);
@@ -42,19 +43,21 @@ const SauceModal = ({ sauce, onClose, resetSelections }) => {
   return (
     <div className="modal-overlay">
       <div className="modal">
-      <span>
-        <Button
-          className="close-button"
-          onClick={onClose}
-          text="X"
-          fontSize="36px"
-        />
+        <span>
+          <Button
+            className="close-button"
+            onClick={onClose}
+            text="X"
+            fontSize="36px"
+          />
         </span>
-        <br /><br /><br />
+        <br />
+        <br />
+        <br />
         <div className="modal-name">
           <h2>{translatedName || sauce.name}</h2>
         </div>
-        <img src={sauce.image} alt={sauce.name} className="modal-image" />  
+        <img src={sauce.image} alt={sauce.name} className="modal-image" />
         <div className="modal-name">
           <h2 className="appetizer-price">${sauce.price.toFixed(2)}</h2>
         </div>
@@ -75,7 +78,7 @@ const SauceModal = ({ sauce, onClose, resetSelections }) => {
             fontSize="20px"
           />
         </div>
-        
+
         <Button
           className="add-to-order-button"
           onClick={handleAddToOrder}
