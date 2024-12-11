@@ -1,5 +1,12 @@
 import db from "../db.js";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Cashier
+ *     description: Operations related to cashier responsibilities
+ */
+
 const pushToMenuItemTable = async (req, res) => {
   try {
     const { menu_item_id, item_quantity } = req.body;

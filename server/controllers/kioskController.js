@@ -1,5 +1,12 @@
 import db from "../db.js";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Kiosk
+ *     description: Operations related to customer kiosk
+ */
+
 const getItemPrice = async (req, res) => {
   try {
     const { itemName } = req.query; // Get the item name from query parameters
@@ -130,7 +137,7 @@ const postOrder = async (req, res) => {
         transactionType,
         customerId,
         employeeId,
-        weekNumber,       
+        weekNumber,
       ]
     );
 
