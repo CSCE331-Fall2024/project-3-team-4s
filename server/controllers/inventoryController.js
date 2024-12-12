@@ -1,5 +1,47 @@
 import db from "../db.js";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Inventory
+ *     description: Operations related to inventory management
+ */
+
+/**
+ * @swagger
+ * /inventory/get-inventory:
+ *   get:
+ *     summary: Get all inventory items that are in stock
+ *     description: Get all inventory items that are in stock, meaning they're "in_stock" is set to true
+ *     tags: [Inventory]
+ *     responses:
+ *       200:
+ *         description: List of inventory items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   ingredient_id:
+ *                     type: integer
+ *                   ingredient_name:
+ *                     type: string
+ *                   current_stock:
+ *                     type: integer
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                   unit:
+ *                     type: string
+ *                   min_stock:
+ *                     type: integer
+ *                   in_stock:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ */
 const getInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await db.any(
@@ -13,6 +55,41 @@ const getInventoryItems = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/get-min-stock:
+ *   get:
+ *     summary: Get inventory items with low stock
+ *     description: Get inventory items that are in stock and have current stock less than minimum stock
+ *     tags: [Inventory]
+ *     responses:
+ *       200:
+ *         description: List of inventory items with low stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   ingredient_id:
+ *                     type: integer
+ *                   ingredient_name:
+ *                     type: string
+ *                   current_stock:
+ *                     type: integer
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                   unit:
+ *                     type: string
+ *                   min_stock:
+ *                     type: integer
+ *                   in_stock:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ */
 const getMinStockInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await db.any(
@@ -26,6 +103,41 @@ const getMinStockInventoryItems = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/get-non-min-stock:
+ *   get:
+ *     summary: Get inventory items with sufficient stock
+ *     description: Get inventory items that are in stock and have current stock greater than or equal to minimum stock
+ *     tags: [Inventory]
+ *     responses:
+ *       200:
+ *         description: List of inventory items with sufficient stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   ingredient_id:
+ *                     type: integer
+ *                   ingredient_name:
+ *                     type: string
+ *                   current_stock:
+ *                     type: integer
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                   unit:
+ *                     type: string
+ *                   min_stock:
+ *                     type: integer
+ *                   in_stock:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ */
 const getNonMinStockInventoryItems = async (req, res) => {
   try {
     const inventoryItems = await db.any(
@@ -39,6 +151,62 @@ const getNonMinStockInventoryItems = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/add-inventory:
+ *   post:
+ *     summary: Add a new inventory item
+ *     description: Add a new inventory item with the specified information
+ *     tags: [Inventory]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ingredient_name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *                 format: float
+ *               unit:
+ *                 type: string
+ *               min_stock:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Inventory item added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 inventoryItem:
+ *                   type: object
+ *                   properties:
+ *                     ingredient_id:
+ *                       type: integer
+ *                     ingredient_name:
+ *                       type: string
+ *                     current_stock:
+ *                       type: integer
+ *                     price:
+ *                       type: number
+ *                       format: float
+ *                     unit:
+ *                       type: string
+ *                     min_stock:
+ *                       type: integer
+ *                     in_stock:
+ *                       type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Internal server error
+ */
 const addInventoryItem = async (req, res) => {
   try {
     // Extract the ingredient_name, price, unit, and min_stock from the request body
@@ -82,6 +250,67 @@ const addInventoryItem = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/update-inventory/{id}:
+ *   put:
+ *     summary: Update an inventory item by ID
+ *     description: Update an inventory item with the specified ID using the provided information
+ *     tags: [Inventory]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the inventory item to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ingredient_name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *                 format: float
+ *               unit:
+ *                 type: string
+ *               min_stock:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Inventory item updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 inventoryItem:
+ *                   type: object
+ *                   properties:
+ *                     ingredient_id:
+ *                       type: integer
+ *                     ingredient_name:
+ *                       type: string
+ *                     current_stock:
+ *                       type: integer
+ *                     price:
+ *                       type: number
+ *                       format: float
+ *                     unit:
+ *                       type: string
+ *                     min_stock:
+ *                       type: integer
+ *                     in_stock:
+ *                       type: boolean
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ */
 const updateInventoryItem = async (req, res) => {
   try {
     // Extract the id from the request parameters
@@ -104,6 +333,44 @@ const updateInventoryItem = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/restock-inventory:
+ *   post:
+ *     summary: Restock inventory items
+ *     description: Restock inventory items based on the order provided
+ *     tags: [Inventory]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 ingredient_id:
+ *                   type: integer
+ *                 ingredient_name:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 total_price:
+ *                   type: number
+ *                   format: float
+ *     responses:
+ *       200:
+ *         description: Inventory successfully restocked
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *       500:
+ *         description: Internal server error
+ */
 const restockInventoryItems = async (req, res) => {
   try {
     // Extract order from the request body
@@ -128,6 +395,33 @@ const restockInventoryItems = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /inventory/delete-inventory/{id}:
+ *   delete:
+ *     summary: Delete an inventory item by ID
+ *     description: Delete an inventory item with the specified ID by setting its "in_stock" to false
+ *     tags: [Inventory]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the inventory item to delete
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Inventory item deleted successfully
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *       500:
+ *         description: Internal server error
+ */
 const deleteInventoryItem = async (req, res) => {
   try {
     // Extract the id from the request parameters

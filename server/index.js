@@ -5,7 +5,6 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import reportsRoutes from "./routes/reportsRoutes.js";
 import cashierRoutes from "./routes/cashierRoutes.js";
-import weatherRoutes from "./routes/weatherRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import swaggerJSDoc from "swagger-jsdoc";
@@ -24,7 +23,6 @@ app.use("/inventory", inventoryRoutes); // Use the inventory routes
 app.use("/employee", employeeRoutes); // Use the employee routes
 app.use("/reports", reportsRoutes); // Use the reports routes
 app.use("/cashier", cashierRoutes); // Use the cashier routes
-app.use("/weather", weatherRoutes); // Use the weather routes
 app.use("/menu", menuRoutes); // Use the menu routes
 app.use("/auth", authRoutes); // Use the auth routes
 
@@ -50,10 +48,6 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-app.get("/swagger.json", (req, res) => {
-  res.send(swaggerDocs);
-});
 
 // Start the server
 app.listen(port, () => {

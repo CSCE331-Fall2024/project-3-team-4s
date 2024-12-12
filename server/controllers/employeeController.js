@@ -1,5 +1,44 @@
 import db from "../db.js";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Employee
+ *     description: Operations related to employee management
+ */
+
+/**
+ * @swagger
+ * /employee/get-employees:
+ *   get:
+ *     summary: Get all current employees
+ *     description: Retrieve a list of current employees
+ *     tags: [Employee]
+ *     responses:
+ *       200:
+ *         description: A list of employees
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   employee_id:
+ *                     type: integer
+ *                   first_name:
+ *                     type: string
+ *                   last_name:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   fired:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ */
 const getEmployees = async (req, res) => {
   try {
     const employees = await db.any(
@@ -12,6 +51,45 @@ const getEmployees = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /employee/add-employee:
+ *   post:
+ *     summary: Add a new employee or rehire an existing one
+ *     description: Add a new employee or update an existing employee's "fired" status to false and update their role and email
+ *     tags: [Employee]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Employee added or rehired successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 employee:
+ *                   type: object
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Missing required fields for adding or rehiring employee
+ *       500:
+ *         description: Internal server error
+ */
 const addEmployee = async (req, res) => {
   try {
     // Extract the first_name, last_name, and role from the request body
@@ -54,6 +132,50 @@ const addEmployee = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /employee/update-employee/{id}:
+ *   put:
+ *     summary: Update employee information
+ *     description: Update the details (first name, last name, role, email) of an existing employee
+ *     tags: [Employee]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the employee to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Employee information updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 employee:
+ *                   type: object
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ */
 const updateEmployee = async (req, res) => {
   try {
     // Extract the id from the request parameters
@@ -75,6 +197,26 @@ const updateEmployee = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /employee/delete-employee/{id}:
+ *   delete:
+ *     summary: Fire an employee
+ *     description: Set the "fired" status of an employee to true to fire them
+ *     tags: [Employee]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the employee to fire
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Employee fired successfully
+ *       500:
+ *         description: Internal server error
+ */
 const deleteEmployee = async (req, res) => {
   try {
     // Extract the id from the request parameters
