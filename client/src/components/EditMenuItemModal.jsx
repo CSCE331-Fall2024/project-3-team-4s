@@ -2,6 +2,19 @@ import { useState } from "react";
 import "./EditModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * EditMenuItemModal component that provides a form to edit an existing menu item.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onEdit - Function to edit the menu item.
+ * @param {Object} props.menuItem - The menu item object to be edited.
+ * @returns {JSX.Element} The edit menu item modal component.
+ */
 const EditMenuItemModal = ({ onCancel, onEdit, menuItem }) => {
   const [itemName, setItemName] = useState(menuItem.item_name);
   const [itemPrice, setItemPrice] = useState(menuItem.item_price);

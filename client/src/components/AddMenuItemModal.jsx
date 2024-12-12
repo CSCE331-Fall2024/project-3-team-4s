@@ -2,6 +2,18 @@ import { useState } from "react";
 import "./AddModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * AddMenuItemModal component that provides a form to add a new menu item.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onAdd - Function to add the menu item.
+ * @returns {JSX.Element} The add menu item modal component.
+ */
 const AddMenuItemModal = ({ onCancel, onAdd }) => {
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");

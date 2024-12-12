@@ -2,6 +2,18 @@ import { useState } from "react";
 import "./AddModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * AddInventoryModal component that provides a form to add a new inventory item.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onAdd - Function to add the inventory item.
+ * @returns {JSX.Element} The add inventory modal component.
+ */
 const AddInventoryModal = ({ onCancel, onAdd }) => {
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");

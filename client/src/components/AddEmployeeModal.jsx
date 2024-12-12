@@ -2,6 +2,18 @@ import { useState } from "react";
 import "./AddModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * AddEmployeeModal component that provides a form to add a new employee.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onAdd - Function to add the employee.
+ * @returns {JSX.Element} The add employee modal component.
+ */
 const AddEmployeeModal = ({ onCancel, onAdd }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

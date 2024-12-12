@@ -5,6 +5,19 @@ import { translate } from "../utils/translateUtil"; // Import your translation f
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * EntreeModal component that provides a modal to add an entree to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.entree - The entree object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element|null} The entree modal component.
+ */
 const EntreeModal = ({ entree, onClose, resetSelections }) => {
   if (!entree) return null;
 

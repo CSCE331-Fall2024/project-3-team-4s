@@ -2,6 +2,19 @@ import { useState } from "react";
 import "./EditModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * EditEmployeeModal component that provides a form to edit an existing employee.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onEdit - Function to edit the employee.
+ * @param {Object} props.employee - The employee object to be edited.
+ * @returns {JSX.Element} The edit employee modal component.
+ */
 const EditEmployeeModal = ({ onCancel, onEdit, employee }) => {
   const [firstName, setFirstName] = useState(employee.first_name);
   const [lastName, setLastName] = useState(employee.last_name);
