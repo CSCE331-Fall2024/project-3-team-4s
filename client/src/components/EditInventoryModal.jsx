@@ -2,6 +2,19 @@ import { useState } from "react";
 import "./EditModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * EditInventoryModal component that provides a form to edit an existing inventory item.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the modal.
+ * @param {Function} props.onEdit - Function to edit the inventory item.
+ * @param {Object} props.inventoryItem - The inventory item object to be edited.
+ * @returns {JSX.Element} The edit inventory modal component.
+ */
 const EditInventoryModal = ({ onCancel, onEdit, inventoryItem }) => {
   console.log(inventoryItem);
   const [itemName, setItemName] = useState(inventoryItem.ingredient_name);

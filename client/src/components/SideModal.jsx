@@ -5,6 +5,19 @@ import { translate } from "../utils/translateUtil"; // Import your translation f
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * SideModal component that provides a modal to add a side to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.side - The side object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element|null} The side modal component.
+ */
 const SideModal = ({ side, onClose, resetSelections }) => {
   if (!side) return null;
 

@@ -5,6 +5,19 @@ import { translate } from "../utils/translateUtil"; // Import your translation f
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * DrinkModal component that provides a modal to add a drink to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.drink - The drink object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element|null} The drink modal component.
+ */
 const DrinkModal = ({ drink, onClose, resetSelections }) => {
   if (!drink) return null;
 

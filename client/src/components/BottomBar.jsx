@@ -4,6 +4,21 @@ import { translate } from "../utils/translateUtil"; // Import translation functi
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * BottomBar component that displays selected items and provides an option to add them to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.selectedItem - The selected item object.
+ * @param {Array} props.selectedSides - The array of selected sides.
+ * @param {Array} props.selectedEntrees - The array of selected entrees.
+ * @param {Function} props.addToOrder - Function to add items to the order.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element} The bottom bar component.
+ */
 const BottomBar = ({
   selectedItem,
   selectedSides,

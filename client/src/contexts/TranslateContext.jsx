@@ -3,7 +3,17 @@ import { createContext, useContext, useState } from "react";
 // Create a context with a default value
 const TranslateContext = createContext();
 
-// Create a provider component
+/**
+ * @module Contexts
+ */
+
+/**
+ * TranslateProvider that provides translation context to its children components.
+ *
+ * @param {Object} props - The properties object.
+ * @param {React.ReactNode} props.children - The child components.
+ * @returns {JSX.Element} The provider component.
+ */
 export const TranslateProvider = ({ children }) => {
   const [language, setLanguage] = useState(
     localStorage.getItem("language") || "en"

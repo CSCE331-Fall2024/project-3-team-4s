@@ -1,6 +1,20 @@
 import "./DeleteModal.css";
 import Button from "./Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * DeleteModal component that provides a modal to confirm deletion.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onCancel - Function to cancel the deletion.
+ * @param {Function} props.onDelete - Function to confirm the deletion.
+ * @param {string} props.heading - The heading text for the modal.
+ * @param {string} props.text - The text content for the modal.
+ * @returns {JSX.Element} The delete modal component.
+ */
 const DeleteModal = ({ onCancel, onDelete, heading, text }) => {
   return (
     <div className="modal-del">

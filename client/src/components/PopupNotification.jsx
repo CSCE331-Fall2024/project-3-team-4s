@@ -3,6 +3,17 @@ import { useTranslate } from "../contexts/TranslateContext"; // Import translati
 import { translate } from "../utils/translateUtil"; // Import translation function
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * PopupNotification component that displays a notification when an item is added to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.popupDetails - The details of the popup notification.
+ * @returns {JSX.Element|null} The popup notification component.
+ */
 const PopupNotification = ({ popupDetails }) => {
   if (!popupDetails) return null;
 
@@ -13,7 +24,11 @@ const PopupNotification = ({ popupDetails }) => {
     const fetchTranslation = async () => {
       try {
         const translated = await translate(
-          `Added ${popupDetails.quantity} ${popupDetails.name} ${popupDetails.isBowl || ""} ${popupDetails.isPlate || ""} ${popupDetails.isBiggerPlate || ""} to the order.`,
+          `Added ${popupDetails.quantity} ${popupDetails.name} ${
+            popupDetails.isBowl || ""
+          } ${popupDetails.isPlate || ""} ${
+            popupDetails.isBiggerPlate || ""
+          } to the order.`,
           language
         );
         setTranslatedText(translated);

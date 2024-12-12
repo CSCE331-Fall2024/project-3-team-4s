@@ -5,6 +5,19 @@ import { translate } from "../utils/translateUtil"; // Import your translation f
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * AppetizerModal component that provides a modal to add an appetizer to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.appetizer - The appetizer object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element|null} The appetizer modal component.
+ */
 const AppetizerModal = ({ appetizer, onClose, resetSelections }) => {
   if (!appetizer) return null;
 

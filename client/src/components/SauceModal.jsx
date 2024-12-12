@@ -5,6 +5,19 @@ import { translate } from "../utils/translateUtil"; // Import your translation f
 import Button from "../components/Button"; // Import your custom Button component
 import "../pages/CustomerHome.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * SauceModal component that provides a modal to add a sauce to the order.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Object} props.sauce - The sauce object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.resetSelections - Function to reset selections.
+ * @returns {JSX.Element|null} The sauce modal component.
+ */
 const SauceModal = ({ sauce, onClose, resetSelections }) => {
   if (!sauce) return null;
 

@@ -2,6 +2,17 @@ import "./TranslateModal.css";
 import { useTranslate } from "../contexts/TranslateContext";
 import Button from "../components/Button";
 
+/**
+ * @module Components
+ */
+
+/**
+ * TranslateModal component that provides a modal to select and save a language preference.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onSave - Function to save the selected language.
+ * @returns {JSX.Element} The translate modal component.
+ */
 const TranslateModal = ({ onSave }) => {
   const { language, setLanguage } = useTranslate();
 

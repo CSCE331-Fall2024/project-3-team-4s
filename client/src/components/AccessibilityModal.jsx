@@ -3,6 +3,17 @@ import { AccessibilityContext } from "../contexts/AccessibilityContext";
 import Button from "./Button";
 import "./AccessibilityModal.css";
 
+/**
+ * @module Components
+ */
+
+/**
+ * AccessibilityModal component that provides sliders to adjust accessibility settings.
+ *
+ * @param {Object} props - The properties object.
+ * @param {Function} props.onClose - Function to close the modal.
+ * @returns {JSX.Element} The accessibility modal component.
+ */
 const AccessibilityModal = ({ onClose }) => {
   const { settings, updateSettings } = useContext(AccessibilityContext);
 
