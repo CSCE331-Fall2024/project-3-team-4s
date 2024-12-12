@@ -7,6 +7,53 @@ import db from "../db.js";
  *     description: Operations related to customer kiosk
  */
 
+/**
+ * @swagger
+ * /kiosk/prices:
+ *   get:
+ *     summary: Get the price of an item
+ *     description: Retrieve the price of an item from the menu based on the name provided in the request body
+ *     tags: [Kiosk]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemName:
+ *                 type: string
+ *                 description: The name of the item to retrieve the price for
+ *     responses:
+ *       200:
+ *         description: The price of the item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *       404:
+ *         description: Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getItemPrice = async (req, res) => {
   try {
     const { itemName } = req.query; // Get the item name from query parameters
@@ -28,6 +75,47 @@ const getItemPrice = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/meal-types:
+ *   get:
+ *     summary: Get all meal items
+ *     description: Retrieve all items from the menu that are categorized as "Meal"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of meal items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getMealTypes = async (req, res) => {
   try {
     const mealTypes = await db.any(
@@ -41,6 +129,47 @@ const getMealTypes = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/items:
+ *   get:
+ *     summary: Get all items
+ *     description: Retrieve all items from the menu
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of all items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getItems = async (req, res) => {
   try {
     const mealTypes = await db.any("SELECT * FROM menu_item");
@@ -52,6 +181,47 @@ const getItems = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/entrees:
+ *   get:
+ *     summary: Get all entrees
+ *     description: Retrieve all items from the menu that are categorized as "Entree"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of entree items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getEntrees = async (req, res) => {
   try {
     const entrees = await db.any(
@@ -65,6 +235,47 @@ const getEntrees = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/sauces:
+ *   get:
+ *     summary: Get all sauces
+ *     description: Retrieve all items from the menu that are categorized as "Sauces"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of sauce items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getSauces = async (req, res) => {
   try {
     const entrees = await db.any(
@@ -78,6 +289,47 @@ const getSauces = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/sides:
+ *   get:
+ *     summary: Get all sides
+ *     description: Retrieve all items from the menu that are categorized as "Side"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of side items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getSides = async (req, res) => {
   try {
     const sides = await db.any(
@@ -91,6 +343,47 @@ const getSides = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/appetizers:
+ *   get:
+ *     summary: Get all appetizers
+ *     description: Retrieve all items from the menu that are categorized as "Appetizer"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of appetizer items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getAppetizers = async (req, res) => {
   try {
     const appetizers = await db.any(
@@ -104,6 +397,47 @@ const getAppetizers = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/drinks:
+ *   get:
+ *     summary: Get all drinks
+ *     description: Retrieve all items from the menu that are categorized as "Drink", "Bottle", or "Refresher"
+ *     tags: [Kiosk]
+ *     responses:
+ *       200:
+ *         description: List of drink items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   menu_item_id:
+ *                     type: integer
+ *                   current_servings:
+ *                     type: number
+ *                     format: float
+ *                   item_name:
+ *                     type: string
+ *                   item_price:
+ *                     type: number
+ *                     format: float
+ *                   item_category:
+ *                     type: string
+ *                   on_menu:
+ *                     type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const getDrinks = async (req, res) => {
   try {
     const drinks = await db.any(
@@ -117,6 +451,63 @@ const getDrinks = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /kiosk/order:
+ *   post:
+ *     summary: Submit a new order
+ *     description: Submit a new order and update the database accordingly
+ *     tags: [Kiosk]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               totalCost:
+ *                 type: number
+ *                 format: float
+ *               transactionType:
+ *                 type: string
+ *               orderList:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
+ *     responses:
+ *       200:
+ *         description: Order successfully added to the database
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Not enough servings for one or more items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error submitting order
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const postOrder = async (req, res) => {
   const { totalCost, transactionType, orderList } = req.body;
   const transactionDate = new Date();
